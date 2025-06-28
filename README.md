@@ -29,5 +29,5 @@ Authors:
 -   André L. R. Pessina [![ORCID
     iD](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-5306-0731)
 
--   Prof. Dr. Manoel Garcia Neto [![ORCID
+-   Manoel Garcia Neto [![ORCID
     iD](https://orcid.org/sites/default/files/images/orcid_16x16.png)](https://orcid.org/0000-0002-5574-0183)
