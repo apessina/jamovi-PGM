@@ -1,0 +1,91 @@
+---
+name:  scurve
+title: "Growth Modeling Analysis"
+menuGroup: Growth
+menuTitle: Growth Modeling
+menuSubtitle: Single Curve
+version: '1.0.0'
+jas: '1.2'
+
+options:
+    - name: data
+      type: Data
+
+    - name: dep
+      title: "Dependent Variable"
+      type: Variable
+
+    - name: time
+      title: "Time Variable"
+      type: Variable
+
+    - name: model
+      title: "Model"
+      type: List
+      options:
+        - title: "Richards"
+          name:  richards
+      default: richards
+
+    - name: agg
+      title: "Aggregation"
+      type: List
+      options:
+        - name: mean
+          title: "Mean"
+        - name: median
+          title: "Median"
+      default: mean
+
+    - name: aic
+      title: "AIC"
+      type: Bool
+      default: false
+    - name: aicc
+      title: "AICc"
+      type: Bool
+      default: false
+    - name: bic
+      title: "BIC"
+      type: Bool
+      default: false
+    - name: r2
+      title: "R²"
+      type: Bool
+      default: false
+    - name: fTest
+      title: "Global F-test"
+      type: Bool
+      default: false
+
+    - name: ogf
+      title: "Ontogenetic growth force"
+      type: Bool
+      default: false
+    - name: ogf3
+      title: "OGF 3rd Derivative"
+      type: Bool
+      default: false
+    
+    - name: sndPlot
+      title: "Growth Rate and Acceleration"
+      type: Bool
+      default: false
+      
+    - name: res
+      title: "x-axis"
+      type: Number
+      min: 0
+      max: 1000
+      default: 100
+      
+    - name: fPoints
+      title: "F-Points"
+      type: Bool
+      default: false      
+    - name: pPoints
+      title: "P-Points"
+      type: Bool
+      default: false      
+
+...

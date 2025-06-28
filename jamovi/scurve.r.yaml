@@ -1,0 +1,144 @@
+---
+name:  scurve
+title: "Growth Modeling Analysis"
+jrs:   '1.1'
+
+items:
+    - name:  text
+      title: ""
+      type:  Preformatted
+      refs:
+        - richards
+
+    - name: pTable
+      title: "Estimated Parameters"
+      type: Table
+      rows: (dep)
+      columns:
+        - name: var
+          title: ''
+          type: text
+          content: ($key)
+        - name: A
+          type: number
+        - name: d
+          type: number
+        - name: k
+          type: number
+        - name: Ti
+          type: number
+      refs:
+        - nlm
+
+    - name: fitq
+      title: "Goodness-of-fit"
+      type: Table
+      rows: (dep)
+      visible: (aic || aicc || bic || r2 || fTest)
+      columns:
+        - name: var
+          title: ''
+          type: text
+          content: ($key)
+        - name: AIC
+          title: "AIC"
+          type: number
+          visible: (aic)
+        - name: AICc
+          title: "AICᴄ"
+          type: number
+          visible: (aicc)
+        - name: BIC
+          type: number
+          visible: (bic)
+        - name: R2
+          title: "R²"
+          type: number
+          visible: (r2)
+        - name: f
+          title: "F"
+          type: number
+          superTitle: Global F-test
+          visible: (fTest)
+        - name: fdf1
+          title: "df1"
+          type: integer
+          superTitle: Global F-test
+          visible: (fTest)
+        - name: fdf2
+          title: "df2"
+          type: integer
+          superTitle: Global F-test
+          visible: (fTest)
+        - name: fp
+          title: p-value
+          type: number
+          format: zto,pvalue
+          superTitle: Global F-test
+          visible: (fTest)
+      refs:
+        - pgm
+          
+    - name: fpoints
+      title: "Key Growth Points"
+      type: Table
+      visible: (fPoints || pPoints)
+      columns:
+        - name: var
+          title: ''
+          type: text
+          content: ($key)
+        - name: F0
+          type: number
+          superTitle: by Ontogenetic Growth Force
+          visible: (fPoints)
+        - name: F1
+          type: number
+          superTitle: by Ontogenetic Growth Force
+          visible: (fPoints)
+        - name: Fi
+          type: number
+          superTitle: by Ontogenetic Growth Force
+          visible: (fPoints)
+        - name: F2
+          type: number
+          superTitle: by Ontogenetic Growth Force
+          visible: (fPoints)
+        - name: F3
+          type: number
+          superTitle: by Ontogenetic Growth Force
+          visible: (fPoints)
+        - name: P1
+          type: number
+          superTitle: by Growth Rate and Acceleration
+          visible: (pPoints)
+        - name: Pi
+          type: number
+          superTitle: by Growth Rate and Acceleration
+          visible: (pPoints)          
+        - name: P2
+          type: number
+          superTitle: by Growth Rate and Acceleration
+          visible: (pPoints)
+      refs:
+        - pgm
+          
+    - name: mplot
+      title: "Growth Curve"
+      type: Image
+      width:  700
+      height: 500
+      renderFun: .mplot
+      refs:
+        - pgm
+                
+    - name: dplot
+      visible: (sndPlot)
+      title: "Growth Rate and Acceleration"
+      type: Image
+      width:  700
+      height: 500
+      renderFun: .dplot
+      refs:
+        - pgm
+...

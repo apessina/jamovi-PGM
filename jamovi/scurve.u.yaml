@@ -1,0 +1,156 @@
+title: "Growth Modeling Analysis"
+name: scurve
+jus: '3.0'
+stage: 0
+compilerMode: tame
+children:
+  - type: VariableSupplier
+    persistentItems: false
+    stretchFactor: 1
+    children:
+      - type: TargetLayoutBox
+        label: Dependent Variable
+        children:
+          - type: VariablesListBox
+            name: dep
+            maxItemCount: 1
+            isTarget: true
+      - type: TargetLayoutBox
+        label: Time Variable
+        children:
+          - type: VariablesListBox
+            name: time
+            maxItemCount: 1
+            isTarget: true
+  - type: CollapseBox
+    label: Modeling
+    collapsed: false
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Growth Function
+                children:
+                  - type: ComboBox
+                    name: model
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Sampling
+                children:
+                  - type: ComboBox
+                    name: agg
+  - type: CollapseBox
+    label: Goodness-of-fit
+    collapsed: false
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Measures
+                children:
+                  - type: CheckBox
+                    name: aic
+                  - type: CheckBox
+                    name: aicc
+                  - type: CheckBox
+                    name: bic
+                  - type: CheckBox
+                    name: r2
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Overall Significance
+                children:
+                  - type: CheckBox
+                    name: fTest
+  - type: CollapseBox
+    label: Plot
+    collapsed: false
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Metrics
+                children:
+                  - type: CheckBox
+                    name: ogf
+                    children:
+                      - type: CheckBox
+                        name: ogf3
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Derivatives
+                children:
+                  - type: CheckBox
+                    name: sndPlot
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Resolution Factor
+                children:
+                  - type: TextBox
+                    name: res
+                    format: number
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Key Points
+                style: list-inline
+                children:
+                  - type: CheckBox
+                    name: fPoints
+                  - type: CheckBox
+                    name: pPoints
