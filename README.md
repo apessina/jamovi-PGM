@@ -17,14 +17,12 @@ this package.
 This package uses Levenberg-Marquardt Nonlinear Least-Squares Algorithm
 found in
 [minpack.lm](https://cran.r-project.org/web/packages/minpack.lm/index.html)
-to fit some model parameters to user data.
-
-Richards model form was based on Equation 9 of [Tjørve and Tjørve
-(2010)](https://doi.org/10.1016/j.jtbi.2010.09.008).
+to fit some model parameters to user data. Richards model form was based 
+on Equation 9 of [Tjørve and Tjørve (2010)](https://doi.org/10.1016/j.jtbi.2010.09.008).
 
 ## How to cite
 
-
+[![DOI](https://zenodo.org/badge/992059711.svg)](https://doi.org/10.5281/zenodo.15764773)
 
 Authors:
 
