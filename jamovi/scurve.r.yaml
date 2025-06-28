@@ -23,7 +23,7 @@ items:
           type: number
         - name: d
           type: number
-        - name: k
+        - name: K
           type: number
         - name: Ti
           type: number

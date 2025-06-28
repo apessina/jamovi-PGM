@@ -40,28 +40,46 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           ### Define model expression
           s_expr <- expression(
-            A * ( 1 + (d - 1) * exp(-k * (t - Ti) / (d / (1 - d))) ) ^ (1 / (1 - d))
+            A * ( 1 + (d - 1) * exp(-K * (t - Ti) / (d / (1 - d))) ) ^ (1 / (1 - d))
           )
           
-          ### Estimate initial values for model parameters
+          ### Initial parameters values
           gr <- diff(y)/diff(t) # growth rate vector (1st derivative)
-          A_init <- max(y, na.rm=TRUE) # asymptotic - maximum y value || *1.5 ?
-          d_init <- 1.2 # almost logistic shape
-          k_init <- max(gr) / A_init # relative max. growth rate
+          A_init <- max(y, na.rm=TRUE) # asymptotic - maximum y value
+          K_init <- max(gr) / A_init # relative max. growth rate
           Ti_init <- t[which.max(gr)] # inflection point
+          d_inits <- seq(0.5, 3, by=0.01) # fixed "d" values for grid search
+          d_inits <- d_inits[d_inits<0.95 | d_inits>1.05] # remove d~1
           
-          ### Adjust parameters with nonlinear least-squares (LM)
-          adjusted <- nlsLM(
-            y ~ A * (1 + (d - 1) * exp(-k * (t - Ti) / (d / (1 - d)))) ^ (1 / (1 - d)),
-            start = list(A=A_init, d=d_init, k=k_init, Ti=Ti_init),
-            control = nls.lm.control(maxiter=1000) # let's avoid crashes
-          )
+          ### Store best iteration results
+          best_model <- NULL
+          best_SSe <- Inf
+          best_d <- NA
+          
+          ### Iteration to estimate best parameters for each fixed "d" value
+          for (d_init in d_inits) {
+            try({
+              fit <- nlsLM(
+                y ~ A * (1 + (d_init - 1) * exp(-K * (t - Ti) / (d_init / (1 - d_init)))) ^ (1 / (1 - d_init)),
+                start = list(A=A_init, K=K_init, Ti=Ti_init),
+                lower = c(A=0, K=0, Ti=min(t)), upper = c(Inf, Inf, max(t)),
+                control = nls.lm.control(maxiter=1000, ftol=1e-10)
+              )
+              SSe <- sum(residuals(fit)^2)
+              if (SSe < best_SSe) {
+                best_model <- fit
+                best_SSe <- SSe
+                best_d <- d_init
+              }
+            }, silent=TRUE)
+          }
           
           ### Get final parameters in the expression
-          params <- as.list(coef(adjusted))
+          params <- as.list(coef(best_model)) # estimated A, K, Ti
+          params$d <- best_d # best d value on grid search
           f_expr <- eval(substitute(expression(
-            A * (1 + (d - 1) * exp(-k * (x - Ti) / (d / (1 - d)))) ^ (1 / (1 - d))
-          ), params))
+              A * (1 + (d - 1) * exp(-K * (x - Ti) / (d / (1 - d)))) ^ (1 / (1 - d))
+            ), params))
           
           return(list(s_expr=s_expr, params=params, f_expr=f_expr))
         }
@@ -186,7 +204,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         pTable$setRow(rowNo=1, values=list(
           A=format(round(params$A, 2), nsmall=2),
           d=format(round(params$d, 2), nsmall=2),
-          k=format(round(params$k, 2), nsmall=2),
+          K=format(round(params$K, 2), nsmall=2),
           Ti=format(round(params$Ti, 2), nsmall=2)
         ))
         
