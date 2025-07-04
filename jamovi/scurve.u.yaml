@@ -1,4 +1,4 @@
-title: "Growth Modeling Analysis"
+title: Growth Modeling Analysis
 name: scurve
 jus: '3.0'
 stage: 0
@@ -42,6 +42,19 @@ children:
                 children:
                   - type: ComboBox
                     name: model
+                  - type: Label
+                    label: Parameter Constraint
+                    children:
+                      - type: RadioButton
+                        name: pConstraint_strict
+                        optionName: pConstraint
+                        optionPart: strict
+                        label: Strict
+                      - type: RadioButton
+                        name: pConstraint_flex
+                        optionName: pConstraint
+                        optionPart: flex
+                        label: Flexible
           - type: LayoutBox
             cell:
               column: 1
@@ -49,10 +62,21 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Sampling
+                label: Samples
                 children:
                   - type: ComboBox
                     name: agg
+                  - type: Label
+                    label: Outliers
+                    children:
+                      - type: CheckBox
+                        name: trim
+                        children:
+                          - type: TextBox
+                            name: tPerc
+                            format: number
+                            suffix: '%'
+                            enable: (trim)
   - type: CollapseBox
     label: Goodness-of-fit
     collapsed: false

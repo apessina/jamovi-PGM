@@ -1,13 +1,13 @@
 ---
 title: Practical Growth Modeling
 name: PGM
-version: 0.1.1
+version: 0.1.2
 jms: '1.0'
 authors:
   - André L. R. Pessina
   - Manoel Garcia Neto
 maintainer: André L. R. Pessina <andre.pessina@unesp.br>
-date: '2025-06-28'
+date: '2025-07-04'
 type: R
 description: >-
   This package facilitates biological growth modeling through curve fitting, 

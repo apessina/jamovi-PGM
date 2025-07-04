@@ -25,10 +25,12 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         x_raw <- data[[self$options$time]]
         
         ### Aggregate multiple y-values with same x-value
+        trim_perc <- ifelse(self$options$trim, self$options$tPerc/100, 0)
         if (self$options$agg == "median") {
           agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=median)
         } else {
-          agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=mean)
+          agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=function(x) 
+            mean(x, trim=trim_perc))
         }
         t <- agg_vals[[1]]
         y <- agg_vals[[2]]
@@ -49,7 +51,13 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           K_init <- max(gr) / A_init # relative max. growth rate
           Ti_init <- t[which.max(gr)] # inflection point
           d_inits <- seq(0.5, 3, by=0.01) # fixed "d" values for grid search
-          d_inits <- d_inits[d_inits<0.95 | d_inits>1.05] # remove d~1
+          
+          ### Parameters restriction
+          if (self$options$pConstraint=="strict") {
+            d_inits <- d_inits[d_inits<0.95|d_inits>1.05] # remove d~1
+          } else {
+            d_inits <- d_inits[d_inits!=1] # remove d=1
+          }
           
           ### Store best iteration results
           best_model <- NULL
@@ -89,12 +97,13 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Adjust selected model to user data
         if (self$options$model == "richards") {
           model <- richards(t, y)
-          
-          s_expr <- model$s_expr
-          params <- model$params
-          n_params <- length(params)
-          W_expr <- model$f_expr
         }
+        
+        ## Get model information
+        s_expr <- model$s_expr # raw expression
+        params <- model$params # values of parameters
+        n_params <- length(params) # number of parameters
+        W_expr <- model$f_expr # final/fit expression
         
         ## First 2 symbolic derivatives as expression
         W1_expr <- D(W_expr, "x") # 1st derivative
@@ -177,16 +186,16 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         f_points <- list(F0=F0, F1=F1, Fi=Fi, F2=F2, F3=F3)
         
         ## by Growth Rate and Acceleration
-        ## Pi
+        ### Pi
         i_Pi <- which(diff(sign(W2_pred))!=0)[1]
         Pi <- t_new[i_Pi]
-        ## P1
+        ### P1
         i_P1 <- which.max(W2(t_new[1:i_Pi]))
         P1 <- t_new[i_P1]
-        ## P2
+        ### P2
         i_P2 <- i_Pi - 1 + which.min(W2(t_new[i_Pi:len]))
         P2 <- t_new[i_P2]
-        ## List of calculated P-Points
+        ### List of calculated P-Points
         p_points <- list(P1=P1, Pi=Pi, P2=P2)
         
         ##### Model Information #####

@@ -9,7 +9,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             dep = NULL,
             time = NULL,
             model = "richards",
+            pConstraint = "strict",
             agg = "mean",
+            trim = FALSE,
+            tPerc = 10,
             aic = FALSE,
             aicc = FALSE,
             bic = FALSE,
@@ -30,16 +33,31 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 
             private$..dep <- jmvcore::OptionVariable$new(
                 "dep",
-                dep)
+                dep,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
             private$..time <- jmvcore::OptionVariable$new(
                 "time",
-                time)
+                time,
+                suggested=list(
+                    "continuous"),
+                permitted=list(
+                    "numeric"))
             private$..model <- jmvcore::OptionList$new(
                 "model",
                 model,
                 options=list(
                     "richards"),
                 default="richards")
+            private$..pConstraint <- jmvcore::OptionList$new(
+                "pConstraint",
+                pConstraint,
+                options=list(
+                    "strict",
+                    "flex"),
+                default="strict")
             private$..agg <- jmvcore::OptionList$new(
                 "agg",
                 agg,
@@ -47,6 +65,16 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "mean",
                     "median"),
                 default="mean")
+            private$..trim <- jmvcore::OptionBool$new(
+                "trim",
+                trim,
+                default=FALSE)
+            private$..tPerc <- jmvcore::OptionNumber$new(
+                "tPerc",
+                tPerc,
+                min=0,
+                max=50,
+                default=10)
             private$..aic <- jmvcore::OptionBool$new(
                 "aic",
                 aic,
@@ -97,7 +125,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..dep)
             self$.addOption(private$..time)
             self$.addOption(private$..model)
+            self$.addOption(private$..pConstraint)
             self$.addOption(private$..agg)
+            self$.addOption(private$..trim)
+            self$.addOption(private$..tPerc)
             self$.addOption(private$..aic)
             self$.addOption(private$..aicc)
             self$.addOption(private$..bic)
@@ -114,7 +145,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         dep = function() private$..dep$value,
         time = function() private$..time$value,
         model = function() private$..model$value,
+        pConstraint = function() private$..pConstraint$value,
         agg = function() private$..agg$value,
+        trim = function() private$..trim$value,
+        tPerc = function() private$..tPerc$value,
         aic = function() private$..aic$value,
         aicc = function() private$..aicc$value,
         bic = function() private$..bic$value,
@@ -130,7 +164,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..dep = NA,
         ..time = NA,
         ..model = NA,
+        ..pConstraint = NA,
         ..agg = NA,
+        ..trim = NA,
+        ..tPerc = NA,
         ..aic = NA,
         ..aicc = NA,
         ..bic = NA,
@@ -331,7 +368,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,1,1),
+                version = c(0,1,2),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,
@@ -351,7 +388,10 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param dep .
 #' @param time .
 #' @param model .
+#' @param pConstraint .
 #' @param agg .
+#' @param trim .
+#' @param tPerc .
 #' @param aic .
 #' @param aicc .
 #' @param bic .
@@ -385,7 +425,10 @@ scurve <- function(
     dep,
     time,
     model = "richards",
+    pConstraint = "strict",
     agg = "mean",
+    trim = FALSE,
+    tPerc = 10,
     aic = FALSE,
     aicc = FALSE,
     bic = FALSE,
@@ -414,7 +457,10 @@ scurve <- function(
         dep = dep,
         time = time,
         model = model,
+        pConstraint = pConstraint,
         agg = agg,
+        trim = trim,
+        tPerc = tPerc,
         aic = aic,
         aicc = aicc,
         bic = bic,
