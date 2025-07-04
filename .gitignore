@@ -59,8 +59,8 @@ oldv/
 oldv*/
 
 # testing files
-PGM_Test.omv
-PGM_TestData.xlsx
+*.omv
+*.xlsx
 
 # other files / folders
 temp/
