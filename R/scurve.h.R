@@ -368,7 +368,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,1,2),
+                version = c(0,1,3),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,

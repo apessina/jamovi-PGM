@@ -12,19 +12,33 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ##### Get User Data #####
         
-        ## Check if variables are defined
-        if (is.null(self$options$dep) || is.null(self$options$time))
+        ## Option values into shorter variable names
+        dep  <- self$options$dep
+        time <- self$options$time
+        
+        ## Check if variables have any data
+        if (is.null(dep) || is.null(time))
           return()
         
         ## Get the data
         data <- self$data
-        data <- na.omit(data) # remove NAs
+        
+        ## Convert to appropriate data types
+        data[[dep]] <- jmvcore::toNumeric(data[[dep]])
+        data[[time]] <- jmvcore::toNumeric(data[[time]])
+        
+        ## Remove NAs
+        data <- na.omit(data)
         
         ## Define data variables
-        y_raw <- data[[self$options$dep]]
-        x_raw <- data[[self$options$time]]
+        y_raw <- data[[dep]]
+        x_raw <- data[[time]]
         
-        ### Aggregate multiple y-values with same x-value
+        ## Check if both variables have at least two unique values
+        if (length(unique(x_raw)) < 2 || length(unique(y_raw)) < 2)
+          stop("At least two unique (x, y) pairs are required for growth analysis")
+        
+        ## Aggregate multiple y-values with same x-value
         trim_perc <- ifelse(self$options$trim, self$options$tPerc/100, 0)
         if (self$options$agg == "median") {
           agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=median)
@@ -166,37 +180,47 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Length of x-axis
         len <- length(t_new)
         
-        ## by Ontogenetic Growth Force
-        ### Fi - inflection point
-        i_Fi <- which(diff(sign(OGF_pred))!=0)[1]
-        Fi <- t_new[i_Fi]
-        ### F1
-        i_F1 <- which.max(OGF(t_new[1:i_Fi]))
-        F1 <- t_new[i_F1]
-        ### F0 - end of lag phase
-        i_F0 <- which.max(OGF3(t_new[1:i_F1]))
-        F0 <- t_new[i_F0]
-        ### F2
-        i_F2 <- i_Fi - 1 + which.min(OGF(t_new[i_Fi:len]))
-        F2 <- t_new[i_F2]
-        ### F3
-        i_F3 <- i_F2 + which(diff(sign(OGF3(t_new[i_F2:len])))!=0)[1]
-        F3 <- t_new[i_F3]
-        ### List of calculated F-Points
-        f_points <- list(F0=F0, F1=F1, Fi=Fi, F2=F2, F3=F3)
+        ## Check if the data have a inflection point
+        zero_acc <- which(diff(sign(W2_pred))!=0)
+        if (length(zero_acc)==0) {
+          stop("No inflection point found. The data might not follow a sigmoidal trend.")
+        } else {
+          
+          ## by Ontogenetic Growth Force
+          ### Fi - inflection point
+          i_Fi <- which(diff(sign(OGF_pred))!=0)[1]
+          Fi <- t_new[i_Fi]
+          ### F1
+          i_F1 <- which.max(OGF(t_new[1:i_Fi]))
+          F1 <- t_new[i_F1]
+          ### F0 - end of lag phase
+          i_F0 <- which.max(OGF3(t_new[1:i_F1]))
+          F0 <- t_new[i_F0]
+          if (F0==F1) 
+            F0 <- NA
+          ### F2
+          i_F2 <- i_Fi - 1 + which.min(OGF(t_new[i_Fi:len]))
+          F2 <- t_new[i_F2]
+          ### F3
+          i_F3 <- i_F2 + which(diff(sign(OGF3(t_new[i_F2:len])))!=0)[1]
+          F3 <- t_new[i_F3]
+          ### List of calculated F-Points
+          f_points <- list(F0=F0, F1=F1, Fi=Fi, F2=F2, F3=F3)
+          
+          ## by Growth Rate and Acceleration
+          ### Pi
+          i_Pi <- zero_acc[1]
+          Pi <- t_new[i_Pi]
+          ### P1
+          i_P1 <- which.max(W2(t_new[1:i_Pi]))
+          P1 <- t_new[i_P1]
+          ### P2
+          i_P2 <- i_Pi - 1 + which.min(W2(t_new[i_Pi:len]))
+          P2 <- t_new[i_P2]
+          ### List of calculated P-Points
+          p_points <- list(P1=P1, Pi=Pi, P2=P2)
         
-        ## by Growth Rate and Acceleration
-        ### Pi
-        i_Pi <- which(diff(sign(W2_pred))!=0)[1]
-        Pi <- t_new[i_Pi]
-        ### P1
-        i_P1 <- which.max(W2(t_new[1:i_Pi]))
-        P1 <- t_new[i_P1]
-        ### P2
-        i_P2 <- i_Pi - 1 + which.min(W2(t_new[i_Pi:len]))
-        P2 <- t_new[i_P2]
-        ### List of calculated P-Points
-        p_points <- list(P1=P1, Pi=Pi, P2=P2)
+        }
         
         ##### Model Information #####
         

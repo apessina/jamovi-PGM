@@ -1,13 +1,13 @@
 ---
 title: Practical Growth Modeling
 name: PGM
-version: 0.1.2
+version: 0.1.3
 jms: '1.0'
 authors:
   - André L. R. Pessina
   - Manoel Garcia Neto
 maintainer: André L. R. Pessina <andre.pessina@unesp.br>
-date: '2025-07-04'
+date: '2025-07-06'
 type: R
 description: >-
   This package facilitates biological growth modeling through curve fitting, 
@@ -19,6 +19,25 @@ analyses:
     menuGroup: Growth
     menuTitle: Growth Modeling
     menuSubtitle: Single Curve
+datasets:
+  - name: Plant Growth (Gregorczyk, 1998)
+    path: gregorczyk1998.csv
+    description: >-
+      Experimental values of dry matter accumulation (grams per day) in
+      buckwheat plants during vegetation
+      (https://doi.org/10.1111/j.1439-037X.1998.tb00424.x)
+  - name: Chicken Growth (Aggrey, 2002)
+    path: aggrey2002.csv
+    description: >-
+      Mean of body weight measurements (grams per day) from an unselected 
+      Athens-Canadian randombred chicken population at different ages
+      (https://doi.org/10.1093/ps/81.12.1782)
+  - name: Broiler Growth (Freitas et al., 1984)
+    path: freitasetal1984.csv
+    description: >-
+      Experimental mean values of body weight measurements (grams per day) in 
+      Pilch broiler chickens from birth to 68 days
+      (https://doi.org/10.1590/S1678-3921.pab1984.v19.16029)
 usesNative: true
 minApp: 1.0.8
 
