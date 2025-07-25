@@ -18,7 +18,12 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             bic = FALSE,
             r2 = FALSE,
             fTest = FALSE,
-            res = 100, ...) {
+            res = 100,
+            calcAction = FALSE,
+            plotKe = FALSE,
+            intInterval = FALSE,
+            intL = 0,
+            intU = 0, ...) {
 
             super$initialize(
                 package="PGM",
@@ -96,6 +101,28 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 min=0,
                 max=1000,
                 default=100)
+            private$..calcAction <- jmvcore::OptionBool$new(
+                "calcAction",
+                calcAction,
+                default=FALSE)
+            private$..plotKe <- jmvcore::OptionBool$new(
+                "plotKe",
+                plotKe,
+                default=FALSE)
+            private$..intInterval <- jmvcore::OptionBool$new(
+                "intInterval",
+                intInterval,
+                default=FALSE)
+            private$..intL <- jmvcore::OptionNumber$new(
+                "intL",
+                intL,
+                min=0,
+                default=0)
+            private$..intU <- jmvcore::OptionNumber$new(
+                "intU",
+                intU,
+                min=0,
+                default=0)
 
             self$.addOption(private$..deps)
             self$.addOption(private$..time)
@@ -110,6 +137,11 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..r2)
             self$.addOption(private$..fTest)
             self$.addOption(private$..res)
+            self$.addOption(private$..calcAction)
+            self$.addOption(private$..plotKe)
+            self$.addOption(private$..intInterval)
+            self$.addOption(private$..intL)
+            self$.addOption(private$..intU)
         }),
     active = list(
         deps = function() private$..deps$value,
@@ -124,7 +156,12 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         bic = function() private$..bic$value,
         r2 = function() private$..r2$value,
         fTest = function() private$..fTest$value,
-        res = function() private$..res$value),
+        res = function() private$..res$value,
+        calcAction = function() private$..calcAction$value,
+        plotKe = function() private$..plotKe$value,
+        intInterval = function() private$..intInterval$value,
+        intL = function() private$..intL$value,
+        intU = function() private$..intU$value),
     private = list(
         ..deps = NA,
         ..time = NA,
@@ -138,7 +175,12 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..bic = NA,
         ..r2 = NA,
         ..fTest = NA,
-        ..res = NA)
+        ..res = NA,
+        ..calcAction = NA,
+        ..plotKe = NA,
+        ..intInterval = NA,
+        ..intL = NA,
+        ..intU = NA)
 )
 
 mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
@@ -148,7 +190,9 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         text = function() private$.items[["text"]],
         pTable = function() private$.items[["pTable"]],
         fitq = function() private$.items[["fitq"]],
-        mplot = function() private$.items[["mplot"]]),
+        action = function() private$.items[["action"]],
+        mplot = function() private$.items[["mplot"]],
+        aplot = function() private$.items[["aplot"]]),
     private = list(),
     public=list(
         initialize=function(options) {
@@ -245,6 +289,41 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `visible`="(fTest)")),
                 refs=list(
                     "pgm")))
+            self$add(jmvcore::Table$new(
+                options=options,
+                name="action",
+                title="Action",
+                rows="(deps)",
+                visible="(calcAction)",
+                columns=list(
+                    list(
+                        `name`="var", 
+                        `title`="", 
+                        `type`="text", 
+                        `content`="($key)"),
+                    list(
+                        `name`="Lower", 
+                        `type`="number", 
+                        `superTitle`="Time interval"),
+                    list(
+                        `name`="Upper", 
+                        `type`="number", 
+                        `superTitle`="Time interval"),
+                    list(
+                        `name`="Action", 
+                        `type`="number"),
+                    list(
+                        `name`="FWA", 
+                        `type`="number"),
+                    list(
+                        `name`="DWA", 
+                        `type`="number")),
+                notes=list(
+                    `WUA`="FWA: Final weight / Action", 
+                    `WGA`="DWA: (Final weight - Initial weight) / Action"),
+                refs=list(
+                    "pgm",
+                    "ppfm")))
             self$add(jmvcore::Image$new(
                 options=options,
                 name="mplot",
@@ -253,7 +332,18 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 height=500,
                 renderFun=".mplot",
                 refs=list(
-                    "pgm")))}))
+                    "pgm")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="aplot",
+                title="Kinetic Energy",
+                visible="(plotKe)",
+                width=700,
+                height=500,
+                renderFun=".aplot",
+                refs=list(
+                    "pgm",
+                    "ppfm")))}))
 
 mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "mcurveBase",
@@ -263,7 +353,7 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "mcurve",
-                version = c(0,2,0),
+                version = c(0,2,1),
                 options = options,
                 results = mcurveResults$new(options=options),
                 data = data,
@@ -293,12 +383,19 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param r2 .
 #' @param fTest .
 #' @param res .
+#' @param calcAction .
+#' @param plotKe .
+#' @param intInterval .
+#' @param intL .
+#' @param intU .
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
 #'   \code{results$pTable} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$fitq} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$action} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$mplot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$aplot} \tab \tab \tab \tab \tab an image \cr
 #' }
 #'
 #' Tables can be converted to data frames with \code{asDF} or \code{\link{as.data.frame}}. For example:
@@ -322,7 +419,12 @@ mcurve <- function(
     bic = FALSE,
     r2 = FALSE,
     fTest = FALSE,
-    res = 100) {
+    res = 100,
+    calcAction = FALSE,
+    plotKe = FALSE,
+    intInterval = FALSE,
+    intL = 0,
+    intU = 0) {
 
     if ( ! requireNamespace("jmvcore", quietly=TRUE))
         stop("mcurve requires jmvcore to be installed (restart may be required)")
@@ -349,7 +451,12 @@ mcurve <- function(
         bic = bic,
         r2 = r2,
         fTest = fTest,
-        res = res)
+        res = res,
+        calcAction = calcAction,
+        plotKe = plotKe,
+        intInterval = intInterval,
+        intL = intL,
+        intU = intU)
 
     analysis <- mcurveClass$new(
         options = options,

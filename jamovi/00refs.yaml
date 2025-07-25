@@ -5,7 +5,7 @@ refs:
         author: Pessina, A. L. R.; Garcia Neto, M.
         year: 2025
         title: 'PGM: Practical Growth Modeling'
-        publisher: '(Version 0.2.0) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM'
+        publisher: '(Version 0.2.1) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM'
         url: https://github.com/apessina/jamovi-PGM
     
     richards:
@@ -24,4 +24,12 @@ refs:
         title: 'minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds'
         publisher: '(Version 1.2-4) [R package]. Retrieved from https://cran.r-project.org/web/packages/minpack.lm/index.html'
         url: https://cran.r-project.org/web/packages/minpack.lm/index.html
+        
+    ppfm:
+        type: 'software'
+        author: Garcia Neto, M.; Kebreab, E.; Faria Junior, M. J. A.
+        year: 2020
+        title: 'PPFM: Practical Program for Forces Modeling'
+        publisher: 'Available on https://sites.google.com/view/ppfm-spreadsheet/'
+        url: https://sites.google.com/view/ppfm-spreadsheet/
 ...

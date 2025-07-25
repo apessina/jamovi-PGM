@@ -4,7 +4,7 @@ title: "Growth Curve Comparison"
 menuGroup: Growth
 menuTitle: Curve Comparison
 menuSubtitle: Multiple Curves
-version: '0.2.0'
+version: '0.2.1'
 jas: '1.2'
 
 options:
@@ -92,5 +92,28 @@ options:
       min: 0
       max: 1000
       default: 100
+
+    - name: calcAction
+      title: "Calculate Action"
+      type: Bool
+      default: false
+    - name: plotKe
+      title: "Ke Plot"
+      type: Bool
+      default: false
+    - name: intInterval
+      title: "Custom"
+      type: Bool
+      default: false
+    - name: intL
+      title: "Integral Lower"
+      type: Number
+      min: 0
+      default: 0
+    - name: intU
+      title: "Integral Upper"
+      type: Number
+      min: 0
+      default: 0
 
 ...

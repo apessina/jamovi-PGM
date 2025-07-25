@@ -93,6 +93,7 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Iteration p/ dep #####
         t_df <- data.frame(t=t_raw)
         t_new_df <- data.frame(t=t_raw_new)
+        Ke_df <- data.frame(t=t_raw_new)
         
         for (dep in deps) {
         
@@ -136,22 +137,13 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           ## First 2 symbolic derivatives as expression
           W1_expr <- D(W_expr, "x") # 1st derivative
-          W2_expr <- D(W1_expr, "x") # 2nd derivative
-          
-          ## Ontogenetic Growth Force expression
-          OGF_expr <- call("*", W1_expr, W2_expr) # W'(t) * W''(t)
-          
-          ### First 3 symbolic derivatives of OGF expressions
-          OGF1_expr <- D(OGF_expr, "x") # 1st OGF derivative
-          OGF2_expr <- D(OGF1_expr, "x") # 2nd OGF derivative 
-          OGF3_expr <- D(OGF2_expr, "x") # 3rd OGF derivative 
           
           ## Expressions to functions
           W  <- function(x) eval(W_expr) # W(t)
           W1 <- function(x) eval(W1_expr) # W'(t)
-          W2 <- function(x) eval(W2_expr) # W''(t)
-          OGF <- function(x) eval(OGF_expr) # OGF(t)
-          OGF3 <- function(x) eval(OGF3_expr) # OGF'''(t)
+          
+          ## Define "Kinetic Energy" function
+          Ke <- function(x) 0.5 * W(x) * W1(x)^2
           
           ##### Goodness-Of-Fit #####
           
@@ -186,6 +178,17 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           ## Apply Data Modeling functions to t_new
           W_pred <- W(t_new) # vector of weight over time
+          Ke_pred <- Ke(t_new) # vector of Ke over time
+          
+          ## Calculate the "Action"
+          if (self$options$intInterval) {
+            intKe_lower <- self$options$intL
+            intKe_upper <- self$options$intU
+          } else {
+            intKe_lower <- min(t_new, na.rm=TRUE)
+            intKe_upper <- max(t_new, na.rm=TRUE)
+          }
+          intKe_pred <- integrate(Ke, lower=intKe_lower, upper=intKe_upper)$value
           
           ##### Model Information #####
           
@@ -215,19 +218,30 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             f=format(round(F_s, 3), nsmall=3),
             fp=F_p
           ))
+          
+          ## Fill the "Action" table
+          tableKe <- self$results$action
+          tableKe$setRow(rowKey=dep, values=list(
+            Lower=format(round(intKe_lower, 2), nsmall=2),
+            Upper=format(round(intKe_upper, 2), nsmall=2),
+            Action=intKe_pred,
+            FWA=W(max(t_new, na.rm=TRUE)) / intKe_pred,
+            DWA=(W(max(t_new, na.rm=TRUE))-W(min(t_new, na.rm=TRUE))) / intKe_pred
+          ))
 
-          ## Fill df length with NA to plot different dep lengths...
-          ## ...and save values for plots
+          ## Fill df length with NA to plot trimmed dep lengths
+          ## Save values for plots
           t_df[[dep]] <- c(y_raw, rep(NA, nrow(t_df)-length(y_raw)))
           t_new_df[[dep]] <- c(W_pred, rep(NA, nrow(t_new_df)-length(W_pred)))
-          # ge_df[[dep]] <- ge_pred
+          Ke_df[[dep]] <- c(Ke_pred, rep(NA, nrow(t_new_df)-length(Ke_pred)))
           
-        }          
+        }
         
         ##### Plots Data #####
         
         ## Data for next functions
         private$.prep_mplot(t_df, t_new_df)
+        private$.prep_aplot(Ke_df)
         
       }, # close .run
       
@@ -261,7 +275,7 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         y_pred_cols <- setdiff(names(data_m), "t")
         
         ## Generate line colors in the standard jamovi palette
-        cores_pred <- jmvcore::colorPalette(n=length(y_pred_cols))
+        colors_pred <- jmvcore::colorPalette(n=length(y_pred_cols))
         
         ## Better limits to avoid points without axis labels
         better_lim <- function(vec, n=5) {
@@ -290,17 +304,77 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Add predicted curves
         for (i in seq_along(y_pred_cols)) {
           col_name <- y_pred_cols[i]
-          lines(t_m, data_m[[col_name]], col=cores_pred[i], lwd=2)
+          lines(t_m, data_m[[col_name]], col=colors_pred[i], lwd=2)
         }
         
         ## Make legend
-        legend("bottom", inset=-0.2, legend=y_pred_cols, col=cores_pred, 
+        legend("bottom", inset=-0.2, legend=y_pred_cols, col=colors_pred, 
                lty=1, lwd=2, horiz=TRUE, bty="n", xpd=TRUE)
         
         ## Notify the rendering system that we have plotted something
         TRUE
         
-      } # close .mplot
+      }, # close .mplot
+      
+      # Prepare the data for "Action" plot
+      .prep_aplot = function(Ke_df) {
+        ## Set-up the plot with the model data in a dataframe
+        image <- self$results$aplot
+        image$setState(list(
+          data_Ke=Ke_df
+        )
+        )
+      }, # close .prep_aplot
+      
+      # Create the derivative plot function
+      .aplot = function(image, ...) {
+        
+        ## Check if there is data for the plot
+        if (is.null(image$state))
+          return(FALSE)
+        
+        data_Ke <- image$state$data_Ke
+        
+        ## Time columns and y columns names
+        t <- data_Ke$t
+        Ke_cols <- setdiff(names(data_Ke), "t") # all columns, except t
+        
+        ## Generate line colors in the standard jamovi palette
+        colors_pred <- jmvcore::colorPalette(n=length(Ke_cols))
+        
+        ## Deactivate the default box around the plotting area
+        par(bty='L')
+        
+        ## Better limits to avoid points without axis labels
+        better_lim <- function(vec, n=5) {
+          ticks <- pretty(vec, n = n)
+          c(min(ticks), max(ticks))
+        }
+        
+        ## Join all y data to calculate limits
+        ylim_total <- range(unlist(data_Ke[Ke_cols]), na.rm=TRUE)
+        ylim_total <- better_lim(ylim_total)
+        
+        ## Create and set-up the plot with 1st curve
+        plot(t, data_Ke[[Ke_cols[1]]], type="l", col=colors_pred[1],
+             lty=1, xlab="", ylab="", ylim=ylim_total)
+        
+        ## Add other predicted curves
+        if (length(Ke_cols) > 1) {
+          for (i in 2:length(Ke_cols)) {
+            col_name <- Ke_cols[i]
+            lines(t, data_Ke[[col_name]], col=colors_pred[i], lty=1)
+          }
+        }
+        
+        ## Make legend
+        legend("bottom", inset=-0.2, legend=Ke_cols, col=colors_pred, lty=1,
+               horiz=TRUE, bty="n", lwd=2, xpd=TRUE)
+        
+        ## Notify the rendering system that we have plotted something
+        TRUE
+        
+      } # close .aplot
       
     ) # close list
 ) # close R6Class

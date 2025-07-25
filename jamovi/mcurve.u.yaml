@@ -134,3 +134,47 @@ children:
                   - type: TextBox
                     name: res
                     format: number
+  - type: CollapseBox
+    label: Action
+    collapsed: false
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Results
+                children:
+                  - type: CheckBox
+                    name: calcAction
+                  - type: CheckBox
+                    name: plotKe
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Integration Interval
+                children:
+                  - type: CheckBox
+                    name: intInterval
+                    enable: (calcAction)
+                    children:
+                      - type: TextBox
+                        name: intL
+                        format: number
+                        enable: (calcAction && intInterval)
+                      - type: TextBox
+                        name: intU
+                        format: number
+                        enable: (calcAction && intInterval)
+                    

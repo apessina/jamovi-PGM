@@ -78,6 +78,35 @@ items:
           visible: (fTest)
       refs:
         - pgm
+
+    - name: action
+      title: "Action"
+      type: Table
+      rows: (deps)
+      visible: (calcAction)
+      columns:
+        - name: var
+          title: ''
+          type: text
+          content: ($key)
+        - name: Lower
+          type: number
+          superTitle: Time interval
+        - name: Upper
+          type: number
+          superTitle: Time interval
+        - name: Action
+          type: number
+        - name: FWA
+          type: number
+        - name: DWA
+          type: number
+      notes:
+          WUA: "FWA: Final weight / Action"
+          WGA: "DWA: (Final weight - Initial weight) / Action"
+      refs:
+        - pgm
+        - ppfm
           
     - name: mplot
       title: "Growth Curves"
@@ -87,4 +116,15 @@ items:
       renderFun: .mplot
       refs:
         - pgm
+        
+    - name: aplot
+      title: "Kinetic Energy"
+      visible: (plotKe)
+      type: Image
+      width:  700
+      height: 500
+      renderFun: .aplot
+      refs:
+        - pgm
+        - ppfm
 ...
