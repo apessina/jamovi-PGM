@@ -1,11 +1,11 @@
 ---
-name:  scurve
-title: "Growth Curve Modeling"
+name:  mcurve
+title: Growth Curve Comparison
 jrs:   '1.1'
 
 items:
     - name:  text
-      title: ""
+      title: "Results"
       type:  Preformatted
       refs:
         - richards
@@ -13,7 +13,7 @@ items:
     - name: pTable
       title: "Estimated Parameters"
       type: Table
-      rows: (dep)
+      rows: (deps)
       columns:
         - name: var
           title: ''
@@ -33,7 +33,7 @@ items:
     - name: fitq
       title: "Goodness-of-fit"
       type: Table
-      rows: (dep)
+      rows: (deps)
       visible: (aic || aicc || bic || r2 || fTest)
       columns:
         - name: var
@@ -79,66 +79,12 @@ items:
       refs:
         - pgm
           
-    - name: fpoints
-      title: "Key Growth Points"
-      type: Table
-      visible: (fPoints || pPoints)
-      columns:
-        - name: var
-          title: ''
-          type: text
-          content: ($key)
-        - name: F0
-          type: number
-          superTitle: by Ontogenetic Growth Force
-          visible: (fPoints)
-        - name: F1
-          type: number
-          superTitle: by Ontogenetic Growth Force
-          visible: (fPoints)
-        - name: Fi
-          type: number
-          superTitle: by Ontogenetic Growth Force
-          visible: (fPoints)
-        - name: F2
-          type: number
-          superTitle: by Ontogenetic Growth Force
-          visible: (fPoints)
-        - name: F3
-          type: number
-          superTitle: by Ontogenetic Growth Force
-          visible: (fPoints)
-        - name: P1
-          type: number
-          superTitle: by Growth Rate and Acceleration
-          visible: (pPoints)
-        - name: Pi
-          type: number
-          superTitle: by Growth Rate and Acceleration
-          visible: (pPoints)          
-        - name: P2
-          type: number
-          superTitle: by Growth Rate and Acceleration
-          visible: (pPoints)
-      refs:
-        - pgm
-          
     - name: mplot
-      title: "Growth Curve"
+      title: "Growth Curves"
       type: Image
       width:  700
       height: 500
       renderFun: .mplot
-      refs:
-        - pgm
-                
-    - name: dplot
-      visible: (sndPlot)
-      title: "Growth Rate and Acceleration"
-      type: Image
-      width:  700
-      height: 500
-      renderFun: .dplot
       refs:
         - pgm
 ...

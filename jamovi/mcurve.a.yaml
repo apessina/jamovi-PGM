@@ -1,9 +1,9 @@
 ---
-name:  scurve
-title: "Growth Curve Modeling"
+name:  mcurve
+title: "Growth Curve Comparison"
 menuGroup: Growth
-menuTitle: Curve Modeling
-menuSubtitle: Single Curve
+menuTitle: Curve Comparison
+menuSubtitle: Multiple Curves
 version: '0.2.0'
 jas: '1.2'
 
@@ -11,9 +11,9 @@ options:
     - name: data
       type: Data
 
-    - name: dep
-      title: "Dependent Variable"
-      type: Variable
+    - name: deps
+      title: "Dependent Variables"
+      type: Variables
       suggested:
         - continuous
       permitted:
@@ -85,20 +85,6 @@ options:
       title: "Global F-test"
       type: Bool
       default: false
-
-    - name: ogf
-      title: "Ontogenetic growth force"
-      type: Bool
-      default: false
-    - name: ogf3
-      title: "OGF 3rd Derivative"
-      type: Bool
-      default: false
-    
-    - name: sndPlot
-      title: "Growth Rate and Acceleration"
-      type: Bool
-      default: false
       
     - name: res
       title: "x-axis"
@@ -106,14 +92,5 @@ options:
       min: 0
       max: 1000
       default: 100
-      
-    - name: fPoints
-      title: "F-Points"
-      type: Bool
-      default: false      
-    - name: pPoints
-      title: "P-Points"
-      type: Bool
-      default: false      
 
 ...

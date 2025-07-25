@@ -1,5 +1,5 @@
-title: Growth Curve Modeling
-name: scurve
+title: Growth Curve Comparison
+name: mcurve
 jus: '3.0'
 stage: 0
 compilerMode: tame
@@ -9,11 +9,10 @@ children:
     stretchFactor: 1
     children:
       - type: TargetLayoutBox
-        label: Dependent Variable
+        label: Dependent Variables
         children:
           - type: VariablesListBox
-            name: dep
-            maxItemCount: 1
+            name: deps
             isTarget: true
       - type: TargetLayoutBox
         label: Time Variable
@@ -130,51 +129,8 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Metrics
-                children:
-                  - type: CheckBox
-                    name: ogf
-                    children:
-                      - type: CheckBox
-                        name: ogf3
-          - type: LayoutBox
-            cell:
-              column: 1
-              row: 0
-            stretchFactor: 1
-            children:
-              - type: Label
-                label: Derivatives
-                children:
-                  - type: CheckBox
-                    name: sndPlot
-      - type: LayoutBox
-        margin: large
-        stretchFactor: 1
-        children:
-          - type: LayoutBox
-            cell:
-              column: 0
-              row: 0
-            stretchFactor: 1
-            children:
-              - type: Label
                 label: Resolution Factor
                 children:
                   - type: TextBox
                     name: res
                     format: number
-          - type: LayoutBox
-            cell:
-              column: 1
-              row: 0
-            stretchFactor: 1
-            children:
-              - type: Label
-                label: Key Points
-                style: list-inline
-                children:
-                  - type: CheckBox
-                    name: fPoints
-                  - type: CheckBox
-                    name: pPoints

@@ -180,7 +180,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Length of x-axis
         len <- length(t_new)
         
-        ## Check if the data have a inflection point
+        ## Check if the data have an inflection point
         zero_acc <- which(diff(sign(W2_pred))!=0)
         if (length(zero_acc)==0) {
           stop("No inflection point found. The data might not follow a sigmoidal trend.")
@@ -280,7 +280,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Plots Data #####
         
         ## Data for next functions
-        private$.prep_mplot(t, y, t_new, W_pred, OGF_pred, 
+        private$.prep_mplot(t, y_raw, t_new, W_pred, OGF_pred, 
                             OGF3_pred, f_points, p_points)
         private$.prep_dplot(t_new, W1_pred, W2_pred)
         

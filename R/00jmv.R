@@ -7,7 +7,7 @@
         `author`="Pessina, A. L. R.; Garcia Neto, M.", 
         `year`=2025, 
         `title`="PGM: Practical Growth Modeling", 
-        `publisher`="(Version 0.1.3) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
+        `publisher`="(Version 0.2.0) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
         `url`="https://github.com/apessina/jamovi-PGM"), 
     `richards`=list(
         `type`="article", 
