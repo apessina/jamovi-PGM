@@ -83,6 +83,8 @@ items:
       title: "Key Growth Points"
       type: Table
       visible: (fPoints || pPoints)
+      notes:
+          sig: NULL
       columns:
         - name: var
           title: ''

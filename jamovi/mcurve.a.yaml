@@ -4,7 +4,7 @@ title: "Growth Curve Comparison"
 menuGroup: Growth
 menuTitle: Curve Comparison
 menuSubtitle: Multiple Curves
-version: '0.2.1'
+version: '0.2.2'
 jas: '1.2'
 
 options:

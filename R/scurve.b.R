@@ -183,7 +183,9 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Check if the data have an inflection point
         zero_acc <- which(diff(sign(W2_pred))!=0)
         if (length(zero_acc)==0) {
-          stop("No inflection point found. The data might not follow a sigmoidal trend.")
+          self$results$fpoints$setNote("sig", "No inflection point found. Input data might not follow a sigmoidal trend.", init=FALSE)
+          f_points <- list(F0=NA, F1=NA, Fi=NA, F2=NA, F3=NA)
+          p_points <- list(P1=NA, Pi=NA, P2=NA)
         } else {
           
           ## by Ontogenetic Growth Force
@@ -280,7 +282,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Plots Data #####
         
         ## Data for next functions
-        private$.prep_mplot(t, y_raw, t_new, W_pred, OGF_pred, 
+        private$.prep_mplot(x_raw, y_raw, t_new, W_pred, OGF_pred, 
                             OGF3_pred, f_points, p_points)
         private$.prep_dplot(t_new, W1_pred, W2_pred)
         

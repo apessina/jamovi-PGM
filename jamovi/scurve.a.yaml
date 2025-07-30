@@ -4,7 +4,7 @@ title: "Growth Curve Modeling"
 menuGroup: Growth
 menuTitle: Curve Modeling
 menuSubtitle: Single Curve
-version: '0.2.1'
+version: '0.2.2'
 jas: '1.2'
 
 options:

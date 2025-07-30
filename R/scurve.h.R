@@ -292,6 +292,8 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="fpoints",
                 title="Key Growth Points",
                 visible="(fPoints || pPoints)",
+                notes=list(
+                    `sig`=NULL),
                 columns=list(
                     list(
                         `name`="var", 
@@ -368,7 +370,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,2,1),
+                version = c(0,2,2),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,
