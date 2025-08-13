@@ -7,10 +7,9 @@ quality and key growth parameters.
 
 ## Installation in jamovi
 
-You can install `PGM` by downloading the `.jmo` file available in the
-last release of this repository and side-load it directly on jamovi
-interface. There is also an example dataset to test and learn how to use
-this package.
+You can install `PGM` directly on `jamovi` library or by downloading the `.jmo` 
+file available in the last release of this repository and side-load it on jamovi
+interface. There are example datasets to test and learn how to use this package.
 
 ## Acknowledgements
 

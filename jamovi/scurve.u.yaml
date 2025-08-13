@@ -78,7 +78,7 @@ children:
                             suffix: '%'
                             enable: (trim)
   - type: CollapseBox
-    label: Goodness-of-fit
+    label: Model Evaluation
     collapsed: false
     stretchFactor: 1
     children:
@@ -93,7 +93,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Measures
+                label: Goodness of Fit
                 children:
                   - type: CheckBox
                     name: aic
@@ -103,9 +103,30 @@ children:
                     name: bic
                   - type: CheckBox
                     name: r2
+                  - type: CheckBox
+                    name: r2_adj
           - type: LayoutBox
             cell:
               column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Error Metrics
+                children:
+                  - type: CheckBox
+                    name: rmse
+                  - type: CheckBox
+                    name: mae
+                  - type: CheckBox
+                    name: medae
+                  - type: CheckBox
+                    name: smape
+                  - type: CheckBox
+                    name: rrmse
+          - type: LayoutBox
+            cell:
+              column: 2
               row: 0
             stretchFactor: 1
             children:
@@ -114,6 +135,108 @@ children:
                 children:
                   - type: CheckBox
                     name: fTest
+  - type: CollapseBox
+    label: Key Growth Points
+    collapsed: false
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: by Ontogenetic Growth Force
+                name: fPoints
+                children:
+                  - name: fPoints_ogfMax
+                    type: CheckBox
+                    optionName: fPoints
+                    optionPart: ogfMax
+                  - name: fPoints_ogfI
+                    type: CheckBox
+                    optionName: fPoints
+                    optionPart: ogfI
+                  - name: fPoints_ogfMin
+                    type: CheckBox
+                    optionName: fPoints
+                    optionPart: ogfMin
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: by Acceleration
+                name: pPoints
+                children:
+                  - name: pPoints_accMax
+                    type: CheckBox
+                    optionName: pPoints
+                    optionPart: accMax
+                  - name: pPoints_accI
+                    type: CheckBox
+                    optionName: pPoints
+                    optionPart: accI
+                  - name: pPoints_accMin
+                    type: CheckBox
+                    optionName: pPoints
+                    optionPart: accMin
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Exponential Start
+                name: lagEnd
+                children:
+                  - name: lagEnd_ogf0
+                    type: CheckBox
+                    optionName: lagEnd
+                    optionPart: ogf0
+                  - name: lagEnd_tang
+                    type: CheckBox
+                    optionName: lagEnd
+                    optionPart: tang
+                  - name: lagEnd_thres
+                    type: CheckBox
+                    optionName: lagEnd
+                    optionPart: thres
+                    children:
+                      - type: TextBox
+                        name: thVal
+                        format: number
+                        enable: (lagEnd_thres)
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Close to Asymptote
+                name: asymptote
+                children:
+                  - name: asymptote_ogf3
+                    type: CheckBox
+                    optionName: asymptote
+                    optionPart: ogf3
+                  - name: asymptote_pda
+                    type: CheckBox
+                    optionName: asymptote
+                    optionPart: pda
   - type: CollapseBox
     label: Plot
     collapsed: false
@@ -136,7 +259,7 @@ children:
                     name: ogf
                     children:
                       - type: CheckBox
-                        name: ogf3
+                        name: ogf_s
           - type: LayoutBox
             cell:
               column: 1
@@ -159,11 +282,10 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Resolution Factor
+                label: Key Growth Points
                 children:
-                  - type: TextBox
-                    name: res
-                    format: number
+                  - type: CheckBox
+                    name: keyGrowth
           - type: LayoutBox
             cell:
               column: 1
@@ -171,10 +293,8 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Key Points
-                style: list-inline
+                label: Resolution Factor
                 children:
-                  - type: CheckBox
-                    name: fPoints
-                  - type: CheckBox
-                    name: pPoints
+                  - type: TextBox
+                    name: res
+                    format: number

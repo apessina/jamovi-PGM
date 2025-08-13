@@ -94,6 +94,7 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         t_df <- data.frame(t=t_raw)
         t_new_df <- data.frame(t=t_raw_new)
         Ke_df <- data.frame(t=t_raw_new)
+        action_val <- list()
         
         for (dep in deps) {
         
@@ -145,14 +146,14 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           ## Define "Kinetic Energy" function
           Ke <- function(x) 0.5 * W(x) * W1(x)^2
           
-          ##### Goodness-Of-Fit #####
+          ##### Evaluation Metrics #####
           
           ## Number of samples
           n = length(y)
           
           ## Degrees of freedom
-          df1 <- n_params - 1
-          df2 <- n - n_params
+          df1 <- n_params - 1 # model
+          df2 <- n - n_params # error
           
           ## Sum of squares
           SSt <- sum((y - mean(y)) ^ 2) # total
@@ -161,6 +162,7 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           ## Goodness-of-fit metrics
           R2 <- 1 - SSe / SSt # R²
+          R2_adj <- 1 - (SSe/df2) / (SSt/(n - 1)) # Adjusted R²
           AIC <- n * log(SSe/n) + 2 * n_params
           AICc <- AIC + (2 * n_params * (n_params + 1)) / (n-n_params - 1)
           BIC <- n * log(SSe/n) + log(n) * n_params
@@ -168,6 +170,17 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           ### Global F-test
           F_s <- ((SSt - SSe) / df1) / (SSe / df2) # F statistics
           F_p <- pf(F_s, df1, df2, lower.tail=FALSE) # F p-value
+          
+          ## Residuals
+          res <- y - W(t)
+          MSE  <- mean(res^2)
+          
+          ## Error metrics
+          RMSE <- sqrt(MSE)
+          MAE <- mean(abs(res))
+          MedAE <- median(abs(res))
+          sMAPE <- mean(2 * abs(res) / (abs(y) + abs(W(t)))) * 100
+          RRMSE <- RMSE / mean(y)
           
           ##### Curve "resolution" #####
           
@@ -213,6 +226,12 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             AICc=format(round(AICc, 2), nsmall=2),
             BIC=format(round(BIC, 2), nsmall=2),
             R2=format(round(R2, 3), nsmall=3),
+            R2_adj=format(round(R2_adj, 3), nsmall=3),
+            RMSE=format(round(RMSE, 3), nsmall=3),
+            MAE=format(round(MAE, 3), nsmall=3),
+            MedAE=format(round(MedAE, 3), nsmall=3),
+            sMAPE=sprintf("%.3f%%", round(sMAPE, 3)),
+            RRMSE=sprintf("%.3f%%", round(RRMSE*100, 3)),
             fdf1=round(df1),
             fdf2=round(df2),
             f=format(round(F_s, 3), nsmall=3),
@@ -224,10 +243,9 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           tableKe$setRow(rowKey=dep, values=list(
             Lower=format(round(intKe_lower, 2), nsmall=2),
             Upper=format(round(intKe_upper, 2), nsmall=2),
-            Action=intKe_pred,
-            FWA=W(max(t_new, na.rm=TRUE)) / intKe_pred,
-            DWA=(W(max(t_new, na.rm=TRUE))-W(min(t_new, na.rm=TRUE))) / intKe_pred
+            Action=intKe_pred
           ))
+          action_val[dep] <- intKe_pred
 
           ## Fill df length with NA to plot trimmed dep lengths
           ## Save values for plots
@@ -235,6 +253,15 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           t_new_df[[dep]] <- c(W_pred, rep(NA, nrow(t_new_df)-length(W_pred)))
           Ke_df[[dep]] <- c(Ke_pred, rep(NA, nrow(t_new_df)-length(Ke_pred)))
           
+        } # close loop
+        
+        ## Rank Action table
+        action_num <- unlist(action_val)
+        rank_val <- (action_num / max(action_num)) * 100
+        for (dep in deps) {
+          tableKe$setRow(rowKey=dep, values=list(
+            Rank=sprintf("%.2f%%", rank_val[dep])
+          ))
         }
         
         ##### Plots Data #####

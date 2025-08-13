@@ -17,6 +17,12 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             aicc = FALSE,
             bic = FALSE,
             r2 = FALSE,
+            r2_adj = FALSE,
+            rmse = FALSE,
+            mae = FALSE,
+            medae = FALSE,
+            smape = FALSE,
+            rrmse = FALSE,
             fTest = FALSE,
             res = 100,
             calcAction = FALSE,
@@ -91,6 +97,30 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "r2",
                 r2,
                 default=FALSE)
+            private$..r2_adj <- jmvcore::OptionBool$new(
+                "r2_adj",
+                r2_adj,
+                default=FALSE)
+            private$..rmse <- jmvcore::OptionBool$new(
+                "rmse",
+                rmse,
+                default=FALSE)
+            private$..mae <- jmvcore::OptionBool$new(
+                "mae",
+                mae,
+                default=FALSE)
+            private$..medae <- jmvcore::OptionBool$new(
+                "medae",
+                medae,
+                default=FALSE)
+            private$..smape <- jmvcore::OptionBool$new(
+                "smape",
+                smape,
+                default=FALSE)
+            private$..rrmse <- jmvcore::OptionBool$new(
+                "rrmse",
+                rrmse,
+                default=FALSE)
             private$..fTest <- jmvcore::OptionBool$new(
                 "fTest",
                 fTest,
@@ -135,6 +165,12 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..aicc)
             self$.addOption(private$..bic)
             self$.addOption(private$..r2)
+            self$.addOption(private$..r2_adj)
+            self$.addOption(private$..rmse)
+            self$.addOption(private$..mae)
+            self$.addOption(private$..medae)
+            self$.addOption(private$..smape)
+            self$.addOption(private$..rrmse)
             self$.addOption(private$..fTest)
             self$.addOption(private$..res)
             self$.addOption(private$..calcAction)
@@ -155,6 +191,12 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         aicc = function() private$..aicc$value,
         bic = function() private$..bic$value,
         r2 = function() private$..r2$value,
+        r2_adj = function() private$..r2_adj$value,
+        rmse = function() private$..rmse$value,
+        mae = function() private$..mae$value,
+        medae = function() private$..medae$value,
+        smape = function() private$..smape$value,
+        rrmse = function() private$..rrmse$value,
         fTest = function() private$..fTest$value,
         res = function() private$..res$value,
         calcAction = function() private$..calcAction$value,
@@ -174,6 +216,12 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..aicc = NA,
         ..bic = NA,
         ..r2 = NA,
+        ..r2_adj = NA,
+        ..rmse = NA,
+        ..mae = NA,
+        ..medae = NA,
+        ..smape = NA,
+        ..rrmse = NA,
         ..fTest = NA,
         ..res = NA,
         ..calcAction = NA,
@@ -234,9 +282,9 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$add(jmvcore::Table$new(
                 options=options,
                 name="fitq",
-                title="Goodness-of-fit",
+                title="Model Evaluation",
                 rows="(deps)",
-                visible="(aic || aicc || bic || r2 || fTest)",
+                visible="(aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse || fTest)",
                 columns=list(
                     list(
                         `name`="var", 
@@ -247,21 +295,56 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `name`="AIC", 
                         `title`="AIC", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(aic)"),
                     list(
                         `name`="AICc", 
                         `title`="AIC\u1D04", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(aicc)"),
                     list(
                         `name`="BIC", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(bic)"),
                     list(
                         `name`="R2", 
                         `title`="R\u00B2", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(r2)"),
+                    list(
+                        `name`="R2_adj", 
+                        `title`="Adjusted R\u00B2", 
+                        `type`="number", 
+                        `superTitle`="Goodness of Fit", 
+                        `visible`="(r2_adj)"),
+                    list(
+                        `name`="RMSE", 
+                        `type`="number", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(rmse)"),
+                    list(
+                        `name`="MAE", 
+                        `type`="number", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(mae)"),
+                    list(
+                        `name`="MedAE", 
+                        `type`="number", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(medae)"),
+                    list(
+                        `name`="sMAPE", 
+                        `type`="text", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(smape)"),
+                    list(
+                        `name`="RRMSE", 
+                        `type`="text", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(rrmse)"),
                     list(
                         `name`="f", 
                         `title`="F", 
@@ -313,14 +396,8 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `name`="Action", 
                         `type`="number"),
                     list(
-                        `name`="FWA", 
-                        `type`="number"),
-                    list(
-                        `name`="DWA", 
-                        `type`="number")),
-                notes=list(
-                    `WUA`="FWA: Final weight / Action", 
-                    `WGA`="DWA: (Final weight - Initial weight) / Action"),
+                        `name`="Rank", 
+                        `type`="text")),
                 refs=list(
                     "pgm",
                     "ppfm")))
@@ -353,7 +430,7 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "mcurve",
-                version = c(0,2,2),
+                version = c(0,3,0),
                 options = options,
                 results = mcurveResults$new(options=options),
                 data = data,
@@ -381,6 +458,12 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param aicc .
 #' @param bic .
 #' @param r2 .
+#' @param r2_adj .
+#' @param rmse .
+#' @param mae .
+#' @param medae .
+#' @param smape .
+#' @param rrmse .
 #' @param fTest .
 #' @param res .
 #' @param calcAction .
@@ -418,6 +501,12 @@ mcurve <- function(
     aicc = FALSE,
     bic = FALSE,
     r2 = FALSE,
+    r2_adj = FALSE,
+    rmse = FALSE,
+    mae = FALSE,
+    medae = FALSE,
+    smape = FALSE,
+    rrmse = FALSE,
     fTest = FALSE,
     res = 100,
     calcAction = FALSE,
@@ -450,6 +539,12 @@ mcurve <- function(
         aicc = aicc,
         bic = bic,
         r2 = r2,
+        r2_adj = r2_adj,
+        rmse = rmse,
+        mae = mae,
+        medae = medae,
+        smape = smape,
+        rrmse = rrmse,
         fTest = fTest,
         res = res,
         calcAction = calcAction,

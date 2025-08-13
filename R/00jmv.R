@@ -7,7 +7,7 @@
         `author`="Pessina, A. L. R.; Garcia Neto, M.", 
         `year`=2025, 
         `title`="PGM: Practical Growth Modeling", 
-        `publisher`="(Version 0.2.2) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
+        `publisher`="(Version 0.3.0) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
         `url`="https://github.com/apessina/jamovi-PGM"), 
     `richards`=list(
         `type`="article", 
@@ -30,4 +30,12 @@
         `year`=2020, 
         `title`="PPFM: Practical Program for Forces Modeling", 
         `publisher`="Available on https://sites.google.com/view/ppfm-spreadsheet/", 
-        `url`="https://sites.google.com/view/ppfm-spreadsheet/"))
+        `url`="https://sites.google.com/view/ppfm-spreadsheet/"), 
+    `pda`=list(
+        `type`="article", 
+        `author`="Mischan, M. M.; Pinho, S. Z.; Carvalho, L. R.", 
+        `year`=2011, 
+        `title`="Determination of a point sufficiently close to the asymptote in nonlinear growth functions", 
+        `publisher`="Scientia Agricola", 
+        `volume`=68, 
+        `pages`="109\u2013114"))

@@ -17,13 +17,23 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             aicc = FALSE,
             bic = FALSE,
             r2 = FALSE,
+            r2_adj = FALSE,
+            rmse = FALSE,
+            mae = FALSE,
+            medae = FALSE,
+            smape = FALSE,
+            rrmse = FALSE,
             fTest = FALSE,
             ogf = FALSE,
-            ogf3 = FALSE,
+            ogf_s = FALSE,
             sndPlot = FALSE,
+            keyGrowth = TRUE,
             res = 100,
-            fPoints = FALSE,
-            pPoints = FALSE, ...) {
+            fPoints = NULL,
+            pPoints = NULL,
+            lagEnd = NULL,
+            thVal = 0.01,
+            asymptote = NULL, ...) {
 
             super$initialize(
                 package="PGM",
@@ -91,6 +101,30 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "r2",
                 r2,
                 default=FALSE)
+            private$..r2_adj <- jmvcore::OptionBool$new(
+                "r2_adj",
+                r2_adj,
+                default=FALSE)
+            private$..rmse <- jmvcore::OptionBool$new(
+                "rmse",
+                rmse,
+                default=FALSE)
+            private$..mae <- jmvcore::OptionBool$new(
+                "mae",
+                mae,
+                default=FALSE)
+            private$..medae <- jmvcore::OptionBool$new(
+                "medae",
+                medae,
+                default=FALSE)
+            private$..smape <- jmvcore::OptionBool$new(
+                "smape",
+                smape,
+                default=FALSE)
+            private$..rrmse <- jmvcore::OptionBool$new(
+                "rrmse",
+                rrmse,
+                default=FALSE)
             private$..fTest <- jmvcore::OptionBool$new(
                 "fTest",
                 fTest,
@@ -99,28 +133,61 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "ogf",
                 ogf,
                 default=FALSE)
-            private$..ogf3 <- jmvcore::OptionBool$new(
-                "ogf3",
-                ogf3,
+            private$..ogf_s <- jmvcore::OptionBool$new(
+                "ogf_s",
+                ogf_s,
                 default=FALSE)
             private$..sndPlot <- jmvcore::OptionBool$new(
                 "sndPlot",
                 sndPlot,
                 default=FALSE)
+            private$..keyGrowth <- jmvcore::OptionBool$new(
+                "keyGrowth",
+                keyGrowth,
+                default=TRUE)
             private$..res <- jmvcore::OptionNumber$new(
                 "res",
                 res,
                 min=0,
                 max=1000,
                 default=100)
-            private$..fPoints <- jmvcore::OptionBool$new(
+            private$..fPoints <- jmvcore::OptionNMXList$new(
                 "fPoints",
                 fPoints,
-                default=FALSE)
-            private$..pPoints <- jmvcore::OptionBool$new(
+                options=list(
+                    "ogfMax",
+                    "ogfI",
+                    "ogfMin"),
+                default=NULL)
+            private$..pPoints <- jmvcore::OptionNMXList$new(
                 "pPoints",
                 pPoints,
-                default=FALSE)
+                options=list(
+                    "accMax",
+                    "accI",
+                    "accMin"),
+                default=NULL)
+            private$..lagEnd <- jmvcore::OptionNMXList$new(
+                "lagEnd",
+                lagEnd,
+                options=list(
+                    "ogf0",
+                    "tang",
+                    "thres"),
+                default=NULL)
+            private$..thVal <- jmvcore::OptionNumber$new(
+                "thVal",
+                thVal,
+                min=0,
+                max=1,
+                default=0.01)
+            private$..asymptote <- jmvcore::OptionNMXList$new(
+                "asymptote",
+                asymptote,
+                options=list(
+                    "ogf3",
+                    "pda"),
+                default=NULL)
 
             self$.addOption(private$..dep)
             self$.addOption(private$..time)
@@ -133,13 +200,23 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..aicc)
             self$.addOption(private$..bic)
             self$.addOption(private$..r2)
+            self$.addOption(private$..r2_adj)
+            self$.addOption(private$..rmse)
+            self$.addOption(private$..mae)
+            self$.addOption(private$..medae)
+            self$.addOption(private$..smape)
+            self$.addOption(private$..rrmse)
             self$.addOption(private$..fTest)
             self$.addOption(private$..ogf)
-            self$.addOption(private$..ogf3)
+            self$.addOption(private$..ogf_s)
             self$.addOption(private$..sndPlot)
+            self$.addOption(private$..keyGrowth)
             self$.addOption(private$..res)
             self$.addOption(private$..fPoints)
             self$.addOption(private$..pPoints)
+            self$.addOption(private$..lagEnd)
+            self$.addOption(private$..thVal)
+            self$.addOption(private$..asymptote)
         }),
     active = list(
         dep = function() private$..dep$value,
@@ -153,13 +230,23 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         aicc = function() private$..aicc$value,
         bic = function() private$..bic$value,
         r2 = function() private$..r2$value,
+        r2_adj = function() private$..r2_adj$value,
+        rmse = function() private$..rmse$value,
+        mae = function() private$..mae$value,
+        medae = function() private$..medae$value,
+        smape = function() private$..smape$value,
+        rrmse = function() private$..rrmse$value,
         fTest = function() private$..fTest$value,
         ogf = function() private$..ogf$value,
-        ogf3 = function() private$..ogf3$value,
+        ogf_s = function() private$..ogf_s$value,
         sndPlot = function() private$..sndPlot$value,
+        keyGrowth = function() private$..keyGrowth$value,
         res = function() private$..res$value,
         fPoints = function() private$..fPoints$value,
-        pPoints = function() private$..pPoints$value),
+        pPoints = function() private$..pPoints$value,
+        lagEnd = function() private$..lagEnd$value,
+        thVal = function() private$..thVal$value,
+        asymptote = function() private$..asymptote$value),
     private = list(
         ..dep = NA,
         ..time = NA,
@@ -172,13 +259,23 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..aicc = NA,
         ..bic = NA,
         ..r2 = NA,
+        ..r2_adj = NA,
+        ..rmse = NA,
+        ..mae = NA,
+        ..medae = NA,
+        ..smape = NA,
+        ..rrmse = NA,
         ..fTest = NA,
         ..ogf = NA,
-        ..ogf3 = NA,
+        ..ogf_s = NA,
         ..sndPlot = NA,
+        ..keyGrowth = NA,
         ..res = NA,
         ..fPoints = NA,
-        ..pPoints = NA)
+        ..pPoints = NA,
+        ..lagEnd = NA,
+        ..thVal = NA,
+        ..asymptote = NA)
 )
 
 scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
@@ -232,9 +329,9 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$add(jmvcore::Table$new(
                 options=options,
                 name="fitq",
-                title="Goodness-of-fit",
+                title="Model Evaluation",
                 rows="(dep)",
-                visible="(aic || aicc || bic || r2 || fTest)",
+                visible="(aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse || fTest)",
                 columns=list(
                     list(
                         `name`="var", 
@@ -245,21 +342,56 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `name`="AIC", 
                         `title`="AIC", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(aic)"),
                     list(
                         `name`="AICc", 
                         `title`="AIC\u1D04", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(aicc)"),
                     list(
                         `name`="BIC", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(bic)"),
                     list(
                         `name`="R2", 
                         `title`="R\u00B2", 
                         `type`="number", 
+                        `superTitle`="Goodness of Fit", 
                         `visible`="(r2)"),
+                    list(
+                        `name`="R2_adj", 
+                        `title`="Adjusted R\u00B2", 
+                        `type`="number", 
+                        `superTitle`="Goodness of Fit", 
+                        `visible`="(r2_adj)"),
+                    list(
+                        `name`="RMSE", 
+                        `type`="number", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(rmse)"),
+                    list(
+                        `name`="MAE", 
+                        `type`="number", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(mae)"),
+                    list(
+                        `name`="MedAE", 
+                        `type`="number", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(medae)"),
+                    list(
+                        `name`="sMAPE", 
+                        `type`="text", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(smape)"),
+                    list(
+                        `name`="RRMSE", 
+                        `type`="text", 
+                        `superTitle`="Error Metrics", 
+                        `visible`="(rrmse)"),
                     list(
                         `name`="f", 
                         `title`="F", 
@@ -291,7 +423,7 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 options=options,
                 name="fpoints",
                 title="Key Growth Points",
-                visible="(fPoints || pPoints)",
+                visible="(lagEnd:tang || lagEnd:thres || lagEnd:ogf0 || fPoints:ogfMax || fPoints:ogfI || fPoints:ogfMin || pPoints:accMax || pPoints:accI || pPoints:accMin || asymptote:ogf3 || asymptote:pda)",
                 notes=list(
                     `sig`=NULL),
                 columns=list(
@@ -301,47 +433,64 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `type`="text", 
                         `content`="($key)"),
                     list(
-                        `name`="F0", 
+                        `name`="OGF0", 
                         `type`="number", 
-                        `superTitle`="by Ontogenetic Growth Force", 
-                        `visible`="(fPoints)"),
+                        `superTitle`="Exponential Start", 
+                        `visible`="(lagEnd:ogf0)"),
+                    list(
+                        `name`="Tangent", 
+                        `type`="number", 
+                        `superTitle`="Exponential Start", 
+                        `visible`="(lagEnd:tang)"),
+                    list(
+                        `name`="Threshold", 
+                        `type`="number", 
+                        `superTitle`="Exponential Start", 
+                        `visible`="(lagEnd:thres)"),
                     list(
                         `name`="F1", 
                         `type`="number", 
                         `superTitle`="by Ontogenetic Growth Force", 
-                        `visible`="(fPoints)"),
+                        `visible`="(fPoints:ogfMax)"),
                     list(
                         `name`="Fi", 
                         `type`="number", 
                         `superTitle`="by Ontogenetic Growth Force", 
-                        `visible`="(fPoints)"),
+                        `visible`="(fPoints:ogfI)"),
                     list(
                         `name`="F2", 
                         `type`="number", 
                         `superTitle`="by Ontogenetic Growth Force", 
-                        `visible`="(fPoints)"),
-                    list(
-                        `name`="F3", 
-                        `type`="number", 
-                        `superTitle`="by Ontogenetic Growth Force", 
-                        `visible`="(fPoints)"),
+                        `visible`="(fPoints:ogfMin)"),
                     list(
                         `name`="P1", 
                         `type`="number", 
-                        `superTitle`="by Growth Rate and Acceleration", 
-                        `visible`="(pPoints)"),
+                        `superTitle`="by Acceleration", 
+                        `visible`="(pPoints:accMax)"),
                     list(
                         `name`="Pi", 
                         `type`="number", 
-                        `superTitle`="by Growth Rate and Acceleration", 
-                        `visible`="(pPoints)"),
+                        `superTitle`="by Acceleration", 
+                        `visible`="(pPoints:accI)"),
                     list(
                         `name`="P2", 
                         `type`="number", 
-                        `superTitle`="by Growth Rate and Acceleration", 
-                        `visible`="(pPoints)")),
+                        `superTitle`="by Acceleration", 
+                        `visible`="(pPoints:accMin)"),
+                    list(
+                        `name`="OGF3", 
+                        `type`="number", 
+                        `superTitle`="Close to Asymptote", 
+                        `visible`="(asymptote:ogf3)"),
+                    list(
+                        `name`="PDA", 
+                        `type`="number", 
+                        `superTitle`="Close to Asymptote", 
+                        `visible`="(asymptote:pda)")),
                 refs=list(
-                    "pgm")))
+                    "pgm",
+                    "ppfm",
+                    "pda")))
             self$add(jmvcore::Image$new(
                 options=options,
                 name="mplot",
@@ -370,7 +519,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,2,2),
+                version = c(0,3,0),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,
@@ -398,13 +547,23 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param aicc .
 #' @param bic .
 #' @param r2 .
+#' @param r2_adj .
+#' @param rmse .
+#' @param mae .
+#' @param medae .
+#' @param smape .
+#' @param rrmse .
 #' @param fTest .
 #' @param ogf .
-#' @param ogf3 .
+#' @param ogf_s .
 #' @param sndPlot .
+#' @param keyGrowth .
 #' @param res .
 #' @param fPoints .
 #' @param pPoints .
+#' @param lagEnd .
+#' @param thVal .
+#' @param asymptote .
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
@@ -435,13 +594,23 @@ scurve <- function(
     aicc = FALSE,
     bic = FALSE,
     r2 = FALSE,
+    r2_adj = FALSE,
+    rmse = FALSE,
+    mae = FALSE,
+    medae = FALSE,
+    smape = FALSE,
+    rrmse = FALSE,
     fTest = FALSE,
     ogf = FALSE,
-    ogf3 = FALSE,
+    ogf_s = FALSE,
     sndPlot = FALSE,
+    keyGrowth = TRUE,
     res = 100,
-    fPoints = FALSE,
-    pPoints = FALSE) {
+    fPoints = NULL,
+    pPoints = NULL,
+    lagEnd = NULL,
+    thVal = 0.01,
+    asymptote = NULL) {
 
     if ( ! requireNamespace("jmvcore", quietly=TRUE))
         stop("scurve requires jmvcore to be installed (restart may be required)")
@@ -467,13 +636,23 @@ scurve <- function(
         aicc = aicc,
         bic = bic,
         r2 = r2,
+        r2_adj = r2_adj,
+        rmse = rmse,
+        mae = mae,
+        medae = medae,
+        smape = smape,
+        rrmse = rrmse,
         fTest = fTest,
         ogf = ogf,
-        ogf3 = ogf3,
+        ogf_s = ogf_s,
         sndPlot = sndPlot,
+        keyGrowth = keyGrowth,
         res = res,
         fPoints = fPoints,
-        pPoints = pPoints)
+        pPoints = pPoints,
+        lagEnd = lagEnd,
+        thVal = thVal,
+        asymptote = asymptote)
 
     analysis <- scurveClass$new(
         options = options,

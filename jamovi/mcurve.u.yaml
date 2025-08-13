@@ -77,7 +77,7 @@ children:
                             suffix: '%'
                             enable: (trim)
   - type: CollapseBox
-    label: Goodness-of-fit
+    label: Model Evaluation
     collapsed: false
     stretchFactor: 1
     children:
@@ -92,7 +92,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Measures
+                label: Goodness of Fit
                 children:
                   - type: CheckBox
                     name: aic
@@ -102,9 +102,30 @@ children:
                     name: bic
                   - type: CheckBox
                     name: r2
+                  - type: CheckBox
+                    name: r2_adj
           - type: LayoutBox
             cell:
               column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Error Metrics
+                children:
+                  - type: CheckBox
+                    name: rmse
+                  - type: CheckBox
+                    name: mae
+                  - type: CheckBox
+                    name: medae
+                  - type: CheckBox
+                    name: smape
+                  - type: CheckBox
+                    name: rrmse
+          - type: LayoutBox
+            cell:
+              column: 2
               row: 0
             stretchFactor: 1
             children:
@@ -177,4 +198,3 @@ children:
                         name: intU
                         format: number
                         enable: (calcAction && intInterval)
-                    

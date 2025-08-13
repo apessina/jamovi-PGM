@@ -123,6 +123,10 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         W1_expr <- D(W_expr, "x") # 1st derivative
         W2_expr <- D(W1_expr, "x") # 2nd derivative
         
+        ## 3rd and 4th derivatives for PDA
+        W3_expr <- D(W2_expr, "x") # 3rd derivative
+        W4_expr <- D(W3_expr, "x") # 4th derivative
+        
         ## Ontogenetic Growth Force expression
         OGF_expr <- call("*", W1_expr, W2_expr) # W'(t) * W''(t)
         
@@ -135,17 +139,18 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         W  <- function(x) eval(W_expr) # W(t)
         W1 <- function(x) eval(W1_expr) # W'(t)
         W2 <- function(x) eval(W2_expr) # W''(t)
+        W4 <- function(x) eval(W4_expr) # W''''(t) (PDA)
         OGF <- function(x) eval(OGF_expr) # OGF(t)
         OGF3 <- function(x) eval(OGF3_expr) # OGF'''(t)
         
-        ##### Goodness-Of-Fit #####
+        ##### Evaluation Metrics #####
         
         ## Number of samples
         n = length(y)
         
         ## Degrees of freedom
-        df1 <- n_params - 1
-        df2 <- n - n_params
+        df1 <- n_params - 1 # model
+        df2 <- n - n_params # error
         
         ## Sum of squares
         SSt <- sum((y - mean(y)) ^ 2) # total
@@ -154,6 +159,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ## Goodness-of-fit metrics
         R2 <- 1 - SSe / SSt # R²
+        R2_adj <- 1 - (SSe/df2) / (SSt/(n - 1)) # Adjusted R²
         AIC <- n * log(SSe/n) + 2 * n_params
         AICc <- AIC + (2 * n_params * (n_params + 1)) / (n-n_params - 1)
         BIC <- n * log(SSe/n) + log(n) * n_params
@@ -161,6 +167,17 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ### Global F-test
         F_s <- ((SSt - SSe) / df1) / (SSe / df2) # F statistics
         F_p <- pf(F_s, df1, df2, lower.tail=FALSE) # F p-value
+        
+        ## Residuals
+        res <- y - W(t)
+        MSE  <- mean(res^2)
+        
+        ## Error metrics
+        RMSE <- sqrt(MSE)
+        MAE <- mean(abs(res))
+        MedAE <- median(abs(res))
+        sMAPE <- mean(2 * abs(res) / (abs(y) + abs(W(t)))) * 100
+        RRMSE <- RMSE / mean(y)
         
         ##### Curve "resolution" #####
         
@@ -172,6 +189,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         W_pred <- W(t_new) # vector of weight over time
         W1_pred <- W1(t_new) # vector of growth rate over time
         W2_pred <- W2(t_new) # vector of acceleration over time
+        W4_pred <- W4(t_new) # vector of 4th derivative over time (PDA)
         OGF_pred <- OGF(t_new) # vector of OGF over time
         OGF3_pred <- OGF3(t_new) # vector of the OGF 3rd Derivative over time
         
@@ -184,8 +202,10 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         zero_acc <- which(diff(sign(W2_pred))!=0)
         if (length(zero_acc)==0) {
           self$results$fpoints$setNote("sig", "No inflection point found. Input data might not follow a sigmoidal trend.", init=FALSE)
-          f_points <- list(F0=NA, F1=NA, Fi=NA, F2=NA, F3=NA)
+          f_points <- list(F1=NA, Fi=NA, F2=NA)
           p_points <- list(P1=NA, Pi=NA, P2=NA)
+          l_points <- list(OGF0=NA, tang=NA, thres=NA)
+          a_points <- list(OGF3=NA, PDA=NA)
         } else {
           
           ## by Ontogenetic Growth Force
@@ -195,19 +215,11 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           ### F1
           i_F1 <- which.max(OGF(t_new[1:i_Fi]))
           F1 <- t_new[i_F1]
-          ### F0 - end of lag phase
-          i_F0 <- which.max(OGF3(t_new[1:i_F1]))
-          F0 <- t_new[i_F0]
-          if (F0==F1) 
-            F0 <- NA
           ### F2
           i_F2 <- i_Fi - 1 + which.min(OGF(t_new[i_Fi:len]))
           F2 <- t_new[i_F2]
-          ### F3
-          i_F3 <- i_F2 + which(diff(sign(OGF3(t_new[i_F2:len])))!=0)[1]
-          F3 <- t_new[i_F3]
           ### List of calculated F-Points
-          f_points <- list(F0=F0, F1=F1, Fi=Fi, F2=F2, F3=F3)
+          f_points <- list(F1=F1, Fi=Fi, F2=F2)
           
           ## by Growth Rate and Acceleration
           ### Pi
@@ -221,6 +233,35 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           P2 <- t_new[i_P2]
           ### List of calculated P-Points
           p_points <- list(P1=P1, Pi=Pi, P2=P2)
+          
+          ## End of Lag Phase
+          ### OGF0 - end of lag phase
+          i_F0 <- which.max(OGF3(t_new[1:i_F1]))
+          F0 <- t_new[i_F0]
+          if (F0==F1 | F0==0)
+            F0 <- NA
+          ### tangent method
+          t_star <- t_new[which.max(W1_pred)]
+          slope <- max(W1_pred)
+          y_star <- W(t_star)
+          y0 <- W(min(t_new)) # min(W_fun(t_new))
+          t_lag_tangent <- t_star - (y_star-y0) / slope
+          ### threshold method
+          y_vals <- sapply(t_new, W)
+          y_thresh <- W(max(t_new)) * self$options$thVal ## custom by user
+          t_lag_threshold <- t_new[min(which(y_vals >= y_thresh))]
+          ### List of calculated points
+          l_points <- list(OGF0=F0, tang=t_lag_tangent, thres=t_lag_threshold)
+          
+          ## Close to Asymptote
+          ### F3
+          i_F3 <- i_F2 + which(diff(sign(OGF3(t_new[i_F2:len])))!=0)[1]
+          F3 <- t_new[i_F3]
+          ### PDA
+          i_PDA <- i_P2 + which(diff(sign(W4(t_new[i_P2:len])))!=0)[1]
+          PDA <- t_new[i_PDA]
+          ### List of calculated A-Points
+          a_points <- list(OGF3=F3, PDA=PDA)
         
         }
         
@@ -243,13 +284,19 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           Ti=format(round(params$Ti, 2), nsmall=2)
         ))
         
-        ## Goodness-Of-Fit table
+        ## Evaluation Metrics table
         tableFit <- self$results$fitq
         tableFit$setRow(rowNo=1, values=list(
           AIC=format(round(AIC, 2), nsmall=2),
           AICc=format(round(AICc, 2), nsmall=2),
           BIC=format(round(BIC, 2), nsmall=2),
           R2=format(round(R2, 3), nsmall=3),
+          R2_adj=format(round(R2_adj, 3), nsmall=3),
+          RMSE=format(round(RMSE, 3), nsmall=3),
+          MAE=format(round(MAE, 3), nsmall=3),
+          MedAE=format(round(MedAE, 3), nsmall=3),
+          sMAPE=sprintf("%.3f%%", round(sMAPE, 3)),
+          RRMSE=sprintf("%.3f%%", round(RRMSE*100, 3)),
           fdf1=round(df1),
           fdf2=round(df2),
           f=format(round(F_s, 3), nsmall=3),
@@ -259,31 +306,37 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Key Growth Points table
         tableFp <- self$results$fpoints
         tableFp$addRow(rowKey=self$options$time, values=list(
-          F0=format(round(f_points$F0, 2), nsmall=2),
+          OGF0=format(round(l_points$OGF0, 2), nsmall=2),
+          Tangent=format(round(l_points$tang, 2), nsmall=2),
+          Threshold=format(round(l_points$thres, 2), nsmall=2),
           F1=format(round(f_points$F1, 2), nsmall=2),
           Fi=format(round(f_points$Fi, 2), nsmall=2),
           F2=format(round(f_points$F2, 2), nsmall=2),
-          F3=format(round(f_points$F3, 2), nsmall=2),
           P1=format(round(p_points$P1, 2), nsmall=2),
           Pi=format(round(p_points$Pi, 2), nsmall=2),
-          P2=format(round(p_points$P2, 2), nsmall=2)
+          P2=format(round(p_points$P2, 2), nsmall=2),
+          OGF3=format(round(a_points$OGF3, 2), nsmall=2),
+          PDA=format(round(a_points$PDA, 2), nsmall=2)
         ))
         tableFp$addRow(rowKey=self$options$dep, values=list(
-          F0=format(round(W(f_points$F0), 2), nsmall=2),
+          OGF0=format(round(W(l_points$OGF0), 2), nsmall=2),
+          Tangent=format(round(W(l_points$tang), 2), nsmall=2),
+          Threshold=format(round(W(l_points$thres), 2), nsmall=2),
           F1=format(round(W(f_points$F1), 2), nsmall=2),
           Fi=format(round(W(f_points$Fi), 2), nsmall=2),
           F2=format(round(W(f_points$F2), 2), nsmall=2),
-          F3=format(round(W(f_points$F3), 2), nsmall=2),
           P1=format(round(W(p_points$P1), 2), nsmall=2),
           Pi=format(round(W(p_points$Pi), 2), nsmall=2),
-          P2=format(round(W(p_points$P2), 2), nsmall=2)
+          P2=format(round(W(p_points$P2), 2), nsmall=2),
+          OGF3=format(round(W(a_points$OGF3), 2), nsmall=2),
+          PDA=format(round(W(a_points$PDA), 2), nsmall=2)
         ))
         
         ##### Plots Data #####
         
         ## Data for next functions
         private$.prep_mplot(x_raw, y_raw, t_new, W_pred, OGF_pred, 
-                            OGF3_pred, f_points, p_points)
+                            OGF3_pred, f_points, p_points, l_points, a_points)
         private$.prep_dplot(t_new, W1_pred, W2_pred)
         
       }, # close .run
@@ -291,14 +344,16 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
       ##### Plots Functions #####
       
       # Prepare data for Model Plot
-      .prep_mplot = function(t, y, t_new, W, OGF, OGF3, Fp, Pp) {
+      .prep_mplot = function(t, y, t_new, W, OGF, OGF3, Fp, Pp, Lp, Ap) {
         ## Set plot with model data as dataframe
         image <- self$results$mplot
         image$setState(list(
           data_p = data.frame(t=t, y=y),
           data_m = data.frame(t_new=t_new, W=W, OGF=OGF, OGF3=OGF3), 
           f_points = Fp, 
-          p_points = Pp
+          p_points = Pp,
+          l_points = Lp,
+          a_points = Ap
           )
         )
       }, # close .prep_mplot
@@ -315,6 +370,8 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         data_m <- image$state$data_m
         f_points <- image$state$f_points
         p_points <- image$state$p_points
+        l_points <- image$state$l_points
+        a_points <- image$state$a_points
         
         ## Deactivate the default box around plotting area
         par(bty='L')
@@ -339,28 +396,93 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         l_cols = c("red") # legend color
         l_ltys = c("solid") # legend line type
         
-        ## Add F-Points vertical lines
-        if (self$options$fPoints) {
-          abline(v=f_points$F0, col="darkgrey", lwd=2, lty=4)
-          text(x=f_points$F0, y=max(data_p$y), 'F0')
-          abline(v=f_points$F1, col="darkgrey", lwd=2, lty=4)
-          text(x=f_points$F1, y=max(data_p$y), 'F1')
-          abline(v=f_points$Fi, col="darkgrey", lwd=2, lty=4)
-          text(x=f_points$Fi, y=max(data_p$y), 'Fi')
-          abline(v=f_points$F2, col="darkgrey", lwd=2, lty=4)
-          text(x=f_points$F2, y=max(data_p$y), 'F2')
-          abline(v=f_points$F3, col="darkgrey", lwd=2, lty=4)
-          text(x=f_points$F3, y=max(data_p$y), 'F3')
-        }
-        
-        ## Add P-Points vertical lines
-        if (self$options$pPoints) {
-          abline(v=p_points$P1, col="lightgrey", lwd=2, lty=4)
-          text(x=p_points$P1, y=max(data_p$y), 'P1')
-          abline(v=p_points$Pi, col="lightgrey", lwd=2, lty=4)
-          text(x=p_points$Pi, y=max(data_p$y), 'Pi')
-          abline(v=p_points$P2, col="lightgrey", lwd=2, lty=4)
-          text(x=p_points$P2, y=max(data_p$y), 'P2')
+        ## Add Key Growth Points
+        if (self$options$keyGrowth) {
+          ## Function to retrieve aprox. y at gowth curve from an x value
+          y_ <- function(x_) {
+            return(approx(data_m$t_new, data_m$W, xout=x_, rule=2)$y)
+          }
+          ## Add A-Points vertical lines
+          if ("ogf0" %in% self$options$lagEnd) {
+            x_point <- l_points$OGF0
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="F0", pos=3, offset=1, col="black", font=2)
+          }
+          if ("tang" %in% self$options$lagEnd) {
+            x_point <- l_points$tang
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="Tan.", pos=3, offset=1, col="black", font=2)
+          }
+          if ("thres" %in% self$options$lagEnd) {
+            x_point <- l_points$thres
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="Thr.", pos=3, offset=1, col="black", font=2)
+          }
+          ## Add F-Points vertical lines
+          if ("ogfMax" %in% self$options$fPoints) {
+            x_point <- f_points$F1
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="F1", pos=3, offset=1, col="black", font=2)
+          }
+          if ("ogfI" %in% self$options$fPoints) {
+            x_point <- f_points$Fi
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="Fi", pos=3, offset=1, col="black", font=2)
+          }
+          if ("ogfMin" %in% self$options$fPoints) {
+            x_point <- f_points$F2
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="F2", pos=3, offset=1, col="black", font=2)
+          }
+          ## Add P-Points vertical lines
+          if ("accMax" %in% self$options$pPoints) {
+            x_point <- p_points$P1
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="P1", pos=3, offset=1, col="black", font=2)
+          }
+          if ("accI" %in% self$options$pPoints) {
+            x_point <- p_points$Pi
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="Pi", pos=3, offset=1, col="black", font=2)
+          }
+          if ("accMin" %in% self$options$pPoints) {
+            x_point <- p_points$P2
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="P2", pos=3, offset=1, col="black", font=2)
+          }
+          ## Add Asymptote vertical lines
+          if ("ogf3" %in% self$options$asymptote) {
+            x_point <- a_points$OGF3
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="F3", pos=3, offset=1, col="black", font=2)
+          }
+          if ("pda" %in% self$options$asymptote) {
+            x_point <- a_points$PDA
+            y_point <- y_(x_point)
+            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
+            points(x_point, y_point, pch=19, col="black")
+            text(x_point, y_point, labels="PDA", pos=3, offset=1, col="black", font=2)
+          }
         }
         
         ## Add OGF(t_new) curve
@@ -377,7 +499,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         }
         
         ## Add OGF'''(t_new) curve
-        if (self$options$ogf3) {
+        if (self$options$ogf_s) {
           par(new = TRUE) # new plot, same area
           plot(data_m$t_new, data_m$OGF3, type="l", col="lightgreen",axes=FALSE,
                xlab="", ylab="", lty="dashed", ylim=better_lim(data_m$OGF3))

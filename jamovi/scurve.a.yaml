@@ -4,7 +4,7 @@ title: "Growth Curve Modeling"
 menuGroup: Growth
 menuTitle: Curve Modeling
 menuSubtitle: Single Curve
-version: '0.2.2'
+version: '0.3.0'
 jas: '1.2'
 
 options:
@@ -81,6 +81,32 @@ options:
       title: "R²"
       type: Bool
       default: false
+    - name: r2_adj
+      title: "Adjusted R²"
+      type: Bool
+      default: false
+
+    - name: rmse
+      title: "RMSE"
+      type: Bool
+      default: false
+    - name: mae
+      title: "MAE"
+      type: Bool
+      default: false
+    - name: medae
+      title: "MedAE"
+      type: Bool
+      default: false
+    - name: smape
+      title: "sMAPE"
+      type: Bool
+      default: false
+    - name: rrmse
+      title: "RRMSE"
+      type: Bool
+      default: false      
+      
     - name: fTest
       title: "Global F-test"
       type: Bool
@@ -90,7 +116,7 @@ options:
       title: "Ontogenetic growth force"
       type: Bool
       default: false
-    - name: ogf3
+    - name: ogf_s
       title: "OGF 3rd Derivative"
       type: Bool
       default: false
@@ -99,6 +125,11 @@ options:
       title: "Growth Rate and Acceleration"
       type: Bool
       default: false
+    
+    - name: keyGrowth
+      title: "Show selected"
+      type: Bool
+      default: True
       
     - name: res
       title: "x-axis"
@@ -108,12 +139,58 @@ options:
       default: 100
       
     - name: fPoints
-      title: "F-Points"
-      type: Bool
-      default: false      
+      title: "by Ontogenetic Growth Force"
+      type: NMXList
+      options:
+        - name: ogfMax
+          title: "Maximum (F1)"
+        - name: ogfI
+          title: "Inflection (Fi)"  
+        - name: ogfMin
+          title: "Minimum (F2)"
+      default: null
+      
     - name: pPoints
-      title: "P-Points"
-      type: Bool
-      default: false      
+      title: "by Acceleration"
+      type: NMXList
+      options:
+        - name: accMax
+          title: "Maximum (P1)"
+        - name: accI
+          title: "Inflection (Pi)"  
+        - name: accMin
+          title: "Minimum (P2)"
+      default: null
 
+    - name: lagEnd
+      title: "Exponential Start"
+      type: NMXList
+      options:
+        - name: ogf0
+          title: "OGF0"
+        - name: tang
+          title: "Tangent"
+        - name: thres
+          title: "Threshold"
+      default: null
+    # - name: tangLines
+    #   title: "lines"
+    #   type: Bool
+    #   default: False
+    - name: thVal
+      title: ''
+      type: Number
+      min: 0
+      max: 1
+      default: 0.01
+
+    - name: asymptote
+      title: "Close to Asymptote"
+      type: NMXList
+      options:
+        - name: ogf3
+          title: "OGF3"
+        - name: pda
+          title: "PDA"
+      default: null
 ...
