@@ -10,7 +10,7 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
       
       .run = function() {
         
-        ##### Get User Data #####
+        ##### Data -----
         
         ## Option values into shorter variable names
         deps  <- self$options$deps
@@ -26,71 +26,14 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Convert time to appropriate data type
         data[[time]] <- jmvcore::toNumeric(data[[time]])
         
-        ##### Models Functions #####
-        
-        ## Richards Model
-        richards <- function(t, y) {
-          
-          ### Define model expression
-          s_expr <- expression(
-            A * ( 1 + (d - 1) * exp(-K * (t - Ti) / (d / (1 - d))) ) ^ (1 / (1 - d))
-          )
-          
-          ### Initial parameters values
-          gr <- diff(y)/diff(t) # growth rate vector (1st derivative)
-          A_init <- max(y, na.rm=TRUE) # asymptotic - maximum y value
-          K_init <- max(gr) / A_init # relative max. growth rate
-          Ti_init <- t[which.max(gr)] # inflection point
-          d_inits <- seq(0.5, 3, by=0.01) # fixed "d" values for grid search
-          
-          ### Parameters restriction
-          if (self$options$pConstraint=="strict") {
-            d_inits <- d_inits[d_inits<0.95|d_inits>1.05] # remove d~1
-          } else {
-            d_inits <- d_inits[d_inits!=1] # remove d=1
-          }
-          
-          ### Store best iteration results
-          best_model <- NULL
-          best_SSe <- Inf
-          best_d <- NA
-          
-          ### Iteration to estimate best parameters for each fixed "d" value
-          for (d_init in d_inits) {
-            try({
-              fit <- nlsLM(
-                y ~ A * (1 + (d_init - 1) * exp(-K * (t - Ti) / (d_init / (1 - d_init)))) ^ (1 / (1 - d_init)),
-                start = list(A=A_init, K=K_init, Ti=Ti_init),
-                lower = c(A=0, K=0, Ti=min(t)), upper = c(Inf, Inf, max(t)),
-                control = nls.lm.control(maxiter=1000, ftol=1e-10)
-              )
-              SSe <- sum(residuals(fit)^2)
-              if (SSe < best_SSe) {
-                best_model <- fit
-                best_SSe <- SSe
-                best_d <- d_init
-              }
-            }, silent=TRUE)
-          }
-          
-          ### Get final parameters in the expression
-          params <- as.list(coef(best_model)) # estimated A, K, Ti
-          params$d <- best_d # best d value on grid search
-          f_expr <- eval(substitute(expression(
-            A * (1 + (d - 1) * exp(-K * (x - Ti) / (d / (1 - d)))) ^ (1 / (1 - d))
-          ), params))
-          
-          return(list(s_expr=s_expr, params=params, f_expr=f_expr))
-        }
-        
-        ##### Curve "resolution" #####
+        ##### Curve Resolution -----
         
         ## Giving time a new "resolution" for smooth lines
         t_raw <- data[[time]]
         t_raw_res <- length(t_raw) * self$options$res # res is the "resolution factor"
         t_raw_new <- seq(min(t_raw), max(t_raw), length.out=t_raw_res) # same range, more points
         
-        ##### Iteration p/ dep #####
+        ##### Iteration per dep -----
         t_df <- data.frame(t=t_raw)
         t_new_df <- data.frame(t=t_raw_new)
         Ke_df <- data.frame(t=t_raw_new)
@@ -112,53 +55,110 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           if (length(unique(x_raw)) < 2 || length(unique(y_raw)) < 2)
             stop("At least two unique (x, y) pairs are required for growth analysis")
           
+          ##### Aggregation -----
+          
           ## Aggregate multiple y-values with same x-value
-          trim_perc <- ifelse(self$options$trim, self$options$tPerc/100, 0)
-          if (self$options$agg == "median") {
-            agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=median)
-          } else {
-            agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=function(x) 
-              mean(x, trim=trim_perc))
-          }
+          agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=mean)
           t <- agg_vals[[1]]
           y <- agg_vals[[2]]
           
-          ##### Data Modeling #####
+          ##### Models -----
           
-          ## Adjust selected model to user data
+          ## Some definitions for parameters domains
+          gr <- diff(y)/diff(t) # growth rate vector (1st derivative)
+          a_sup <- max(y, na.rm=TRUE)
+          a_inf <- min(y, na.rm=TRUE)
+          
           if (self$options$model == "richards") {
-            model <- richards(t, y)
+            expr <- expression(
+              A * (1 + (d - 1) * exp(-K * (t - Ti) / (d^(d / (1 - d)))))^(1 / (1 - d))
+            )
+            init <- list(A=a_sup, K=max(gr)/a_sup, Ti=t[which.max(gr)], d=1.2)
+            lower <- c(A=0, K=0, Ti=min(t), d=1.05)
+            upper <- c(Inf, Inf, max(t), Inf)
           }
           
-          ## Get model information
-          s_expr <- model$s_expr # raw expression
-          params <- model$params # values of parameters
-          n_params <- length(params) # number of parameters
-          W_expr <- model$f_expr # final/fit expression
           
-          ## First 2 symbolic derivatives as expression
-          W1_expr <- D(W_expr, "x") # 1st derivative
+          ## Show model equation as text
+          eq_str <- paste0("Model:\n", paste(expr[[1]], collapse=""))
+          self$results$text$setContent(eq_str)
+          
+          ##### Modeling -----
+          
+          ## Iteration to estimate best parameters for each fixed "d" value
+          fit <- nlsLM(
+            formula=as.formula(call("~", quote(y), expr[[1]]), env=.GlobalEnv), 
+            data=data.frame(y=y ,t=t), start=init, lower=lower, upper=upper,
+            control = nls.lm.control(maxiter=1000, ftol=1e-10)
+          )
+          
+          ## Get final parameters in the expression
+          params <- coef(fit) # estimated parameters
+          
+          ## Model equation with fit parameters as expression
+          W_expr <- as.expression(
+            do.call('substitute', list(expr[[1]], as.list(params)))
+          )
+          
+          ## First symbolic derivative as expression
+          W1_expr <- D(W_expr, "t") # 1st derivative
           
           ## Expressions to functions
-          W  <- function(x) eval(W_expr) # W(t)
-          W1 <- function(x) eval(W1_expr) # W'(t)
+          W  <- function(t) eval(W_expr, envir=list(t=t)) # W(t) 
+          W1 <- function(t) eval(W1_expr, envir=list(t=t)) # W'(t)
           
           ## Define "Kinetic Energy" function
-          Ke <- function(x) 0.5 * W(x) * W1(x)^2
+          Ke <- function(t) 0.5 * W(t) * W1(t)^2
           
-          ##### Evaluation Metrics #####
+          ##### Parameters -----
           
           ## Number of samples
           n = length(y)
+          
+          ## Number of parameters
+          n_params <- length(params)
           
           ## Degrees of freedom
           df1 <- n_params - 1 # model
           df2 <- n - n_params # error
           
+          ## Covariance Matrix
+          covm <- vcov(fit)
+          
+          ## Standard Errors 
+          se_vals <- sqrt(diag(covm))
+          
+          ## t Values - Wald t-test
+          t_vals <- params / se_vals
+          
+          ## p-values - Wald t-test
+          p_vals <- 2 * pt(abs(t_vals), df=df2, lower.tail=FALSE)
+          
+          ## Confidence Intervals - Wald t-test
+          alpha <- 0.05 # fixed in 95% for now
+          t_crit <- qt(1 - alpha / 2, df=df2)
+          lower_ci <- params - t_crit * se_vals
+          upper_ci <- params + t_crit * se_vals
+          
+          ## Parameters DF
+          params_df <- data.frame(
+            param=names(params),
+            estim=params,
+            lower=lower_ci,
+            upper=upper_ci,
+            se=se_vals,
+            t=t_vals,
+            p=p_vals
+          )
+          
+          ##### Evaluation -----
+          
+          ## Residuals / Error
+          res <- residuals(fit)
+          
           ## Sum of squares
           SSt <- sum((y - mean(y)) ^ 2) # total
-          SSm <- sum((W(t) - mean(y)) ^ 2) # model
-          SSe <- sum((y - W(t)) ^ 2) # error
+          SSe <- sum(res ^ 2) # error
           
           ## Goodness-of-fit metrics
           R2 <- 1 - SSe / SSt # R²
@@ -167,22 +167,15 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           AICc <- AIC + (2 * n_params * (n_params + 1)) / (n-n_params - 1)
           BIC <- n * log(SSe/n) + log(n) * n_params
           
-          ### Global F-test
-          F_s <- ((SSt - SSe) / df1) / (SSe / df2) # F statistics
-          F_p <- pf(F_s, df1, df2, lower.tail=FALSE) # F p-value
-          
-          ## Residuals
-          res <- y - W(t)
-          MSE  <- mean(res^2)
-          
           ## Error metrics
+          MSE  <- mean(res ^ 2)
           RMSE <- sqrt(MSE)
           MAE <- mean(abs(res))
           MedAE <- median(abs(res))
-          sMAPE <- mean(2 * abs(res) / (abs(y) + abs(W(t)))) * 100
+          sMAPE <- mean(2 * abs(res) / (abs(y) + abs(fitted(fit)))) * 100
           RRMSE <- RMSE / mean(y)
           
-          ##### Curve "resolution" #####
+          ##### Curve Resolution -----
           
           ## Trim t_raw_new unit the max value of t.
           ## This allows graphical comparison in the same scale,
@@ -203,40 +196,45 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           }
           intKe_pred <- integrate(Ke, lower=intKe_lower, upper=intKe_upper)$value
           
-          ##### Model Information #####
-          
-          ## Show model equation as text
-          str_expr <- paste(deparse(s_expr[[1]]), collapse="")
-          eq_str <- paste0("\nModel equation:\n", str_expr)
-          self$results$text$setContent(eq_str)
-          
-          ## Estimated parameters table
+          ##### Results -----
+
+          ## Estimated Parameters and Model Evaluation tables
           pTable <- self$results$pTable
-          pTable$setRow(rowKey=dep, values=list(
-            A=format(round(params$A, 2), nsmall=2),
-            d=format(round(params$d, 2), nsmall=2),
-            K=format(round(params$K, 2), nsmall=2),
-            Ti=format(round(params$Ti, 2), nsmall=2)
-          ))
-          
-          ## Goodness-Of-Fit table
           tableFit <- self$results$fitq
-          tableFit$setRow(rowKey=dep, values=list(
-            AIC=format(round(AIC, 2), nsmall=2),
-            AICc=format(round(AICc, 2), nsmall=2),
-            BIC=format(round(BIC, 2), nsmall=2),
-            R2=format(round(R2, 3), nsmall=3),
-            R2_adj=format(round(R2_adj, 3), nsmall=3),
-            RMSE=format(round(RMSE, 3), nsmall=3),
-            MAE=format(round(MAE, 3), nsmall=3),
-            MedAE=format(round(MedAE, 3), nsmall=3),
-            sMAPE=sprintf("%.3f%%", round(sMAPE, 3)),
-            RRMSE=sprintf("%.3f%%", round(RRMSE*100, 3)),
-            fdf1=round(df1),
-            fdf2=round(df2),
-            f=format(round(F_s, 3), nsmall=3),
-            fp=F_p
-          ))
+          
+          if (fit$convInfo$isConv) {
+            ### Estimated Parameters
+            for (i in seq_len(n_params)) { # one new row per parameter
+              pTable$addRow(rowKey=i, values=list(
+                var = if (i==1) dep, # variable name
+                Parameter=params_df$param[i],
+                Estimate=format(round(params_df$estim[i], 3), nsmall=2),
+                Lower=format(round(params_df$lower[i], 3), nsmall=2),
+                Upper=format(round(params_df$upper[i], 3), nsmall=2),
+                SE=format(round(params_df$se[i], 3), nsmall=2),
+                Statistics=format(round(params_df$t[i], 3), nsmall=2),
+                pvalue=params_df$p[i]
+              ))
+            }
+            pTable$setNote("conv", "This version fits the curve to means at each time point. Uncertainty metrics are approximate and may be optimistically biased under heteroscedasticity.", init=FALSE)
+            ### Model Evaluation
+            tableFit$setRow(rowKey=dep, values=list(
+              AIC=format(round(AIC, 2), nsmall=2),
+              AICc=format(round(AICc, 2), nsmall=2),
+              BIC=format(round(BIC, 2), nsmall=2),
+              R2=format(round(R2, 3), nsmall=3),
+              R2_adj=format(round(R2_adj, 3), nsmall=3),
+              RMSE=format(round(RMSE, 3), nsmall=3),
+              MAE=format(round(MAE, 3), nsmall=3),
+              MedAE=format(round(MedAE, 3), nsmall=3),
+              sMAPE=sprintf("%.3f%%", round(sMAPE, 3)),
+              RRMSE=sprintf("%.3f%%", round(RRMSE*100, 3))
+            ))
+            tableFit$setNote("conv", "This version fits the curve to means at each time point. Uncertainty metrics are approximate and may be optimistically biased under heteroscedasticity.", init=FALSE)
+          } else {
+            pTable$setNote("conv", "Model didn't converge.", init=FALSE)
+            tableFit$setNote("conv", "Model didn't converge.", init=FALSE)
+          }
           
           ## Fill the "Action" table
           tableKe <- self$results$action
@@ -264,7 +262,7 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           ))
         }
         
-        ##### Plots Data #####
+        ##### Plots Data -----
         
         ## Data for next functions
         private$.prep_mplot(t_df, t_new_df)

@@ -9,10 +9,8 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             deps = NULL,
             time = NULL,
             model = "richards",
-            pConstraint = "strict",
-            agg = "mean",
-            trim = FALSE,
-            tPerc = 10,
+            eq = TRUE,
+            par = TRUE,
             aic = FALSE,
             aicc = FALSE,
             bic = FALSE,
@@ -23,7 +21,6 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             medae = FALSE,
             smape = FALSE,
             rrmse = FALSE,
-            fTest = FALSE,
             res = 100,
             calcAction = FALSE,
             plotKe = FALSE,
@@ -57,30 +54,14 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 options=list(
                     "richards"),
                 default="richards")
-            private$..pConstraint <- jmvcore::OptionList$new(
-                "pConstraint",
-                pConstraint,
-                options=list(
-                    "strict",
-                    "flex"),
-                default="strict")
-            private$..agg <- jmvcore::OptionList$new(
-                "agg",
-                agg,
-                options=list(
-                    "mean",
-                    "median"),
-                default="mean")
-            private$..trim <- jmvcore::OptionBool$new(
-                "trim",
-                trim,
-                default=FALSE)
-            private$..tPerc <- jmvcore::OptionNumber$new(
-                "tPerc",
-                tPerc,
-                min=0,
-                max=50,
-                default=10)
+            private$..eq <- jmvcore::OptionBool$new(
+                "eq",
+                eq,
+                default=TRUE)
+            private$..par <- jmvcore::OptionBool$new(
+                "par",
+                par,
+                default=TRUE)
             private$..aic <- jmvcore::OptionBool$new(
                 "aic",
                 aic,
@@ -121,10 +102,6 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "rrmse",
                 rrmse,
                 default=FALSE)
-            private$..fTest <- jmvcore::OptionBool$new(
-                "fTest",
-                fTest,
-                default=FALSE)
             private$..res <- jmvcore::OptionNumber$new(
                 "res",
                 res,
@@ -157,10 +134,8 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..deps)
             self$.addOption(private$..time)
             self$.addOption(private$..model)
-            self$.addOption(private$..pConstraint)
-            self$.addOption(private$..agg)
-            self$.addOption(private$..trim)
-            self$.addOption(private$..tPerc)
+            self$.addOption(private$..eq)
+            self$.addOption(private$..par)
             self$.addOption(private$..aic)
             self$.addOption(private$..aicc)
             self$.addOption(private$..bic)
@@ -171,7 +146,6 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..medae)
             self$.addOption(private$..smape)
             self$.addOption(private$..rrmse)
-            self$.addOption(private$..fTest)
             self$.addOption(private$..res)
             self$.addOption(private$..calcAction)
             self$.addOption(private$..plotKe)
@@ -183,10 +157,8 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         deps = function() private$..deps$value,
         time = function() private$..time$value,
         model = function() private$..model$value,
-        pConstraint = function() private$..pConstraint$value,
-        agg = function() private$..agg$value,
-        trim = function() private$..trim$value,
-        tPerc = function() private$..tPerc$value,
+        eq = function() private$..eq$value,
+        par = function() private$..par$value,
         aic = function() private$..aic$value,
         aicc = function() private$..aicc$value,
         bic = function() private$..bic$value,
@@ -197,7 +169,6 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         medae = function() private$..medae$value,
         smape = function() private$..smape$value,
         rrmse = function() private$..rrmse$value,
-        fTest = function() private$..fTest$value,
         res = function() private$..res$value,
         calcAction = function() private$..calcAction$value,
         plotKe = function() private$..plotKe$value,
@@ -208,10 +179,8 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..deps = NA,
         ..time = NA,
         ..model = NA,
-        ..pConstraint = NA,
-        ..agg = NA,
-        ..trim = NA,
-        ..tPerc = NA,
+        ..eq = NA,
+        ..par = NA,
         ..aic = NA,
         ..aicc = NA,
         ..bic = NA,
@@ -222,7 +191,6 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..medae = NA,
         ..smape = NA,
         ..rrmse = NA,
-        ..fTest = NA,
         ..res = NA,
         ..calcAction = NA,
         ..plotKe = NA,
@@ -251,40 +219,60 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$add(jmvcore::Preformatted$new(
                 options=options,
                 name="text",
-                title="Results",
+                title="",
+                visible="(eq)",
                 refs=list(
                     "richards")))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="pTable",
-                title="Estimated Parameters",
-                rows="(deps)",
+                title="Model Parameters",
+                visible="(par)",
+                notes=list(
+                    `conv`=NULL),
                 columns=list(
                     list(
                         `name`="var", 
                         `title`="", 
-                        `type`="text", 
-                        `content`="($key)"),
+                        `type`="text"),
                     list(
-                        `name`="A", 
+                        `name`="Parameter", 
+                        `type`="text"),
+                    list(
+                        `name`="Estimate", 
                         `type`="number"),
                     list(
-                        `name`="d", 
+                        `name`="SE", 
                         `type`="number"),
                     list(
-                        `name`="K", 
-                        `type`="number"),
+                        `name`="Lower", 
+                        `type`="number", 
+                        `superTitle`="95% Confidence Interval"),
                     list(
-                        `name`="Ti", 
-                        `type`="number")),
+                        `name`="Upper", 
+                        `type`="number", 
+                        `superTitle`="95% Confidence Interval"),
+                    list(
+                        `name`="Statistics", 
+                        `type`="number", 
+                        `superTitle`="Wald t-test"),
+                    list(
+                        `name`="pvalue", 
+                        `title`="p-value", 
+                        `type`="number", 
+                        `format`="zto,pvalue", 
+                        `superTitle`="Wald t-test")),
                 refs=list(
-                    "nlm")))
+                    "nlm",
+                    "pgm")))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="fitq",
                 title="Model Evaluation",
                 rows="(deps)",
-                visible="(aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse || fTest)",
+                visible="(aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse)",
+                notes=list(
+                    `conv`=NULL),
                 columns=list(
                     list(
                         `name`="var", 
@@ -295,81 +283,46 @@ mcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `name`="AIC", 
                         `title`="AIC", 
                         `type`="number", 
-                        `superTitle`="Goodness of Fit", 
                         `visible`="(aic)"),
                     list(
                         `name`="AICc", 
                         `title`="AIC\u1D04", 
                         `type`="number", 
-                        `superTitle`="Goodness of Fit", 
                         `visible`="(aicc)"),
                     list(
                         `name`="BIC", 
                         `type`="number", 
-                        `superTitle`="Goodness of Fit", 
                         `visible`="(bic)"),
                     list(
                         `name`="R2", 
                         `title`="R\u00B2", 
                         `type`="number", 
-                        `superTitle`="Goodness of Fit", 
                         `visible`="(r2)"),
                     list(
                         `name`="R2_adj", 
                         `title`="Adjusted R\u00B2", 
                         `type`="number", 
-                        `superTitle`="Goodness of Fit", 
                         `visible`="(r2_adj)"),
                     list(
                         `name`="RMSE", 
                         `type`="number", 
-                        `superTitle`="Error Metrics", 
                         `visible`="(rmse)"),
                     list(
                         `name`="MAE", 
                         `type`="number", 
-                        `superTitle`="Error Metrics", 
                         `visible`="(mae)"),
                     list(
                         `name`="MedAE", 
                         `type`="number", 
-                        `superTitle`="Error Metrics", 
                         `visible`="(medae)"),
                     list(
                         `name`="sMAPE", 
                         `type`="text", 
-                        `superTitle`="Error Metrics", 
                         `visible`="(smape)"),
                     list(
                         `name`="RRMSE", 
                         `type`="text", 
-                        `superTitle`="Error Metrics", 
-                        `visible`="(rrmse)"),
-                    list(
-                        `name`="f", 
-                        `title`="F", 
-                        `type`="number", 
-                        `superTitle`="Global F-test", 
-                        `visible`="(fTest)"),
-                    list(
-                        `name`="fdf1", 
-                        `title`="df1", 
-                        `type`="integer", 
-                        `superTitle`="Global F-test", 
-                        `visible`="(fTest)"),
-                    list(
-                        `name`="fdf2", 
-                        `title`="df2", 
-                        `type`="integer", 
-                        `superTitle`="Global F-test", 
-                        `visible`="(fTest)"),
-                    list(
-                        `name`="fp", 
-                        `title`="p-value", 
-                        `type`="number", 
-                        `format`="zto,pvalue", 
-                        `superTitle`="Global F-test", 
-                        `visible`="(fTest)")),
+                        `visible`="(rrmse)")),
                 refs=list(
                     "pgm")))
             self$add(jmvcore::Table$new(
@@ -430,7 +383,7 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "mcurve",
-                version = c(0,3,0),
+                version = c(0,4,0),
                 options = options,
                 results = mcurveResults$new(options=options),
                 data = data,
@@ -450,10 +403,8 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param deps .
 #' @param time .
 #' @param model .
-#' @param pConstraint .
-#' @param agg .
-#' @param trim .
-#' @param tPerc .
+#' @param eq .
+#' @param par .
 #' @param aic .
 #' @param aicc .
 #' @param bic .
@@ -464,7 +415,6 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param medae .
 #' @param smape .
 #' @param rrmse .
-#' @param fTest .
 #' @param res .
 #' @param calcAction .
 #' @param plotKe .
@@ -493,10 +443,8 @@ mcurve <- function(
     deps,
     time,
     model = "richards",
-    pConstraint = "strict",
-    agg = "mean",
-    trim = FALSE,
-    tPerc = 10,
+    eq = TRUE,
+    par = TRUE,
     aic = FALSE,
     aicc = FALSE,
     bic = FALSE,
@@ -507,7 +455,6 @@ mcurve <- function(
     medae = FALSE,
     smape = FALSE,
     rrmse = FALSE,
-    fTest = FALSE,
     res = 100,
     calcAction = FALSE,
     plotKe = FALSE,
@@ -531,10 +478,8 @@ mcurve <- function(
         deps = deps,
         time = time,
         model = model,
-        pConstraint = pConstraint,
-        agg = agg,
-        trim = trim,
-        tPerc = tPerc,
+        eq = eq,
+        par = par,
         aic = aic,
         aicc = aicc,
         bic = bic,
@@ -545,7 +490,6 @@ mcurve <- function(
         medae = medae,
         smape = smape,
         rrmse = rrmse,
-        fTest = fTest,
         res = res,
         calcAction = calcAction,
         plotKe = plotKe,

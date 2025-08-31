@@ -4,7 +4,7 @@ title: "Growth Curve Modeling"
 menuGroup: Growth
 menuTitle: Curve Modeling
 menuSubtitle: Single Curve
-version: '0.3.0'
+version: '0.4.0'
 jas: '1.2'
 
 options:
@@ -33,37 +33,20 @@ options:
       options:
         - title: "Richards"
           name:  richards
+        # - title: "Gen. Logistic"
+        #   name:  glogistic
+        # - title: "Gen. Weibull"
+        #   name:  gweibull
       default: richards
       
-    - name: pConstraint
-      title: "Parameter Constraint"
-      type: List
-      options:
-        - name: strict
-          title: "Strict"
-        - name: flex
-          title: "Flexible"
-      default: strict
-
-    - name: agg
-      title: "Aggregation"
-      type: List
-      options:
-        - name: mean
-          title: "Mean"
-        - name: median
-          title: "Median"
-      default: mean
-    - name: trim
-      title: "Trim Extremes"
+    - name: eq
+      title: "Equation"
       type: Bool
-      default: false
-    - name: tPerc
-      title: "Percentage"
-      type: Number
-      min: 0
-      max: 50
-      default: 10
+      default: true
+    - name: par
+      title: "Parameters"
+      type: Bool
+      default: true
 
     - name: aic
       title: "AIC"
@@ -104,11 +87,6 @@ options:
       default: false
     - name: rrmse
       title: "RRMSE"
-      type: Bool
-      default: false      
-      
-    - name: fTest
-      title: "Global F-test"
       type: Bool
       default: false
 
@@ -163,7 +141,7 @@ options:
       default: null
 
     - name: lagEnd
-      title: "Exponential Start"
+      title: "Exponential Phase Onset"
       type: NMXList
       options:
         - name: ogf0
@@ -185,7 +163,7 @@ options:
       default: 0.01
 
     - name: asymptote
-      title: "Close to Asymptote"
+      title: "Saturation Phase Entry"
       type: NMXList
       options:
         - name: ogf3

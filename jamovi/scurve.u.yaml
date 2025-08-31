@@ -42,19 +42,6 @@ children:
                 children:
                   - type: ComboBox
                     name: model
-                  - type: Label
-                    label: Parameter Constraint
-                    children:
-                      - type: RadioButton
-                        name: pConstraint_strict
-                        optionName: pConstraint
-                        optionPart: strict
-                        label: Strict
-                      - type: RadioButton
-                        name: pConstraint_flex
-                        optionName: pConstraint
-                        optionPart: flex
-                        label: Flexible
           - type: LayoutBox
             cell:
               column: 1
@@ -62,21 +49,13 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Samples
+                label: Show
+                style: list-inline
                 children:
-                  - type: ComboBox
-                    name: agg
-                  - type: Label
-                    label: Outliers
-                    children:
-                      - type: CheckBox
-                        name: trim
-                        children:
-                          - type: TextBox
-                            name: tPerc
-                            format: number
-                            suffix: '%'
-                            enable: (trim)
+                  - type: CheckBox
+                    name: eq
+                  - type: CheckBox
+                    name: par
   - type: CollapseBox
     label: Model Evaluation
     collapsed: false
@@ -124,17 +103,6 @@ children:
                     name: smape
                   - type: CheckBox
                     name: rrmse
-          - type: LayoutBox
-            cell:
-              column: 2
-              row: 0
-            stretchFactor: 1
-            children:
-              - type: Label
-                label: Overall Significance
-                children:
-                  - type: CheckBox
-                    name: fTest
   - type: CollapseBox
     label: Key Growth Points
     collapsed: false
@@ -199,7 +167,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Exponential Start
+                label: Exponential Phase Onset
                 name: lagEnd
                 children:
                   - name: lagEnd_ogf0
@@ -226,7 +194,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Close to Asymptote
+                label: Saturation Phase Entry
                 name: asymptote
                 children:
                   - name: asymptote_ogf3

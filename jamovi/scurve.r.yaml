@@ -7,34 +7,51 @@ items:
     - name:  text
       title: ""
       type:  Preformatted
+      visible: (eq)
       refs:
         - richards
 
     - name: pTable
-      title: "Estimated Parameters"
+      title: "Model Parameters"
       type: Table
-      rows: (dep)
+      visible: (par)
+      notes:
+          conv: NULL
       columns:
         - name: var
           title: ''
           type: text
-          content: ($key)
-        - name: A
+        - name: Parameter
+          type: text
+        - name: Estimate
           type: number
-        - name: d
+        - name: SE
           type: number
-        - name: K
+        - name: Lower
           type: number
-        - name: Ti
+          superTitle: "95% Confidence Interval"
+        - name: Upper
           type: number
+          superTitle: "95% Confidence Interval"
+        - name: Statistics
+          type: number
+          superTitle: "Wald t-test"
+        - name: pvalue
+          title: "p-value"
+          type: number
+          format: zto,pvalue
+          superTitle: "Wald t-test"
       refs:
         - nlm
+        - pgm
 
     - name: fitq
       title: "Model Evaluation"
       type: Table
       rows: (dep)
-      visible: (aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse || fTest)
+      visible: (aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse)
+      notes:
+          conv: NULL
       columns:
         - name: var
           title: ''
@@ -43,68 +60,37 @@ items:
         - name: AIC
           title: "AIC"
           type: number
-          superTitle: "Goodness of Fit"
           visible: (aic)
         - name: AICc
           title: "AICᴄ"
           type: number
-          superTitle: "Goodness of Fit"
           visible: (aicc)
         - name: BIC
           type: number
-          superTitle: "Goodness of Fit"
           visible: (bic)
         - name: R2
           title: "R²"
           type: number
-          superTitle: "Goodness of Fit"
           visible: (r2)
         - name: R2_adj
           title: "Adjusted R²"
           type: number
-          superTitle: "Goodness of Fit"
           visible: (r2_adj)
         - name: RMSE
           type: number
-          superTitle: "Error Metrics"
           visible: (rmse)
         - name: MAE
           type: number
-          superTitle: "Error Metrics"
           visible: (mae)
         - name: MedAE
           type: number
-          superTitle: "Error Metrics"
           visible: (medae)
         - name: sMAPE
           type: text
-          superTitle: "Error Metrics"
           visible: (smape)
         - name: RRMSE
           type: text
-          superTitle: "Error Metrics"
           visible: (rrmse)
-        - name: f
-          title: "F"
-          type: number
-          superTitle: "Global F-test"
-          visible: (fTest)
-        - name: fdf1
-          title: "df1"
-          type: integer
-          superTitle: "Global F-test"
-          visible: (fTest)
-        - name: fdf2
-          title: "df2"
-          type: integer
-          superTitle: "Global F-test"
-          visible: (fTest)
-        - name: fp
-          title: p-value
-          type: number
-          format: zto,pvalue
-          superTitle: "Global F-test"
-          visible: (fTest)
       refs:
         - pgm
           
@@ -121,47 +107,36 @@ items:
           content: ($key)
         - name: OGF0
           type: number
-          superTitle: "Exponential Start"
           visible: (lagEnd:ogf0)
         - name: Tangent
           type: number
-          superTitle: "Exponential Start"
           visible: (lagEnd:tang)
         - name: Threshold
           type: number
-          superTitle: "Exponential Start"
           visible: (lagEnd:thres)
         - name: F1
           type: number
-          superTitle: "by Ontogenetic Growth Force"
           visible: (fPoints:ogfMax)
         - name: Fi
           type: number
-          superTitle: "by Ontogenetic Growth Force"
           visible: (fPoints:ogfI)
         - name: F2
           type: number
-          superTitle: "by Ontogenetic Growth Force"
           visible: (fPoints:ogfMin)
         - name: P1
           type: number
-          superTitle: "by Acceleration"
           visible: (pPoints:accMax)
         - name: Pi
           type: number
-          superTitle: "by Acceleration"
           visible: (pPoints:accI)          
         - name: P2
           type: number
-          superTitle: "by Acceleration"
           visible: (pPoints:accMin)
         - name: OGF3
           type: number
-          superTitle: "Close to Asymptote"
           visible: (asymptote:ogf3)
         - name: PDA
           type: number
-          superTitle: "Close to Asymptote"
           visible: (asymptote:pda)  
       refs:
         - pgm
