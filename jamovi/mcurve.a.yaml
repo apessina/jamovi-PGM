@@ -4,7 +4,7 @@ title: "Growth Curve Comparison"
 menuGroup: Growth
 menuTitle: Curve Comparison
 menuSubtitle: Multiple Curves
-version: '0.4.0'
+version: '0.4.1'
 jas: '1.2'
 
 options:
@@ -93,9 +93,9 @@ options:
     - name: res
       title: "x-axis"
       type: Number
-      min: 0
-      max: 1000
-      default: 100
+      min: 1
+      max: 30
+      default: 20
 
     - name: calcAction
       title: "Calculate Action"

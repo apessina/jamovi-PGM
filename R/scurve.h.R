@@ -25,7 +25,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             ogf_s = FALSE,
             sndPlot = FALSE,
             keyGrowth = TRUE,
-            res = 100,
+            res = 20,
             fPoints = NULL,
             pPoints = NULL,
             lagEnd = NULL,
@@ -125,9 +125,9 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             private$..res <- jmvcore::OptionNumber$new(
                 "res",
                 res,
-                min=0,
-                max=1000,
-                default=100)
+                min=1,
+                max=30,
+                default=20)
             private$..fPoints <- jmvcore::OptionNMXList$new(
                 "fPoints",
                 fPoints,
@@ -461,7 +461,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,4,0),
+                version = c(0,4,1),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,
@@ -541,7 +541,7 @@ scurve <- function(
     ogf_s = FALSE,
     sndPlot = FALSE,
     keyGrowth = TRUE,
-    res = 100,
+    res = 20,
     fPoints = NULL,
     pPoints = NULL,
     lagEnd = NULL,

@@ -21,7 +21,7 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             medae = FALSE,
             smape = FALSE,
             rrmse = FALSE,
-            res = 100,
+            res = 20,
             calcAction = FALSE,
             plotKe = FALSE,
             intInterval = FALSE,
@@ -105,9 +105,9 @@ mcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             private$..res <- jmvcore::OptionNumber$new(
                 "res",
                 res,
-                min=0,
-                max=1000,
-                default=100)
+                min=1,
+                max=30,
+                default=20)
             private$..calcAction <- jmvcore::OptionBool$new(
                 "calcAction",
                 calcAction,
@@ -383,7 +383,7 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "mcurve",
-                version = c(0,4,0),
+                version = c(0,4,1),
                 options = options,
                 results = mcurveResults$new(options=options),
                 data = data,
@@ -455,7 +455,7 @@ mcurve <- function(
     medae = FALSE,
     smape = FALSE,
     rrmse = FALSE,
-    res = 100,
+    res = 20,
     calcAction = FALSE,
     plotKe = FALSE,
     intInterval = FALSE,

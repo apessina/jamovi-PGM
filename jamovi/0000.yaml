@@ -1,13 +1,13 @@
 ---
 title: Practical Growth Modeling
 name: PGM
-version: 0.4.0
+version: 0.4.1
 jms: '1.0'
 authors:
   - André L. R. Pessina
   - Manoel Garcia Neto
 maintainer: André L. R. Pessina <andre.pessina@unesp.br>
-date: '2025-08-13'
+date: '2025-10-12'
 type: R
 description: >-
   This package facilitates biological growth modeling through curve fitting, 
@@ -46,6 +46,12 @@ datasets:
       Experimental mean values of body weight measurements (grams per day) in 
       Pilch broiler chickens from birth to 68 days
       (https://doi.org/10.1590/S1678-3921.pab1984.v19.16029)
+  - name: Avian Growth (Svagelj et al., 2019)
+    path: svageljetal2019.csv
+    description: >-
+      Measurements of body mass, bill length, head length, and tarsus length  in
+      female Imperial Shag chicks from hatching to approximately 40 days.
+      (https://doi.org/10.1111/jav.01864)
 usesNative: true
 minApp: 1.0.8
 

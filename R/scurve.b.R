@@ -1,6 +1,3 @@
-
-# This file is a generated template, your changes will not be overwritten
-
 scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
     "scurveClass",
     inherit = scurveBase,
@@ -175,8 +172,8 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Curve Resolution -----
         
         ## Giving t a new "resolution" for smooth lines
-        t_res <- length(t) * self$options$res # res is the "resolution factor"
-        t_new <- seq(min(t), max(t), length.out=t_res) # same range, more points
+        t_res <- min(3000, max(500, round((max(t) - min(t)) * self$options$res)))
+        t_new <- seq(min(t), max(t), length.out=t_res)
         
         ## Apply Data Modeling functions to t_new
         W_pred <- W(t_new) # vector of weight over time

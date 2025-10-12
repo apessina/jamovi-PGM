@@ -1,6 +1,3 @@
-
-# This file is a generated template, your changes will not be overwritten
-
 mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
     "mcurveClass",
     inherit = mcurveBase,
@@ -30,8 +27,8 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ## Giving time a new "resolution" for smooth lines
         t_raw <- data[[time]]
-        t_raw_res <- length(t_raw) * self$options$res # res is the "resolution factor"
-        t_raw_new <- seq(min(t_raw), max(t_raw), length.out=t_raw_res) # same range, more points
+        t_raw_np <- min(3000, max(500, round((max(t_raw) - min(t_raw)) * self$options$res)))
+        t_raw_new <- seq(min(t_raw), max(t_raw), length.out=t_raw_np)
         
         ##### Iteration per dep -----
         t_df <- data.frame(t=t_raw)
@@ -175,7 +172,7 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           sMAPE <- mean(2 * abs(res) / (abs(y) + abs(fitted(fit)))) * 100
           RRMSE <- RMSE / mean(y)
           
-          ##### Curve Resolution -----
+          ##### dep Curve Resolution -----
           
           ## Trim t_raw_new unit the max value of t.
           ## This allows graphical comparison in the same scale,
@@ -204,17 +201,20 @@ mcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           if (fit$convInfo$isConv) {
             ### Estimated Parameters
-            for (i in seq_len(n_params)) { # one new row per parameter
-              pTable$addRow(rowKey=i, values=list(
-                var = if (i==1) dep, # variable name
-                Parameter=params_df$param[i],
-                Estimate=format(round(params_df$estim[i], 3), nsmall=2),
-                Lower=format(round(params_df$lower[i], 3), nsmall=2),
-                Upper=format(round(params_df$upper[i], 3), nsmall=2),
-                SE=format(round(params_df$se[i], 3), nsmall=2),
-                Statistics=format(round(params_df$t[i], 3), nsmall=2),
-                pvalue=params_df$p[i]
-              ))
+            for (i in seq_len(n_params)) {
+              pTable$addRow(
+                rowKey = paste0(dep,"__",i),
+                values = list(
+                  var = if (i==1) dep,
+                  Parameter = params_df$param[i],
+                  Estimate  = format(round(params_df$estim[i], 3), nsmall=2),
+                  Lower     = format(round(params_df$lower[i], 3), nsmall=2),
+                  Upper     = format(round(params_df$upper[i], 3), nsmall=2),
+                  SE        = format(round(params_df$se[i], 3), nsmall=2),
+                  Statistics= format(round(params_df$t[i], 3), nsmall=2),
+                  pvalue    = params_df$p[i]
+                )
+              )
             }
             pTable$setNote("conv", "This version fits the curve to means at each time point. Uncertainty metrics are approximate and may be optimistically biased under heteroscedasticity.", init=FALSE)
             ### Model Evaluation
