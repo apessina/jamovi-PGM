@@ -22,6 +22,13 @@ children:
             name: time
             maxItemCount: 1
             isTarget: true
+      # - type: TargetLayoutBox
+      #   label: IDs (in development)
+      #   children:
+      #     - type: VariablesListBox
+      #       name: ids
+      #       maxItemCount: 1
+      #       isTarget: true
   - type: CollapseBox
     label: Modeling
     collapsed: false
@@ -44,18 +51,49 @@ children:
                     name: model
           - type: LayoutBox
             cell:
+              column: 0
+              row: 1
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Error Weighting
+                children:
+                  - type: RadioButton
+                    name: wtype_none
+                    optionName: wtype
+                    optionPart: none
+                    label: None
+                  - type: RadioButton
+                    name: wtype_power
+                    optionName: wtype
+                    optionPart: power
+                    label: Power
+                  - type: RadioButton
+                    name: wtype_exp
+                    optionName: wtype
+                    optionPart: exp
+                    label: Exponential
+                  - type: RadioButton
+                    name: wtype_tpoly
+                    optionName: wtype
+                    optionPart: tpoly
+                    label: Polynomial (time)
+          - type: LayoutBox
+            cell:
               column: 1
               row: 0
             stretchFactor: 1
             children:
               - type: Label
                 label: Show
-                style: list-inline
+                style: list
                 children:
                   - type: CheckBox
                     name: eq
                   - type: CheckBox
                     name: par
+                  - type: CheckBox
+                    name: est
   - type: CollapseBox
     label: Model Evaluation
     collapsed: false
@@ -119,7 +157,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: by Ontogenetic Growth Force
+                label: Ontogenetic Growth Force
                 name: fPoints
                 children:
                   - name: fPoints_ogfMax
@@ -141,7 +179,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: by Acceleration
+                label: Acceleration
                 name: pPoints
                 children:
                   - name: pPoints_accMax
@@ -235,10 +273,12 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Derivatives
+                label: Additional plots
                 children:
                   - type: CheckBox
                     name: sndPlot
+                  - type: CheckBox
+                    name: resPlot  
       - type: LayoutBox
         margin: large
         stretchFactor: 1

@@ -4,9 +4,9 @@ title: "Growth Curve Modeling"
 jrs:   '1.1'
 
 items:
-    - name:  text
-      title: ""
-      type:  Preformatted
+    
+    - name: equation
+      type: Html
       visible: (eq)
       refs:
         - richards
@@ -17,6 +17,7 @@ items:
       visible: (par)
       notes:
           conv: NULL
+          infer: NULL
       columns:
         - name: var
           title: ''
@@ -35,21 +36,41 @@ items:
           superTitle: "95% Confidence Interval"
         - name: Statistics
           type: number
-          superTitle: "Wald t-test"
+          superTitle: "Wald test"
         - name: pvalue
-          title: "p-value"
+          title: "p value"
           type: number
           format: zto,pvalue
-          superTitle: "Wald t-test"
+          superTitle: "Wald test"
       refs:
-        - nlm
         - pgm
 
-    - name: fitq
-      title: "Model Evaluation"
+    - name: eTable
+      title: "Estimation"
+      type: Table
+      visible: (est)
+      notes:
+          conv: NULL
+      rows: 3
+      columns:
+        - name: var
+          title: ''
+          type: text
+        - name: infoh
+          title: 'Info'
+          type: text
+        - name: infor
+          title: ""
+          type: text
+      refs:
+        - snlm
+        - pgm
+
+    - name: gof
+      title: "Goodness of Fit"
       type: Table
       rows: (dep)
-      visible: (aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse)
+      visible: (aic || aicc || bic || r2 || r2_adj)
       notes:
           conv: NULL
       columns:
@@ -76,6 +97,21 @@ items:
           title: "Adjusted R²"
           type: number
           visible: (r2_adj)
+      refs:
+        - pgm
+
+    - name: em
+      title: "Error Metrics"
+      type: Table
+      rows: (dep)
+      visible: (rmse || mae || medae || smape || rrmse)
+      notes:
+          conv: NULL
+      columns:
+        - name: var
+          title: ''
+          type: text
+          content: ($key)
         - name: RMSE
           type: number
           visible: (rmse)
@@ -142,13 +178,14 @@ items:
         - pgm
         - ppfm
         - pda
-          
+
     - name: mplot
       title: "Growth Curve"
       type: Image
       width:  700
       height: 500
       renderFun: .mplot
+      requiresData: true
       refs:
         - pgm
                 
@@ -159,6 +196,18 @@ items:
       width:  700
       height: 500
       renderFun: .dplot
+      requiresData: true
+      refs:
+        - pgm
+        
+    - name: resplot
+      visible: (resPlot)
+      title: "Residual Analysis"
+      type: Image
+      width:  700
+      height: 500
+      renderFun: .resplot
+      requiresData: true
       refs:
         - pgm
 ...

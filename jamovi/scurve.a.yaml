@@ -4,7 +4,7 @@ title: "Growth Curve Modeling"
 menuGroup: Growth
 menuTitle: Curve Modeling
 menuSubtitle: Single Curve
-version: '0.4.1'
+version: '0.5.0'
 jas: '1.2'
 
 options:
@@ -27,6 +27,14 @@ options:
       permitted:
         - numeric
 
+    # - name: ids
+    #   title: "IDs (in development)"
+    #   type: Variable
+    #   suggested:
+    #     - nominal
+    #   permitted:
+    #     - factor
+
     - name: model
       title: "Model"
       type: List
@@ -38,6 +46,20 @@ options:
         # - title: "Gen. Weibull"
         #   name:  gweibull
       default: richards
+
+    - name: wtype
+      title: "Error Weighting"
+      type: List
+      options:
+        - name: none
+          title: "None"
+        - name: power
+          title: "Power"
+        - name: exp
+          title: "Exponential"
+        - name: tpoly
+          title: "Polynomial (time)"
+      default: none
       
     - name: eq
       title: "Equation"
@@ -47,6 +69,10 @@ options:
       title: "Parameters"
       type: Bool
       default: true
+    - name: est
+      title: "Estimation Info"
+      type: Bool
+      default: false
 
     - name: aic
       title: "AIC"
@@ -101,6 +127,10 @@ options:
     
     - name: sndPlot
       title: "Growth Rate and Acceleration"
+      type: Bool
+      default: false
+    - name: resPlot
+      title: "Residual plots"
       type: Bool
       default: false
     

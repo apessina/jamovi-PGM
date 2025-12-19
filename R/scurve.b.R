@@ -7,18 +7,42 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
       
       .run = function() {
         
+        ##### Equation -----
+        
+        ## Set model equation for UI 
+        if (self$options$model == "richards") {
+          html_eq <- '<i>A</i>(1 + (<i>d</i> − 1) exp(−<i>K</i>(<i>t</i> − <i>T</i><sub>i</sub>)/<i>d</i><sup><i>d</i>/(1 − <i>d</i>)</sup>))<sup>1/(1 − <i>d</i>)</sup>'
+        } else stop("ERROR: Invalid model equation")
+        
+        ## Set HTML content
+        self$results$equation$setContent(paste0(
+          '<div style="margin-top:10px;">',
+          '<div style="font-family:Segoe UI, sans-serif; font-size:12px; margin-bottom:3px;">Model Equation</div>',
+          #'<div style="border:1px solid #ccc; border-radius:8px; padding:11px; background-color:#fff;">',
+          '<p style="text-align:center; font-family:Cambria, serif; font-size:16px;">',
+          html_eq,
+          '</p>',
+          '</div>',
+          '</div>'
+        ))
+        
         ##### Data -----
         
         ## Option values into shorter variable names
         dep  <- self$options$dep
         time <- self$options$time
+        ids <- NULL # self$options$ids
         
-        ## Check if variables have any data
-        if (is.null(dep) || is.null(time))
+        ## Check if variables have any data and get the data
+        if (!is.null(dep) & !is.null(time)) {
+          if (!is.null(ids)) {
+            data <- self$data[, c(dep, time, ids), drop=FALSE]
+          } else {
+            data <- self$data[, c(dep, time), drop=FALSE]
+          }
+        } else {
           return()
-        
-        ## Get the data
-        data <- self$data[, c(dep, time), drop=FALSE]
+        }
         
         ## Convert to appropriate data types
         data[[dep]] <- jmvcore::toNumeric(data[[dep]])
@@ -35,16 +59,12 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         if (length(unique(x_raw)) < 2 || length(unique(y_raw)) < 2)
           stop("At least two unique (x, y) pairs are required for growth analysis")
         
-        ##### Aggregation -----
-        
-        ## Aggregate multiple y-values with same x-value
-        agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=mean)
-        t <- agg_vals[[1]]
-        y <- agg_vals[[2]]
-        
         ##### Models -----
         
         ## Some definitions for parameters domains
+        agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=mean)
+        t <- agg_vals[[1]]
+        y <- agg_vals[[2]]
         gr <- diff(y)/diff(t) # growth rate vector (1st derivative)
         a_sup <- max(y, na.rm=TRUE)
         a_inf <- min(y, na.rm=TRUE)
@@ -55,29 +75,92 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           )
           init <- list(A=a_sup, K=max(gr)/a_sup, Ti=t[which.max(gr)], d=1.2)
           lower <- c(A=0, K=0, Ti=min(t), d=1.05)
-          upper <- c(Inf, Inf, max(t), Inf)
+          upper <- c(A=Inf, K=Inf, Ti=max(t), d=Inf)
         }
-      
-        
-        ## Show model equation as text
-        eq_str <- paste0("Model:\n", paste(expr[[1]], collapse=""))
-        self$results$text$setContent(eq_str)
 
         ##### Modeling -----
         
-        ## Iteration to estimate best parameters for each fixed "d" value
-        fit <- nlsLM(
-          formula=as.formula(call("~", quote(y), expr[[1]]), env=.GlobalEnv), 
-          data=data.frame(y=y ,t=t), start=init, lower=lower, upper=upper,
-          control = nls.lm.control(maxiter=1000, ftol=1e-10)
+        ## Initial data structure for modeling
+        data_fit <- data.frame(y=as.numeric(y_raw), t=as.numeric(x_raw))
+        wfunc <- "All weights = 1"
+        w <- rep(1, length(data_fit$y))
+        
+        ## Fit selected model
+        fit <- gsl_nls(
+          fn=as.formula(call("~", quote(y), expr[[1]]), env=.GlobalEnv), 
+          data=data_fit, start=init, lower=lower, upper=upper, algorithm="lm"
         )
         
-        ## Get final parameters in the expression
-        params <- coef(fit) # estimated parameters
+        ## Apply error weights if requested
+        if (self$options$wtype != "none") {
+          
+          ### FGLS / IRLS
+          eps   <- 1e-6
+          max_iter <- 20
+          for (k in 1:max_iter) {
+            mu <- pmax(fitted(fit), eps)
+            r  <- resid(fit)
+            r2 <- pmax(r^2, eps)
+            
+            if (self$options$wtype == "power") {
+              m <- lm(log(r2) ~ log(mu))
+              delta <- coef(m)[2] / 2
+              w <- mu^(-2 * delta)
+              wfunc <- paste0("Var(ε) = σ² * μ^(2δ), δ=",round(delta, 2),
+                              ", ",k," of ",max_iter," IRLS Iterations")
+              
+            } else if (self$options$wtype == "exp") {
+              mu_s <- (mu - mean(mu)) / sd(mu)
+              m <- lm(log(r2) ~ mu_s)
+              delta_s <- coef(m)[2] / 2
+              w <- exp(-2 * delta_s * mu_s)
+              wfunc <- paste0("Var(ε) = σ² * exp(2δ·z(μ)), δ=",round(delta_s, 2),
+                              ", ",k," of ",max_iter," IRLS Iterations")
+              
+            } else if (self$options$wtype == "tpoly") { 
+              t0 <- pmax(data_fit$t, eps)
+              m <- lm(log(r2) ~ poly(t0, 3, raw = TRUE))
+              vhat <- exp(predict(m, newdata = data.frame(t0 = t0)))
+              vhat <- pmax(vhat, quantile(vhat, 0.02, na.rm = TRUE))
+              w <- 1 / vhat
+              wfunc <- paste0("Var(ε) = σ² * f(t), ",
+                              k," of ",max_iter," IRLS Iterations")
+           
+            } else {
+              stop("ERROR: invalid weight type")
+            }
+            
+            w <- w / median(w, na.rm = TRUE)
+            cap <- quantile(w, 0.99, na.rm = TRUE)
+            w[w > cap] <- cap
+            floor_w <- quantile(w, 0.01, na.rm = TRUE)
+            w[w < floor_w] <- floor_w
+            data_fit$w <- w
+            
+            beta_old <- coef(fit)
+            fit <- gsl_nls(
+              fn=as.formula(call("~", quote(y), expr[[1]]), env=.GlobalEnv),
+              data=data_fit, lower=lower, upper=upper, algorithm="lm",
+              start=as.list(beta_old), weights=w
+            )
+            
+            if (max(abs((coef(fit)-beta_old) / pmax(abs(beta_old), eps))) < 1e-3) break
+          }
+          
+        }
+        
+        ## Model intra-individual correlation if ids
+        icorr <- !is.null(ids) && self$options$cor_type != "none"
+        if (icorr) {
+          # to-do
+        }
+        
+        ## Get estimated parameters
+        beta_hat <- coef(fit)
         
         ## Model equation with fit parameters as expression
         W_expr <- as.expression(
-          do.call('substitute', list(expr[[1]], as.list(params)))
+          do.call('substitute', list(expr[[1]], as.list(beta_hat)))
         )
         
         ## First 2 symbolic derivatives as expression
@@ -107,67 +190,86 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Parameters -----
         
         ## Number of samples
-        n = length(y)
+        n <- nrow(data_fit)
         
         ## Number of parameters
-        n_params <- length(params)
-
-        ## Degrees of freedom
-        df1 <- n_params - 1 # model
-        df2 <- n - n_params # error
+        n_params <- length(beta_hat)
         
+        ## Degrees of freedom
+        df2 <- n - n_params
+
         ## Covariance Matrix
         covm <- vcov(fit)
         
         ## Standard Errors 
         se_vals <- sqrt(diag(covm))
         
-        ## t Values - Wald t-test
-        t_vals <- params / se_vals
+        ## Inference - Wald test
+        stat_vals <- beta_hat / se_vals
         
-        ## p-values - Wald t-test
-        p_vals <- 2 * pt(abs(t_vals), df=df2, lower.tail=FALSE)
+        if (self$options$wtype == "none") {
+          p_vals <- 2 * pt(abs(stat_vals), df = df2, lower.tail = FALSE)
+          crit <- qt(1 - 0.05/2, df = df2)
+          infer_note <- "Wald t (iid)"
+        } else {
+          p_vals <- 2 * pnorm(abs(stat_vals), lower.tail = FALSE)
+          crit <- qnorm(1 - 0.05/2)
+          infer_note <- "Wald z (FGLS approx)"
+        }
         
-        ## Confidence Intervals - Wald t-test
-        alpha <- 0.05 # fixed in 95% for now
-        t_crit <- qt(1 - alpha / 2, df=df2)
-        lower_ci <- params - t_crit * se_vals
-        upper_ci <- params + t_crit * se_vals
+        ## Confidence Intervals
+        lower_ci <- beta_hat - crit * se_vals
+        upper_ci <- beta_hat + crit * se_vals
         
         ## Parameters DF
         params_df <- data.frame(
-          param=names(params),
-          estim=params,
+          param=names(beta_hat),
+          estim=beta_hat,
           lower=lower_ci,
           upper=upper_ci,
           se=se_vals,
-          t=t_vals,
+          stat=stat_vals,
           p=p_vals
         )
         
         ##### Evaluation -----
         
         ## Residuals / Error
-        res <- residuals(fit)
+        res <- resid(fit)
+        
+        ## Fitted values
+        yhat <- fitted(fit)
         
         ## Sum of squares
-        SSt <- sum((y - mean(y)) ^ 2) # total
-        SSe <- sum(res ^ 2) # error
+        SSt <- sum((y_raw - mean(y_raw))^2)
+        SSe <- sum(res^2)
         
         ## Goodness-of-fit metrics
-        R2 <- 1 - SSe / SSt # R²
-        R2_adj <- 1 - (SSe/df2) / (SSt/(n - 1)) # Adjusted R²
-        AIC <- n * log(SSe/n) + 2 * n_params
-        AICc <- AIC + (2 * n_params * (n_params + 1)) / (n-n_params - 1)
-        BIC <- n * log(SSe/n) + log(n) * n_params
+        R2 <- 1 - SSe / SSt
+        R2_adj <- 1 - (SSe/df2) / (SSt/(n - 1))
+        
+        if (self$options$wtype == "none") {
+          AIC <- n * log(SSe/n) + 2 * n_params
+          AICc <- AIC + (2 * n_params * (n_params + 1)) / (n - n_params - 1)
+          BIC <- n * log(SSe/n) + log(n) * n_params
+        } else { # normal with Var(e_i) = sigma2 / w_i (w = 1/Var relative)
+          w_i <- data_fit$w
+          sigma2_hat <- sum(data_fit$w * res^2) / n
+          logLik <- -0.5 * sum(
+            log(2*pi*sigma2_hat / w_i) + (w_i * res^2) / sigma2_hat
+          )
+          AIC <- -2 * logLik + 2 * n_params
+          BIC <- -2 * logLik + log(n) * n_params
+          AICc <- AIC + (2 * n_params * (n_params + 1)) / (n - n_params - 1)
+        }
         
         ## Error metrics
-        MSE  <- mean(res ^ 2)
+        MSE  <- sum(w * res^2) / sum(w)
         RMSE <- sqrt(MSE)
         MAE <- mean(abs(res))
         MedAE <- median(abs(res))
-        sMAPE <- mean(2 * abs(res) / (abs(y) + abs(fitted(fit)))) * 100
-        RRMSE <- RMSE / mean(y)
+        sMAPE <- mean(2 * abs(res) / (abs(y_raw) + abs(yhat))) * 100
+        RRMSE <- RMSE / weighted.mean(y_raw, w)
         
         ##### Curve Resolution -----
         
@@ -260,11 +362,28 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Results -----
         
         ## Add dependent variable name in the section title
-        self$results$text$setTitle(paste("Results for", self$options$dep))
+        # self$results$setTitle(paste("Growth Curve Modeling for", self$options$dep))
+        
+        ## Estimated Parameters and Model Evaluation tables
+        eTable <- self$results$eTable
+        eTable$setRow(rowNo=1, values=list(
+          var=dep,
+          infoh="Estimator",
+          infor="Nonlinear Least Squares"
+        ))
+        eTable$setRow(rowNo=2, values=list(
+          infoh="Optimization",
+          infor="Levenberg–Marquardt"
+        ))
+        eTable$setRow(rowNo=3, values=list(
+          infoh="Weight Function",
+          infor=wfunc
+        ))
 
         ## Estimated Parameters and Model Evaluation tables
         pTable <- self$results$pTable
-        tableFit <- self$results$fitq
+        gofTable <- self$results$gof
+        emTable <- self$results$em
         
         if (fit$convInfo$isConv) {
           for (i in seq_len(n_params)) { # one new row per parameter
@@ -275,28 +394,32 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
               Lower=format(round(params_df$lower[i], 3), nsmall=2),
               Upper=format(round(params_df$upper[i], 3), nsmall=2),
               SE=format(round(params_df$se[i], 3), nsmall=2),
-              Statistics=format(round(params_df$t[i], 3), nsmall=2),
+              Statistics=format(round(params_df$stat[i], 3), nsmall=2),
               pvalue=params_df$p[i]
             ))
           }
-          pTable$setNote("conv", "This version fits the curve to means at each time point. Uncertainty metrics are approximate and may be optimistically biased under heteroscedasticity.", init=FALSE)
+          pTable$setNote("infer", infer_note, init=FALSE)
           
-          tableFit$setRow(rowNo=1, values=list(
+          gofTable$setRow(rowNo=1, values=list(
             AIC=format(round(AIC, 2), nsmall=2),
             AICc=format(round(AICc, 2), nsmall=2),
             BIC=format(round(BIC, 2), nsmall=2),
             R2=format(round(R2, 3), nsmall=3),
-            R2_adj=format(round(R2_adj, 3), nsmall=3),
+            R2_adj=format(round(R2_adj, 3), nsmall=3)
+          ))
+          
+          emTable$setRow(rowNo=1, values=list(
             RMSE=format(round(RMSE, 3), nsmall=3),
             MAE=format(round(MAE, 3), nsmall=3),
             MedAE=format(round(MedAE, 3), nsmall=3),
             sMAPE=sprintf("%.3f%%", round(sMAPE, 3)),
             RRMSE=sprintf("%.3f%%", round(RRMSE*100, 3))
           ))
-          tableFit$setNote("conv", "This version fits the curve to means at each time point. Uncertainty metrics are approximate and may be optimistically biased under heteroscedasticity.", init=FALSE)
+          
         } else {
           pTable$setNote("conv", "Model didn't converge.", init=FALSE)
-          tableFit$setNote("conv", "Model didn't converge.", init=FALSE)
+          gofTablt$setNote("conv", "Model didn't converge.", init=FALSE)
+          emTable$setNote("conv", "Model didn't converge.", init=FALSE)
         }
         
         ## Key Growth Points table
@@ -335,6 +458,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Plots Data #####
         
         ## Data for next functions
+        private$.prep_resplot(x_raw, w, res, fitted(fit), df.residual(fit))
         private$.prep_mplot(x_raw, y_raw, t_new, W_pred, OGF_pred, 
                             OGF3_pred, f_points, p_points, l_points, a_points)
         private$.prep_dplot(t_new, W1_pred, W2_pred)
@@ -342,6 +466,64 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
       }, # close .run
       
       ##### Plots Functions #####
+      
+      # Prepare data for Model Plot
+      .prep_resplot = function(t, w, res, fitted, dfres) {
+        ## Set plot with model data as dataframe
+        image <- self$results$resplot
+        image$setState(list(
+          t = t,
+          w = w,
+          res = res,
+          fitted = fitted,
+          dfres = dfres
+          )
+        )
+      }, # close .prep_resplot
+      
+      # Model Plot Function
+      .resplot = function(image, ...) {
+        
+        ## Check if there is any data to plot
+        if (is.null(image$state))
+          return(FALSE)
+        
+        t <- image$state$t
+        w <- image$state$w
+        r <- image$state$res
+        f <- image$state$fitted
+        dfres = image$state$dfres
+        
+        ## Standardized residuals (based on model sigma)
+        eps <- 1e-12
+        w2 <- pmax(w, eps)
+        sse_w <- sum(w2 * r^2, na.rm = TRUE)
+        sigma2_hat <- sse_w / max(dfres, 1)
+        rs <- as.numeric(r * sqrt(w2) / sqrt(sigma2_hat))
+        
+        ## Start plot 2x2
+        op <- par(mfrow = c(2, 2)); on.exit(par(op), add = TRUE)
+        
+        ### Residuals vs Fitted
+        plot(f, rs, xlab = "Fitted", ylab = "Std. residuals",
+             main = "Residuals vs Fitted"); abline(h = 0, lty = 2)
+        
+        ### QQ-plot
+        qqnorm(rs, main = "Normal Q–Q (std. residuals)"); qqline(rs)
+        
+        ### Scale–Location
+        plot(f, sqrt(abs(rs)), xlab = "Fitted", ylab = "√|std. residual|",
+             main = "Scale–Location")
+        
+        ### Residuals vs time
+        plot(t, rs, xlab = self$options$time, ylab = "Std. residuals",
+             main = paste0("Residuals vs ", self$options$time))
+        abline(h = 0, lty = 2)
+        
+        ## Notify the rendering system that we have plotted something
+        TRUE
+        
+      }, # close .resplot
       
       # Prepare data for Model Plot
       .prep_mplot = function(t, y, t_new, W, OGF, OGF3, Fp, Pp, Lp, Ap) {

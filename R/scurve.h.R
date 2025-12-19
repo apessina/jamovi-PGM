@@ -9,8 +9,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             dep = NULL,
             time = NULL,
             model = "richards",
+            wtype = "none",
             eq = TRUE,
             par = TRUE,
+            est = FALSE,
             aic = FALSE,
             aicc = FALSE,
             bic = FALSE,
@@ -24,6 +26,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             ogf = FALSE,
             ogf_s = FALSE,
             sndPlot = FALSE,
+            resPlot = FALSE,
             keyGrowth = TRUE,
             res = 20,
             fPoints = NULL,
@@ -58,6 +61,15 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 options=list(
                     "richards"),
                 default="richards")
+            private$..wtype <- jmvcore::OptionList$new(
+                "wtype",
+                wtype,
+                options=list(
+                    "none",
+                    "power",
+                    "exp",
+                    "tpoly"),
+                default="none")
             private$..eq <- jmvcore::OptionBool$new(
                 "eq",
                 eq,
@@ -66,6 +78,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "par",
                 par,
                 default=TRUE)
+            private$..est <- jmvcore::OptionBool$new(
+                "est",
+                est,
+                default=FALSE)
             private$..aic <- jmvcore::OptionBool$new(
                 "aic",
                 aic,
@@ -118,6 +134,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "sndPlot",
                 sndPlot,
                 default=FALSE)
+            private$..resPlot <- jmvcore::OptionBool$new(
+                "resPlot",
+                resPlot,
+                default=FALSE)
             private$..keyGrowth <- jmvcore::OptionBool$new(
                 "keyGrowth",
                 keyGrowth,
@@ -169,8 +189,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..dep)
             self$.addOption(private$..time)
             self$.addOption(private$..model)
+            self$.addOption(private$..wtype)
             self$.addOption(private$..eq)
             self$.addOption(private$..par)
+            self$.addOption(private$..est)
             self$.addOption(private$..aic)
             self$.addOption(private$..aicc)
             self$.addOption(private$..bic)
@@ -184,6 +206,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..ogf)
             self$.addOption(private$..ogf_s)
             self$.addOption(private$..sndPlot)
+            self$.addOption(private$..resPlot)
             self$.addOption(private$..keyGrowth)
             self$.addOption(private$..res)
             self$.addOption(private$..fPoints)
@@ -196,8 +219,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         dep = function() private$..dep$value,
         time = function() private$..time$value,
         model = function() private$..model$value,
+        wtype = function() private$..wtype$value,
         eq = function() private$..eq$value,
         par = function() private$..par$value,
+        est = function() private$..est$value,
         aic = function() private$..aic$value,
         aicc = function() private$..aicc$value,
         bic = function() private$..bic$value,
@@ -211,6 +236,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ogf = function() private$..ogf$value,
         ogf_s = function() private$..ogf_s$value,
         sndPlot = function() private$..sndPlot$value,
+        resPlot = function() private$..resPlot$value,
         keyGrowth = function() private$..keyGrowth$value,
         res = function() private$..res$value,
         fPoints = function() private$..fPoints$value,
@@ -222,8 +248,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..dep = NA,
         ..time = NA,
         ..model = NA,
+        ..wtype = NA,
         ..eq = NA,
         ..par = NA,
+        ..est = NA,
         ..aic = NA,
         ..aicc = NA,
         ..bic = NA,
@@ -237,6 +265,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..ogf = NA,
         ..ogf_s = NA,
         ..sndPlot = NA,
+        ..resPlot = NA,
         ..keyGrowth = NA,
         ..res = NA,
         ..fPoints = NA,
@@ -250,12 +279,15 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "scurveResults",
     inherit = jmvcore::Group,
     active = list(
-        text = function() private$.items[["text"]],
+        equation = function() private$.items[["equation"]],
         pTable = function() private$.items[["pTable"]],
-        fitq = function() private$.items[["fitq"]],
+        eTable = function() private$.items[["eTable"]],
+        gof = function() private$.items[["gof"]],
+        em = function() private$.items[["em"]],
         fpoints = function() private$.items[["fpoints"]],
         mplot = function() private$.items[["mplot"]],
-        dplot = function() private$.items[["dplot"]]),
+        dplot = function() private$.items[["dplot"]],
+        resplot = function() private$.items[["resplot"]]),
     private = list(),
     public=list(
         initialize=function(options) {
@@ -263,10 +295,9 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 options=options,
                 name="",
                 title="Growth Curve Modeling")
-            self$add(jmvcore::Preformatted$new(
+            self$add(jmvcore::Html$new(
                 options=options,
-                name="text",
-                title="",
+                name="equation",
                 visible="(eq)",
                 refs=list(
                     "richards")))
@@ -276,7 +307,8 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 title="Model Parameters",
                 visible="(par)",
                 notes=list(
-                    `conv`=NULL),
+                    `conv`=NULL, 
+                    `infer`=NULL),
                 columns=list(
                     list(
                         `name`="var", 
@@ -302,22 +334,45 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     list(
                         `name`="Statistics", 
                         `type`="number", 
-                        `superTitle`="Wald t-test"),
+                        `superTitle`="Wald test"),
                     list(
                         `name`="pvalue", 
-                        `title`="p-value", 
+                        `title`="p value", 
                         `type`="number", 
                         `format`="zto,pvalue", 
-                        `superTitle`="Wald t-test")),
+                        `superTitle`="Wald test")),
                 refs=list(
-                    "nlm",
                     "pgm")))
             self$add(jmvcore::Table$new(
                 options=options,
-                name="fitq",
-                title="Model Evaluation",
+                name="eTable",
+                title="Estimation",
+                visible="(est)",
+                notes=list(
+                    `conv`=NULL),
+                rows=3,
+                columns=list(
+                    list(
+                        `name`="var", 
+                        `title`="", 
+                        `type`="text"),
+                    list(
+                        `name`="infoh", 
+                        `title`="Info", 
+                        `type`="text"),
+                    list(
+                        `name`="infor", 
+                        `title`="", 
+                        `type`="text")),
+                refs=list(
+                    "snlm",
+                    "pgm")))
+            self$add(jmvcore::Table$new(
+                options=options,
+                name="gof",
+                title="Goodness of Fit",
                 rows="(dep)",
-                visible="(aic || aicc || bic || r2 || r2_adj || rmse || mae || medae || smape || rrmse)",
+                visible="(aic || aicc || bic || r2 || r2_adj)",
                 notes=list(
                     `conv`=NULL),
                 columns=list(
@@ -349,7 +404,23 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `name`="R2_adj", 
                         `title`="Adjusted R\u00B2", 
                         `type`="number", 
-                        `visible`="(r2_adj)"),
+                        `visible`="(r2_adj)")),
+                refs=list(
+                    "pgm")))
+            self$add(jmvcore::Table$new(
+                options=options,
+                name="em",
+                title="Error Metrics",
+                rows="(dep)",
+                visible="(rmse || mae || medae || smape || rrmse)",
+                notes=list(
+                    `conv`=NULL),
+                columns=list(
+                    list(
+                        `name`="var", 
+                        `title`="", 
+                        `type`="text", 
+                        `content`="($key)"),
                     list(
                         `name`="RMSE", 
                         `type`="number", 
@@ -440,6 +511,7 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 width=700,
                 height=500,
                 renderFun=".mplot",
+                requiresData=TRUE,
                 refs=list(
                     "pgm")))
             self$add(jmvcore::Image$new(
@@ -450,6 +522,18 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 width=700,
                 height=500,
                 renderFun=".dplot",
+                requiresData=TRUE,
+                refs=list(
+                    "pgm")))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="resplot",
+                visible="(resPlot)",
+                title="Residual Analysis",
+                width=700,
+                height=500,
+                renderFun=".resplot",
+                requiresData=TRUE,
                 refs=list(
                     "pgm")))}))
 
@@ -461,7 +545,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,4,1),
+                version = c(0,5,0),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,
@@ -481,8 +565,10 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param dep .
 #' @param time .
 #' @param model .
+#' @param wtype .
 #' @param eq .
 #' @param par .
+#' @param est .
 #' @param aic .
 #' @param aicc .
 #' @param bic .
@@ -496,6 +582,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param ogf .
 #' @param ogf_s .
 #' @param sndPlot .
+#' @param resPlot .
 #' @param keyGrowth .
 #' @param res .
 #' @param fPoints .
@@ -505,12 +592,15 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param asymptote .
 #' @return A results object containing:
 #' \tabular{llllll}{
-#'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$equation} \tab \tab \tab \tab \tab a html \cr
 #'   \code{results$pTable} \tab \tab \tab \tab \tab a table \cr
-#'   \code{results$fitq} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$eTable} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$gof} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$em} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$fpoints} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$mplot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$dplot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$resplot} \tab \tab \tab \tab \tab an image \cr
 #' }
 #'
 #' Tables can be converted to data frames with \code{asDF} or \code{\link{as.data.frame}}. For example:
@@ -525,8 +615,10 @@ scurve <- function(
     dep,
     time,
     model = "richards",
+    wtype = "none",
     eq = TRUE,
     par = TRUE,
+    est = FALSE,
     aic = FALSE,
     aicc = FALSE,
     bic = FALSE,
@@ -540,6 +632,7 @@ scurve <- function(
     ogf = FALSE,
     ogf_s = FALSE,
     sndPlot = FALSE,
+    resPlot = FALSE,
     keyGrowth = TRUE,
     res = 20,
     fPoints = NULL,
@@ -564,8 +657,10 @@ scurve <- function(
         dep = dep,
         time = time,
         model = model,
+        wtype = wtype,
         eq = eq,
         par = par,
+        est = est,
         aic = aic,
         aicc = aicc,
         bic = bic,
@@ -579,6 +674,7 @@ scurve <- function(
         ogf = ogf,
         ogf_s = ogf_s,
         sndPlot = sndPlot,
+        resPlot = resPlot,
         keyGrowth = keyGrowth,
         res = res,
         fPoints = fPoints,

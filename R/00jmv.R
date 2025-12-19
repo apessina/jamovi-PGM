@@ -7,7 +7,7 @@
         `author`="Pessina, A. L. R.; Garcia Neto, M.", 
         `year`=2025, 
         `title`="PGM: Practical Growth Modeling", 
-        `publisher`="(Version 0.4.1) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
+        `publisher`="(Version 0.5.0) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
         `url`="https://github.com/apessina/jamovi-PGM"), 
     `richards`=list(
         `type`="article", 
@@ -38,4 +38,11 @@
         `title`="Determination of a point sufficiently close to the asymptote in nonlinear growth functions", 
         `publisher`="Scientia Agricola", 
         `volume`=68, 
-        `pages`="109\u2013114"))
+        `pages`="109\u2013114"), 
+    `snlm`=list(
+        `type`="software", 
+        `author`="Chau, J.", 
+        `year`=2025, 
+        `title`="gslnls: GSL Multi-Start Nonlinear Least-Squares Fitting", 
+        `publisher`="(Version 1.4.2) [R package]. Retrieved from https://cran.r-project.org/web/packages/gslnls/index.html", 
+        `url`="https://cran.r-project.org/web/packages/gslnls/index.html"))

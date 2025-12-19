@@ -1,7 +1,7 @@
 Package: PGM
 Type: Package
 Title: Practical Growth Modeling
-Version: 0.4.0
+Version: 0.5.0
 Author: c(person("André", "L. R. Pessina", 
             role=c("aut", "cre", "cph"), 
             email="andre.pessina@unesp.br"),
@@ -15,4 +15,4 @@ Description: This package facilitates biological growth modeling through curve
 License: use_gpl_license(version = 3, include_future = TRUE)
 Encoding: UTF-8
 LazyData: true
-Imports: jmvcore (>= 0.8.5), R6, minpack.lm
+Imports: jmvcore (>= 0.8.5), R6, minpack.lm, gslnls
