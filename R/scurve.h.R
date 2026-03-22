@@ -59,7 +59,11 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "model",
                 model,
                 options=list(
-                    "richards"),
+                    "richards",
+                    "drichards",
+                    "trichards",
+                    "glogistic",
+                    "gweibull"),
                 default="richards")
             private$..wtype <- jmvcore::OptionList$new(
                 "wtype",
@@ -282,8 +286,7 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         equation = function() private$.items[["equation"]],
         pTable = function() private$.items[["pTable"]],
         eTable = function() private$.items[["eTable"]],
-        gof = function() private$.items[["gof"]],
-        em = function() private$.items[["em"]],
+        meval = function() private$.items[["meval"]],
         fpoints = function() private$.items[["fpoints"]],
         mplot = function() private$.items[["mplot"]],
         dplot = function() private$.items[["dplot"]],
@@ -300,15 +303,17 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="equation",
                 visible="(eq)",
                 refs=list(
+                    "models",
                     "richards")))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="pTable",
                 title="Model Parameters",
                 visible="(par)",
-                notes=list(
-                    `conv`=NULL, 
-                    `infer`=NULL),
+                clearWith=list(
+                    "dep",
+                    "time",
+                    "model"),
                 columns=list(
                     list(
                         `name`="var", 
@@ -348,8 +353,6 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="eTable",
                 title="Estimation",
                 visible="(est)",
-                notes=list(
-                    `conv`=NULL),
                 rows=3,
                 columns=list(
                     list(
@@ -367,89 +370,103 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 refs=list(
                     "snlm",
                     "pgm")))
-            self$add(jmvcore::Table$new(
-                options=options,
-                name="gof",
-                title="Goodness of Fit",
-                rows="(dep)",
-                visible="(aic || aicc || bic || r2 || r2_adj)",
-                notes=list(
-                    `conv`=NULL),
-                columns=list(
-                    list(
-                        `name`="var", 
-                        `title`="", 
-                        `type`="text", 
-                        `content`="($key)"),
-                    list(
-                        `name`="AIC", 
-                        `title`="AIC", 
-                        `type`="number", 
-                        `visible`="(aic)"),
-                    list(
-                        `name`="AICc", 
-                        `title`="AIC\u1D04", 
-                        `type`="number", 
-                        `visible`="(aicc)"),
-                    list(
-                        `name`="BIC", 
-                        `type`="number", 
-                        `visible`="(bic)"),
-                    list(
-                        `name`="R2", 
-                        `title`="R\u00B2", 
-                        `type`="number", 
-                        `visible`="(r2)"),
-                    list(
-                        `name`="R2_adj", 
-                        `title`="Adjusted R\u00B2", 
-                        `type`="number", 
-                        `visible`="(r2_adj)")),
-                refs=list(
-                    "pgm")))
-            self$add(jmvcore::Table$new(
-                options=options,
-                name="em",
-                title="Error Metrics",
-                rows="(dep)",
-                visible="(rmse || mae || medae || smape || rrmse)",
-                notes=list(
-                    `conv`=NULL),
-                columns=list(
-                    list(
-                        `name`="var", 
-                        `title`="", 
-                        `type`="text", 
-                        `content`="($key)"),
-                    list(
-                        `name`="RMSE", 
-                        `type`="number", 
-                        `visible`="(rmse)"),
-                    list(
-                        `name`="MAE", 
-                        `type`="number", 
-                        `visible`="(mae)"),
-                    list(
-                        `name`="MedAE", 
-                        `type`="number", 
-                        `visible`="(medae)"),
-                    list(
-                        `name`="sMAPE", 
-                        `type`="text", 
-                        `visible`="(smape)"),
-                    list(
-                        `name`="RRMSE", 
-                        `type`="text", 
-                        `visible`="(rrmse)")),
-                refs=list(
-                    "pgm")))
+            self$add(R6::R6Class(
+                inherit = jmvcore::Group,
+                active = list(
+                    gof = function() private$.items[["gof"]],
+                    em = function() private$.items[["em"]]),
+                private = list(),
+                public=list(
+                    initialize=function(options) {
+                        super$initialize(
+                            options=options,
+                            name="meval",
+                            title="Model Evaluation")
+                        self$add(jmvcore::Table$new(
+                            options=options,
+                            name="gof",
+                            title="Goodness of Fit",
+                            visible="(aic || aicc || bic || r2 || r2_adj)",
+                            clearWith=list(
+                                "dep",
+                                "time",
+                                "model"),
+                            rows="(dep)",
+                            columns=list(
+                                list(
+                                    `name`="var", 
+                                    `title`="", 
+                                    `type`="text", 
+                                    `content`="($key)"),
+                                list(
+                                    `name`="AIC", 
+                                    `title`="AIC", 
+                                    `type`="number", 
+                                    `visible`="(aic)"),
+                                list(
+                                    `name`="AICc", 
+                                    `title`="AIC\u1D04", 
+                                    `type`="number", 
+                                    `visible`="(aicc)"),
+                                list(
+                                    `name`="BIC", 
+                                    `type`="number", 
+                                    `visible`="(bic)"),
+                                list(
+                                    `name`="R2", 
+                                    `title`="R\u00B2", 
+                                    `type`="number", 
+                                    `visible`="(r2)"),
+                                list(
+                                    `name`="R2_adj", 
+                                    `title`="Adjusted R\u00B2", 
+                                    `type`="number", 
+                                    `visible`="(r2_adj)")),
+                            refs=list(
+                                "pgm")))
+                        self$add(jmvcore::Table$new(
+                            options=options,
+                            name="em",
+                            title="Error Metrics",
+                            visible="(rmse || mae || medae || smape || rrmse)",
+                            clearWith=list(
+                                "dep",
+                                "time",
+                                "model"),
+                            rows="(dep)",
+                            columns=list(
+                                list(
+                                    `name`="var", 
+                                    `title`="", 
+                                    `type`="text", 
+                                    `content`="($key)"),
+                                list(
+                                    `name`="RMSE", 
+                                    `type`="number", 
+                                    `visible`="(rmse)"),
+                                list(
+                                    `name`="MAE", 
+                                    `type`="number", 
+                                    `visible`="(mae)"),
+                                list(
+                                    `name`="MedAE", 
+                                    `type`="number", 
+                                    `visible`="(medae)"),
+                                list(
+                                    `name`="sMAPE", 
+                                    `type`="text", 
+                                    `visible`="(smape)"),
+                                list(
+                                    `name`="RRMSE", 
+                                    `type`="text", 
+                                    `visible`="(rrmse)")),
+                            refs=list(
+                                "pgm")))}))$new(options=options))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="fpoints",
                 title="Key Growth Points",
                 visible="(lagEnd:tang || lagEnd:thres || lagEnd:ogf0 || fPoints:ogfMax || fPoints:ogfI || fPoints:ogfMin || pPoints:accMax || pPoints:accI || pPoints:accMin || asymptote:ogf3 || asymptote:pda)",
-                notes=list(
-                    `sig`=NULL),
                 columns=list(
                     list(
                         `name`="var", 
@@ -457,7 +474,7 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `type`="text", 
                         `content`="($key)"),
                     list(
-                        `name`="OGF0", 
+                        `name`="F0", 
                         `type`="number", 
                         `visible`="(lagEnd:ogf0)"),
                     list(
@@ -493,7 +510,7 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `type`="number", 
                         `visible`="(pPoints:accMin)"),
                     list(
-                        `name`="OGF3", 
+                        `name`="F3", 
                         `type`="number", 
                         `visible`="(asymptote:ogf3)"),
                     list(
@@ -593,10 +610,10 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$equation} \tab \tab \tab \tab \tab a html \cr
-#'   \code{results$pTable} \tab \tab \tab \tab \tab a table \cr
-#'   \code{results$eTable} \tab \tab \tab \tab \tab a table \cr
-#'   \code{results$gof} \tab \tab \tab \tab \tab a table \cr
-#'   \code{results$em} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$pTable} \tab \tab \tab \tab \tab a table containing statistics about parameter estimation \cr
+#'   \code{results$eTable} \tab \tab \tab \tab \tab a table containing information about estimation method \cr
+#'   \code{results$meval$gof} \tab \tab \tab \tab \tab a table containing GoF metrics \cr
+#'   \code{results$meval$em} \tab \tab \tab \tab \tab a table containing error metrics \cr
 #'   \code{results$fpoints} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$mplot} \tab \tab \tab \tab \tab an image \cr
 #'   \code{results$dplot} \tab \tab \tab \tab \tab an image \cr

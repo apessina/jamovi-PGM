@@ -9,15 +9,18 @@ items:
       type: Html
       visible: (eq)
       refs:
+        - models
         - richards
 
     - name: pTable
       title: "Model Parameters"
       type: Table
+      description: a table containing statistics about parameter estimation
       visible: (par)
-      notes:
-          conv: NULL
-          infer: NULL
+      clearWith:
+        - dep
+        - time
+        - model
       columns:
         - name: var
           title: ''
@@ -44,13 +47,12 @@ items:
           superTitle: "Wald test"
       refs:
         - pgm
-
+    
     - name: eTable
       title: "Estimation"
       type: Table
+      description: a table containing information about estimation method
       visible: (est)
-      notes:
-          conv: NULL
       rows: 3
       columns:
         - name: var
@@ -66,82 +68,91 @@ items:
         - snlm
         - pgm
 
-    - name: gof
-      title: "Goodness of Fit"
-      type: Table
-      rows: (dep)
-      visible: (aic || aicc || bic || r2 || r2_adj)
-      notes:
-          conv: NULL
-      columns:
-        - name: var
-          title: ''
-          type: text
-          content: ($key)
-        - name: AIC
-          title: "AIC"
-          type: number
-          visible: (aic)
-        - name: AICc
-          title: "AICᴄ"
-          type: number
-          visible: (aicc)
-        - name: BIC
-          type: number
-          visible: (bic)
-        - name: R2
-          title: "R²"
-          type: number
-          visible: (r2)
-        - name: R2_adj
-          title: "Adjusted R²"
-          type: number
-          visible: (r2_adj)
-      refs:
-        - pgm
+    - name: meval
+      title: 'Model Evaluation'
+      type: Group
+      items:
 
-    - name: em
-      title: "Error Metrics"
-      type: Table
-      rows: (dep)
-      visible: (rmse || mae || medae || smape || rrmse)
-      notes:
-          conv: NULL
-      columns:
-        - name: var
-          title: ''
-          type: text
-          content: ($key)
-        - name: RMSE
-          type: number
-          visible: (rmse)
-        - name: MAE
-          type: number
-          visible: (mae)
-        - name: MedAE
-          type: number
-          visible: (medae)
-        - name: sMAPE
-          type: text
-          visible: (smape)
-        - name: RRMSE
-          type: text
-          visible: (rrmse)
-      refs:
-        - pgm
-          
+        - name: gof
+          title: "Goodness of Fit"
+          type: Table
+          description: a table containing GoF metrics
+          visible: (aic || aicc || bic || r2 || r2_adj)
+          clearWith:
+            - dep
+            - time
+            - model
+          rows: (dep)
+          columns:
+            - name: var
+              title: ''
+              type: text
+              content: ($key)
+            - name: AIC
+              title: "AIC"
+              type: number
+              visible: (aic)
+            - name: AICc
+              title: "AICᴄ"
+              type: number
+              visible: (aicc)
+            - name: BIC
+              type: number
+              visible: (bic)
+            - name: R2
+              title: "R²"
+              type: number
+              visible: (r2)
+            - name: R2_adj
+              title: "Adjusted R²"
+              type: number
+              visible: (r2_adj)
+          refs:
+            - pgm
+
+        - name: em
+          title: "Error Metrics"
+          type: Table
+          description: a table containing error metrics
+          visible: (rmse || mae || medae || smape || rrmse)
+          clearWith:
+            - dep
+            - time
+            - model
+          rows: (dep)
+          columns:
+            - name: var
+              title: ''
+              type: text
+              content: ($key)
+            - name: RMSE
+              type: number
+              visible: (rmse)
+            - name: MAE
+              type: number
+              visible: (mae)
+            - name: MedAE
+              type: number
+              visible: (medae)
+            - name: sMAPE
+              type: text
+              visible: (smape)
+            - name: RRMSE
+              type: text
+              visible: (rrmse)
+          refs:
+            - pgm
+      
     - name: fpoints
       title: "Key Growth Points"
       type: Table
       visible: (lagEnd:tang || lagEnd:thres || lagEnd:ogf0 || fPoints:ogfMax || fPoints:ogfI || fPoints:ogfMin || pPoints:accMax || pPoints:accI || pPoints:accMin || asymptote:ogf3 || asymptote:pda)
-      notes:
-          sig: NULL
       columns:
         - name: var
           title: ''
           type: text
           content: ($key)
-        - name: OGF0
+        - name: F0
           type: number
           visible: (lagEnd:ogf0)
         - name: Tangent
@@ -168,7 +179,7 @@ items:
         - name: P2
           type: number
           visible: (pPoints:accMin)
-        - name: OGF3
+        - name: F3
           type: number
           visible: (asymptote:ogf3)
         - name: PDA

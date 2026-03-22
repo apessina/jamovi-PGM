@@ -3,28 +3,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
     inherit = scurveBase,
     private = list(
       
-      ##### Main Function #####
-      
       .run = function() {
-        
-        ##### Equation -----
-        
-        ## Set model equation for UI 
-        if (self$options$model == "richards") {
-          html_eq <- '<i>A</i>(1 + (<i>d</i> − 1) exp(−<i>K</i>(<i>t</i> − <i>T</i><sub>i</sub>)/<i>d</i><sup><i>d</i>/(1 − <i>d</i>)</sup>))<sup>1/(1 − <i>d</i>)</sup>'
-        } else stop("ERROR: Invalid model equation")
-        
-        ## Set HTML content
-        self$results$equation$setContent(paste0(
-          '<div style="margin-top:10px;">',
-          '<div style="font-family:Segoe UI, sans-serif; font-size:12px; margin-bottom:3px;">Model Equation</div>',
-          #'<div style="border:1px solid #ccc; border-radius:8px; padding:11px; background-color:#fff;">',
-          '<p style="text-align:center; font-family:Cambria, serif; font-size:16px;">',
-          html_eq,
-          '</p>',
-          '</div>',
-          '</div>'
-        ))
         
         ##### Data -----
         
@@ -58,26 +37,31 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Check if both variables have at least two unique values
         if (length(unique(x_raw)) < 2 || length(unique(y_raw)) < 2)
           stop("At least two unique (x, y) pairs are required for growth analysis")
+
+        ##### Model support data -----
         
-        ##### Models -----
-        
-        ## Some definitions for parameters domains
-        agg_vals <- aggregate(y_raw, by=list(x_raw), FUN=mean)
+        agg_vals <- aggregate(y_raw, by = list(x_raw), FUN = mean)
         t <- agg_vals[[1]]
         y <- agg_vals[[2]]
-        gr <- diff(y)/diff(t) # growth rate vector (1st derivative)
-        a_sup <- max(y, na.rm=TRUE)
-        a_inf <- min(y, na.rm=TRUE)
         
-        if (self$options$model == "richards") {
-          expr <- expression(
-            A * (1 + (d - 1) * exp(-K * (t - Ti) / (d^(d / (1 - d)))))^(1 / (1 - d))
-          )
-          init <- list(A=a_sup, K=max(gr)/a_sup, Ti=t[which.max(gr)], d=1.2)
-          lower <- c(A=0, K=0, Ti=min(t), d=1.05)
-          upper <- c(A=Inf, K=Inf, Ti=max(t), d=Inf)
-        }
-
+        ##### Model specs -----
+        
+        spec <- get_model_spec(self$options$model, t, y)
+        
+        self$results$equation$setContent(paste0(
+          '<div style="margin-top:10px;">',
+          '<div style="font-family:Segoe UI, sans-serif; font-size:12px; margin-bottom:3px;">Model Equation</div>',
+          '<p style="text-align:center; font-family:Cambria, serif; font-size:16px;">',
+          spec$html_eq,
+          '</p>',
+          '</div>'
+        ))
+        
+        expr  <- spec$expr
+        init  <- spec$init
+        lower <- spec$lower
+        upper <- spec$upper
+        
         ##### Modeling -----
         
         ## Initial data structure for modeling
@@ -85,10 +69,29 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         wfunc <- "All weights = 1"
         w <- rep(1, length(data_fit$y))
         
+        ## Check if initial values return finite output
+        start_env <- c(list(t = data_fit$t), init)
+        start_val <- eval(expr, envir = start_env)
+        if (any(!is.finite(start_val))) {
+          stop("ERROR: Initial values generate non-finite model predictions")
+        }
+        
+        # Check: (t - mu)/delta must stay positive for G. Weibull
+        if (self$options$model == "genweibull") {
+          z0 <- (data_fit$t - init$mu) / init$delta
+          if (any(z0 <= 0)) {
+            stop("ERROR: Invalid initial domain for G. Weibull")
+          }
+        }
+        
         ## Fit selected model
         fit <- gsl_nls(
-          fn=as.formula(call("~", quote(y), expr[[1]]), env=.GlobalEnv), 
-          data=data_fit, start=init, lower=lower, upper=upper, algorithm="lm"
+          fn = as.formula(call("~", quote(y), expr), env = .GlobalEnv),
+          data = data_fit,
+          start = init,
+          lower = lower,
+          upper = upper,
+          algorithm = "lm"
         )
         
         ## Apply error weights if requested
@@ -139,9 +142,13 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             
             beta_old <- coef(fit)
             fit <- gsl_nls(
-              fn=as.formula(call("~", quote(y), expr[[1]]), env=.GlobalEnv),
-              data=data_fit, lower=lower, upper=upper, algorithm="lm",
-              start=as.list(beta_old), weights=w
+              fn = as.formula(call("~", quote(y), expr), env = .GlobalEnv),
+              data = data_fit,
+              lower = lower,
+              upper = upper,
+              algorithm = "lm",
+              start = as.list(beta_old),
+              weights = w
             )
             
             if (max(abs((coef(fit)-beta_old) / pmax(abs(beta_old), eps))) < 1e-3) break
@@ -159,9 +166,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         beta_hat <- coef(fit)
         
         ## Model equation with fit parameters as expression
-        W_expr <- as.expression(
-          do.call('substitute', list(expr[[1]], as.list(beta_hat)))
-        )
+        W_expr <- do.call("substitute", list(expr, as.list(beta_hat)))
         
         ## First 2 symbolic derivatives as expression
         W1_expr <- D(W_expr, "t") # 1st derivative
@@ -180,12 +185,12 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         OGF3_expr <- D(OGF2_expr, "t") # 3rd OGF derivative 
         
         ## Expressions to functions
-        W  <- function(t) eval(W_expr, envir=list(t=t)) # W(t) 
-        W1 <- function(t) eval(W1_expr, envir=list(t=t)) # W'(t)
-        W2 <- function(t) eval(W2_expr, envir=list(t=t)) # W''(t)
-        W4 <- function(t) eval(W4_expr, envir=list(t=t)) # W''''(t) (PDA)
-        OGF <- function(t) eval(OGF_expr, envir=list(t=t)) # OGF(t)
-        OGF3 <- function(t) eval(OGF3_expr, envir=list(t=t)) # OGF'''(t)
+        W  <- function(t) eval(W_expr, envir = list(t = t)) # W(t) 
+        W1 <- function(t) eval(W1_expr, envir = list(t = t)) # W'(t)
+        W2 <- function(t) eval(W2_expr, envir = list(t = t)) # W''(t)
+        W4 <- function(t) eval(W4_expr, envir = list(t = t)) # W''''(t) (PDA)
+        OGF <- function(t) eval(OGF_expr, envir = list(t = t)) # OGF(t)
+        OGF3 <- function(t) eval(OGF3_expr, envir = list(t = t)) # OGF'''(t)
         
         ##### Parameters -----
         
@@ -199,10 +204,14 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         df2 <- n - n_params
 
         ## Covariance Matrix
-        covm <- vcov(fit)
-        
+        covm <- try(vcov(fit), silent = TRUE)
+
         ## Standard Errors 
-        se_vals <- sqrt(diag(covm))
+        if (inherits(covm, "try-error")) {
+          se_vals <- rep(NA_real_, length(beta_hat))
+        } else {
+          se_vals <- sqrt(diag(covm))
+        }
         
         ## Inference - Wald test
         stat_vals <- beta_hat / se_vals
@@ -361,9 +370,6 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ##### Results -----
         
-        ## Add dependent variable name in the section title
-        # self$results$setTitle(paste("Growth Curve Modeling for", self$options$dep))
-        
         ## Estimated Parameters and Model Evaluation tables
         eTable <- self$results$eTable
         eTable$setRow(rowNo=1, values=list(
@@ -382,10 +388,11 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
 
         ## Estimated Parameters and Model Evaluation tables
         pTable <- self$results$pTable
-        gofTable <- self$results$gof
-        emTable <- self$results$em
+        gofTable <- self$results$meval$gof
+        emTable <- self$results$meval$em
         
         if (fit$convInfo$isConv) {
+          
           for (i in seq_len(n_params)) { # one new row per parameter
             pTable$addRow(rowKey=i, values=list(
               var = if (i==1) dep, # variable name
@@ -398,7 +405,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
               pvalue=params_df$p[i]
             ))
           }
-          pTable$setNote("infer", infer_note, init=FALSE)
+          pTable$setNote("conv", infer_note, init=FALSE)
           
           gofTable$setRow(rowNo=1, values=list(
             AIC=format(round(AIC, 2), nsmall=2),
@@ -417,8 +424,9 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           ))
           
         } else {
+          pTable$addRow(rowKey=1)
           pTable$setNote("conv", "Model didn't converge.", init=FALSE)
-          gofTablt$setNote("conv", "Model didn't converge.", init=FALSE)
+          gofTable$setNote("conv", "Model didn't converge.", init=FALSE)
           emTable$setNote("conv", "Model didn't converge.", init=FALSE)
         }
         
@@ -426,7 +434,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         tableFp <- self$results$fpoints
         if (!length(zero_acc)==0) {
           tableFp$addRow(rowKey=self$options$time, values=list(
-            OGF0=format(round(l_points$OGF0, 2), nsmall=2),
+            F0=format(round(l_points$OGF0, 2), nsmall=2),
             Tangent=format(round(l_points$tang, 2), nsmall=2),
             Threshold=format(round(l_points$thres, 2), nsmall=2),
             F1=format(round(f_points$F1, 2), nsmall=2),
@@ -435,11 +443,11 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             P1=format(round(p_points$P1, 2), nsmall=2),
             Pi=format(round(p_points$Pi, 2), nsmall=2),
             P2=format(round(p_points$P2, 2), nsmall=2),
-            OGF3=format(round(a_points$OGF3, 2), nsmall=2),
+            F3=format(round(a_points$OGF3, 2), nsmall=2),
             PDA=format(round(a_points$PDA, 2), nsmall=2)
           ))
           tableFp$addRow(rowKey=self$options$dep, values=list(
-            OGF0=format(round(W(l_points$OGF0), 2), nsmall=2),
+            F0=format(round(W(l_points$OGF0), 2), nsmall=2),
             Tangent=format(round(W(l_points$tang), 2), nsmall=2),
             Threshold=format(round(W(l_points$thres), 2), nsmall=2),
             F1=format(round(W(f_points$F1), 2), nsmall=2),
@@ -448,40 +456,44 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             P1=format(round(W(p_points$P1), 2), nsmall=2),
             Pi=format(round(W(p_points$Pi), 2), nsmall=2),
             P2=format(round(W(p_points$P2), 2), nsmall=2),
-            OGF3=format(round(W(a_points$OGF3), 2), nsmall=2),
+            F3=format(round(W(a_points$OGF3), 2), nsmall=2),
             PDA=format(round(W(a_points$PDA), 2), nsmall=2)
           ))
         } else {
           tableFp$setNote("sig", "No inflection point found. Input data might not follow a sigmoidal trend.", init=FALSE)
         }
         
-        ##### Plots Data #####
+        ##### Plots Data -----
         
-        ## Data for next functions
-        private$.prep_resplot(x_raw, w, res, fitted(fit), df.residual(fit))
-        private$.prep_mplot(x_raw, y_raw, t_new, W_pred, OGF_pred, 
-                            OGF3_pred, f_points, p_points, l_points, a_points)
-        private$.prep_dplot(t_new, W1_pred, W2_pred)
+        ## Data for render functions
+        self$results$resplot$setState(list(
+          t = x_raw,
+          w = w,
+          res = res,
+          fitted = fitted(fit),
+          dfres = df.residual(fit)
+        ))
+        
+        self$results$mplot$setState(list(
+          data_p = data.frame(t = x_raw, y = y_raw),
+          data_m = data.frame(t_new = t_new, W = W_pred, OGF = OGF_pred, OGF3 = OGF3_pred),
+          f_points = f_points,
+          p_points = p_points,
+          l_points = l_points,
+          a_points = a_points
+        ))
+        
+        self$results$dplot$setState(data.frame(
+          t_new = t_new,
+          W1 = W1_pred,
+          W2 = W2_pred
+        ))
         
       }, # close .run
       
-      ##### Plots Functions #####
+      ##### Render Functions -----
       
-      # Prepare data for Model Plot
-      .prep_resplot = function(t, w, res, fitted, dfres) {
-        ## Set plot with model data as dataframe
-        image <- self$results$resplot
-        image$setState(list(
-          t = t,
-          w = w,
-          res = res,
-          fitted = fitted,
-          dfres = dfres
-          )
-        )
-      }, # close .prep_resplot
-      
-      # Model Plot Function
+      # Residuals plot
       .resplot = function(image, ...) {
         
         ## Check if there is any data to plot
@@ -525,22 +537,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
       }, # close .resplot
       
-      # Prepare data for Model Plot
-      .prep_mplot = function(t, y, t_new, W, OGF, OGF3, Fp, Pp, Lp, Ap) {
-        ## Set plot with model data as dataframe
-        image <- self$results$mplot
-        image$setState(list(
-          data_p = data.frame(t=t, y=y),
-          data_m = data.frame(t_new=t_new, W=W, OGF=OGF, OGF3=OGF3), 
-          f_points = Fp, 
-          p_points = Pp,
-          l_points = Lp,
-          a_points = Ap
-          )
-        )
-      }, # close .prep_mplot
-      
-      # Model Plot Function
+      # Model plot
       .mplot = function(image, ...) {
         
         ## Check if there is any data to plot
@@ -580,90 +577,38 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ## Add Key Growth Points
         if (self$options$keyGrowth) {
-          ## Function to retrieve aprox. y at gowth curve from an x value
+          
           y_ <- function(x_) {
-            return(approx(data_m$t_new, data_m$W, xout=x_, rule=2)$y)
+            approx(data_m$t_new, data_m$W, xout = x_, rule = 2)$y
           }
-          ## Add A-Points vertical lines
-          if ("ogf0" %in% self$options$lagEnd) {
-            x_point <- l_points$OGF0
+          
+          draw_growth_point <- function(x_point, label) {
             y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="F0", pos=3, offset=1, col="black", font=2)
+            segments(x_point, par("usr")[3], x_point, y_point,
+                     col = "slategrey", lwd = 2, lty = 4)
+            points(x_point, y_point, pch = 19, col = "black")
+            text(x_point, y_point, labels = label,
+                 pos = 3, offset = 1, col = "black", font = 2)
           }
-          if ("tang" %in% self$options$lagEnd) {
-            x_point <- l_points$tang
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="Tan.", pos=3, offset=1, col="black", font=2)
-          }
-          if ("thres" %in% self$options$lagEnd) {
-            x_point <- l_points$thres
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="Thr.", pos=3, offset=1, col="black", font=2)
-          }
-          ## Add F-Points vertical lines
-          if ("ogfMax" %in% self$options$fPoints) {
-            x_point <- f_points$F1
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="F1", pos=3, offset=1, col="black", font=2)
-          }
-          if ("ogfI" %in% self$options$fPoints) {
-            x_point <- f_points$Fi
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="Fi", pos=3, offset=1, col="black", font=2)
-          }
-          if ("ogfMin" %in% self$options$fPoints) {
-            x_point <- f_points$F2
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="F2", pos=3, offset=1, col="black", font=2)
-          }
-          ## Add P-Points vertical lines
-          if ("accMax" %in% self$options$pPoints) {
-            x_point <- p_points$P1
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="P1", pos=3, offset=1, col="black", font=2)
-          }
-          if ("accI" %in% self$options$pPoints) {
-            x_point <- p_points$Pi
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="Pi", pos=3, offset=1, col="black", font=2)
-          }
-          if ("accMin" %in% self$options$pPoints) {
-            x_point <- p_points$P2
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="P2", pos=3, offset=1, col="black", font=2)
-          }
-          ## Add Asymptote vertical lines
-          if ("ogf3" %in% self$options$asymptote) {
-            x_point <- a_points$OGF3
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="F3", pos=3, offset=1, col="black", font=2)
-          }
-          if ("pda" %in% self$options$asymptote) {
-            x_point <- a_points$PDA
-            y_point <- y_(x_point)
-            segments(x_point, par("usr")[3], x_point, y_point, col="slategrey", lwd=2, lty=4)
-            points(x_point, y_point, pch=19, col="black")
-            text(x_point, y_point, labels="PDA", pos=3, offset=1, col="black", font=2)
+          
+          point_defs <- list(
+            list(option_group = "lagEnd",     opt = "ogf0",   point = l_points$OGF0, label = "F0"),
+            list(option_group = "lagEnd",     opt = "tang",   point = l_points$tang, label = "Tan."),
+            list(option_group = "lagEnd",     opt = "thres",  point = l_points$thres, label = "Thr."),
+            list(option_group = "fPoints",    opt = "ogfMax", point = f_points$F1,    label = "F1"),
+            list(option_group = "fPoints",    opt = "ogfI",   point = f_points$Fi,    label = "Fi"),
+            list(option_group = "fPoints",    opt = "ogfMin", point = f_points$F2,    label = "F2"),
+            list(option_group = "pPoints",    opt = "accMax", point = p_points$P1,    label = "P1"),
+            list(option_group = "pPoints",    opt = "accI",   point = p_points$Pi,    label = "Pi"),
+            list(option_group = "pPoints",    opt = "accMin", point = p_points$P2,    label = "P2"),
+            list(option_group = "asymptote",  opt = "ogf3",   point = a_points$OGF3,  label = "F3"),
+            list(option_group = "asymptote",  opt = "pda",    point = a_points$PDA,   label = "PDA")
+          )
+          
+          for (d in point_defs) {
+            if (!is.null(d$point) && !is.na(d$point) && d$opt %in% self$options[[d$option_group]]) {
+              draw_growth_point(d$point, d$label)
+            }
           }
         }
         
@@ -699,14 +644,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
       }, # close .mplot
       
-      # Prepare data for Derivative Plot
-      .prep_dplot = function(t_new, W1, W2) {
-        ## Set plot with model data as dataframe
-        image <- self$results$dplot
-        image$setState(data.frame(t_new=t_new, W1=W1, W2=W2))
-      }, # close .prep_dplot
-      
-      # Create the derivative plot function
+      # Derivatives plot
       .dplot = function(image, ...) {
         
         ## Check if there is any data to plot

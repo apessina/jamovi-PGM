@@ -383,7 +383,7 @@ mcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "mcurve",
-                version = c(0,5,0),
+                version = c(0,6,0),
                 options = options,
                 results = mcurveResults$new(options=options),
                 data = data,

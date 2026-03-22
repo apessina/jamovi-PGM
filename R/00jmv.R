@@ -7,7 +7,7 @@
         `author`="Pessina, A. L. R.; Garcia Neto, M.", 
         `year`=2025, 
         `title`="PGM: Practical Growth Modeling", 
-        `publisher`="(Version 0.5.0) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
+        `publisher`="(Version 0.6.0) [jamovi module]. DOI available on https://github.com/apessina/jamovi-PGM", 
         `url`="https://github.com/apessina/jamovi-PGM"), 
     `richards`=list(
         `type`="article", 
@@ -17,6 +17,14 @@
         `publisher`="Journal of Theoretical Biology", 
         `volume`=267, 
         `pages`="417\u2013425"), 
+    `models`=list(
+        `type`="article", 
+        `author`="Koya, P. R.; Goshu, A. T.", 
+        `year`=2013, 
+        `title`="Generalized mathematical model for biological growths", 
+        `publisher`="Open Journal of Modelling and Simulation", 
+        `volume`=4, 
+        `pages`="42-53"), 
     `nlm`=list(
         `type`="software", 
         `author`="Elzhov, T. M.; Mullen, K. M.; Spiess, A.-N.; Bolker B.", 
