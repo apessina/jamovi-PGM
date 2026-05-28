@@ -259,8 +259,14 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Metrics
+                label: Additional elements
                 children:
+                  - type: CheckBox
+                    name: dataPoints
+                  - type: CheckBox
+                    name: keyGrowth
+                  - type: CheckBox
+                    name: ciPolygon
                   - type: CheckBox
                     name: ogf
                     children:
@@ -279,27 +285,6 @@ children:
                     name: sndPlot
                   - type: CheckBox
                     name: resPlot  
-      - type: LayoutBox
-        margin: large
-        stretchFactor: 1
-        children:
-          - type: LayoutBox
-            cell:
-              column: 0
-              row: 0
-            stretchFactor: 1
-            children:
-              - type: Label
-                label: Key Growth Points
-                children:
-                  - type: CheckBox
-                    name: keyGrowth
-          - type: LayoutBox
-            cell:
-              column: 1
-              row: 0
-            stretchFactor: 1
-            children:
               - type: Label
                 label: Resolution Factor
                 children:

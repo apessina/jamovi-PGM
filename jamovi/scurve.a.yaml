@@ -4,7 +4,7 @@ title: "Growth Curve Modeling"
 menuGroup: Growth
 menuTitle: Curve Modeling
 menuSubtitle: Single Curve
-version: '0.5.0'
+version: '0.7.0'
 jas: '1.2'
 
 options:
@@ -49,10 +49,6 @@ options:
           name:  glogistic
         - title: "Generalized Weibull"
           name:  gweibull
-        # - title: "Gen. Logistic"
-        #   name:  glogistic
-        # - title: "Gen. Weibull"
-        #   name:  gweibull
       default: richards
 
     - name: wtype
@@ -124,6 +120,18 @@ options:
       type: Bool
       default: false
 
+    - name: dataPoints
+      title: "Samples"
+      type: Bool
+      default: True
+    - name: keyGrowth
+      title: "Key growth points"
+      type: Bool
+      default: True      
+    - name: ciPolygon
+      title: "Fitted mean 95% band"
+      type: Bool
+      default: False
     - name: ogf
       title: "Ontogenetic growth force"
       type: Bool
@@ -141,11 +149,6 @@ options:
       title: "Residual plots"
       type: Bool
       default: false
-    
-    - name: keyGrowth
-      title: "Show selected"
-      type: Bool
-      default: True
       
     - name: res
       title: "x-axis"
@@ -189,10 +192,6 @@ options:
         - name: thres
           title: "Threshold"
       default: null
-    # - name: tangLines
-    #   title: "lines"
-    #   type: Bool
-    #   default: False
     - name: thVal
       title: ''
       type: Number

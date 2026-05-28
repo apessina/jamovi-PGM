@@ -295,78 +295,21 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         OGF3_pred <- OGF3(t_new) # vector of the OGF 3rd Derivative over time
         
         ##### Critical Points -----
+        cp <- compute_critical_points(
+          t_new = t_new,
+          W1_pred = W1_pred,
+          W2_pred = W2_pred,
+          OGF_pred = OGF_pred,
+          OGF3_pred = OGF3_pred,
+          W = W, W2 = W2, W4 = W4,
+          OGF = OGF, OGF3 = OGF3,
+          thVal = self$options$thVal
+        )
         
-        ## Length of x-axis
-        len <- length(t_new)
-        
-        ## Check if the data have an inflection point
-        zero_acc <- which(diff(sign(W2_pred))!=0)
-        if (!length(zero_acc)==0) {
-          ## by Ontogenetic Growth Force
-          ### Fi - inflection point
-          i_Fi <- which(diff(sign(OGF_pred))!=0)[1]
-          Fi <- t_new[i_Fi]
-          ### F1
-          i_F1 <- which.max(OGF(t_new[1:i_Fi]))
-          F1 <- t_new[i_F1]
-          ### F2
-          i_F2 <- i_Fi - 1 + which.min(OGF(t_new[i_Fi:len]))
-          F2 <- t_new[i_F2]
-          ### List of calculated F-Points
-          f_points <- list(F1=F1, Fi=Fi, F2=F2)
-          
-          ## by Growth Rate and Acceleration
-          ### Pi
-          i_Pi <- zero_acc[1]
-          Pi <- t_new[i_Pi]
-          ### P1
-          i_P1 <- which.max(W2(t_new[1:i_Pi]))
-          P1 <- t_new[i_P1]
-          ### P2
-          i_P2 <- i_Pi - 1 + which.min(W2(t_new[i_Pi:len]))
-          P2 <- t_new[i_P2]
-          ### List of calculated P-Points
-          p_points <- list(P1=P1, Pi=Pi, P2=P2)
-          
-          ## End of Lag Phase
-          ### OGF0 - end of lag phase
-          i_F0 <- which.max(OGF3(t_new[1:i_F1]))
-          F0 <- t_new[i_F0]
-          if (F0==F1 | F0==0)
-            F0 <- NA
-          ### tangent method
-          t_star <- t_new[which.max(W1_pred)]
-          slope <- max(W1_pred)
-          y_star <- W(t_star)
-          y0 <- W(min(t_new)) # min(W_fun(t_new))
-          t_lag_tangent <- t_star - (y_star-y0) / slope
-          if (t_lag_tangent==0)
-            t_lag_tangent <- NA
-          ### threshold method
-          y_vals <- sapply(t_new, W)
-          y_thresh <- W(max(t_new)) * self$options$thVal ## custom by user
-          t_lag_threshold <- t_new[min(which(y_vals >= y_thresh))]
-          if (t_lag_threshold==0)
-            t_lag_threshold <- NA
-          ### List of calculated points
-          l_points <- list(OGF0=F0, tang=t_lag_tangent, thres=t_lag_threshold)
-          
-          ## Close to Asymptote
-          ### F3
-          i_F3 <- i_F2 + which(diff(sign(OGF3(t_new[i_F2:len])))!=0)[1]
-          F3 <- t_new[i_F3]
-          ### PDA
-          i_PDA <- i_P2 + which(diff(sign(W4(t_new[i_P2:len])))!=0)[1]
-          PDA <- t_new[i_PDA]
-          ### List of calculated A-Points
-          a_points <- list(OGF3=F3, PDA=PDA)
-        
-        } else {
-          f_points <- list(F1=NA, Fi=NA, F2=NA)
-          p_points <- list(P1=NA, Pi=NA, P2=NA)
-          l_points <- list(OGF0=NA, tang=NA, thres=NA)
-          a_points <- list(OGF3=NA, PDA=NA)
-        }
+        f_points <- cp$f_points
+        p_points <- cp$p_points
+        l_points <- cp$l_points
+        a_points <- cp$a_points
         
         ##### Results -----
         
@@ -432,7 +375,7 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ## Key Growth Points table
         tableFp <- self$results$fpoints
-        if (!length(zero_acc)==0) {
+        if (cp$inflection) {
           tableFp$addRow(rowKey=self$options$time, values=list(
             F0=format(round(l_points$OGF0, 2), nsmall=2),
             Tangent=format(round(l_points$tang, 2), nsmall=2),
@@ -464,6 +407,23 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         }
         
         ##### Plots Data -----
+
+        ## Delta method for function CI (Wald approx.)
+        if (!inherits(covm, "try-error")) {
+          grad_exprs <- lapply(names(beta_hat), function(p) D(expr, p))
+          grad_fun <- function(t0) {
+            sapply(grad_exprs, function(g)
+              eval(g, envir = c(list(t = t0), as.list(beta_hat))))
+          }
+          G <- t(sapply(t_new, grad_fun))
+          var_fit <- rowSums((G %*% covm) * G)
+          se_fit <- sqrt(pmax(var_fit, 0))
+          W_lower <- W_pred - crit * se_fit
+          W_upper <- W_pred + crit * se_fit
+        } else {
+          W_lower <- rep(NA_real_, length(t_new))
+          W_upper <- rep(NA_real_, length(t_new))
+        }
         
         ## Data for render functions
         self$results$resplot$setState(list(
@@ -476,7 +436,9 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         self$results$mplot$setState(list(
           data_p = data.frame(t = x_raw, y = y_raw),
-          data_m = data.frame(t_new = t_new, W = W_pred, OGF = OGF_pred, OGF3 = OGF3_pred),
+          data_m = data.frame(t_new = t_new, W = W_pred, 
+                              W_lower = W_lower, W_upper = W_upper, 
+                              OGF = OGF_pred, OGF3 = OGF3_pred),
           f_points = f_points,
           p_points = p_points,
           l_points = l_points,
@@ -566,9 +528,21 @@ scurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         par(mgp = c(2, 0.5, 0)) # c(3, 1, 0)
         
         ## Create plot with samples points
-        plot(data_p$t, data_p$y, col="grey", pch=16, 
-             xlab="", ylab=self$options$dep,
+        if (self$options$dataPoints) dalpha=1.0 else dalpha=0.0
+        plot(data_p$t, data_p$y, xlab="", ylab=self$options$dep,
+             col=if (self$options$dataPoints) "grey" else NA, pch=16,
              ylim=better_lim(data_p$y))
+        
+        ### Fitted function CI
+        if (self$options$ciPolygon) {
+          polygon(
+            x = c(data_m$t_new, rev(data_m$t_new)),
+            y = c(data_m$W_lower, rev(data_m$W_upper)),
+            border = NA,
+            col = adjustcolor("blue", alpha.f = 0.20)
+          )
+        }
+        
         ### Add W(t_new) curve
         lines(data_m$t_new, data_m$W, col="red", lwd=2)
         legends = c("Fitted curve") # legend label

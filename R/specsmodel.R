@@ -1,5 +1,6 @@
-
+# =========================================================
 # build models equations and provide its specs
+# =========================================================
 
 ## Richards - Tjørve & Tjørve (Eq. 9) ----
 spec_richards <- function(t, y) {

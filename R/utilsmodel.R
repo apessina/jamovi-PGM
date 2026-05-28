@@ -1,5 +1,6 @@
-
+# =========================================================
 # helpers to build models equations
+# =========================================================
 
 ## Expression for each Richards component ----
 richards_component_expr = function(idx) {

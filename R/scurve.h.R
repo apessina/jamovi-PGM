@@ -23,11 +23,13 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             medae = FALSE,
             smape = FALSE,
             rrmse = FALSE,
+            dataPoints = TRUE,
+            keyGrowth = TRUE,
+            ciPolygon = FALSE,
             ogf = FALSE,
             ogf_s = FALSE,
             sndPlot = FALSE,
             resPlot = FALSE,
-            keyGrowth = TRUE,
             res = 20,
             fPoints = NULL,
             pPoints = NULL,
@@ -126,6 +128,18 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "rrmse",
                 rrmse,
                 default=FALSE)
+            private$..dataPoints <- jmvcore::OptionBool$new(
+                "dataPoints",
+                dataPoints,
+                default=TRUE)
+            private$..keyGrowth <- jmvcore::OptionBool$new(
+                "keyGrowth",
+                keyGrowth,
+                default=TRUE)
+            private$..ciPolygon <- jmvcore::OptionBool$new(
+                "ciPolygon",
+                ciPolygon,
+                default=FALSE)
             private$..ogf <- jmvcore::OptionBool$new(
                 "ogf",
                 ogf,
@@ -142,10 +156,6 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "resPlot",
                 resPlot,
                 default=FALSE)
-            private$..keyGrowth <- jmvcore::OptionBool$new(
-                "keyGrowth",
-                keyGrowth,
-                default=TRUE)
             private$..res <- jmvcore::OptionNumber$new(
                 "res",
                 res,
@@ -207,11 +217,13 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..medae)
             self$.addOption(private$..smape)
             self$.addOption(private$..rrmse)
+            self$.addOption(private$..dataPoints)
+            self$.addOption(private$..keyGrowth)
+            self$.addOption(private$..ciPolygon)
             self$.addOption(private$..ogf)
             self$.addOption(private$..ogf_s)
             self$.addOption(private$..sndPlot)
             self$.addOption(private$..resPlot)
-            self$.addOption(private$..keyGrowth)
             self$.addOption(private$..res)
             self$.addOption(private$..fPoints)
             self$.addOption(private$..pPoints)
@@ -237,11 +249,13 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         medae = function() private$..medae$value,
         smape = function() private$..smape$value,
         rrmse = function() private$..rrmse$value,
+        dataPoints = function() private$..dataPoints$value,
+        keyGrowth = function() private$..keyGrowth$value,
+        ciPolygon = function() private$..ciPolygon$value,
         ogf = function() private$..ogf$value,
         ogf_s = function() private$..ogf_s$value,
         sndPlot = function() private$..sndPlot$value,
         resPlot = function() private$..resPlot$value,
-        keyGrowth = function() private$..keyGrowth$value,
         res = function() private$..res$value,
         fPoints = function() private$..fPoints$value,
         pPoints = function() private$..pPoints$value,
@@ -266,11 +280,13 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..medae = NA,
         ..smape = NA,
         ..rrmse = NA,
+        ..dataPoints = NA,
+        ..keyGrowth = NA,
+        ..ciPolygon = NA,
         ..ogf = NA,
         ..ogf_s = NA,
         ..sndPlot = NA,
         ..resPlot = NA,
-        ..keyGrowth = NA,
         ..res = NA,
         ..fPoints = NA,
         ..pPoints = NA,
@@ -562,7 +578,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,5,0),
+                version = c(0,7,0),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,
@@ -596,11 +612,13 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param medae .
 #' @param smape .
 #' @param rrmse .
+#' @param dataPoints .
+#' @param keyGrowth .
+#' @param ciPolygon .
 #' @param ogf .
 #' @param ogf_s .
 #' @param sndPlot .
 #' @param resPlot .
-#' @param keyGrowth .
 #' @param res .
 #' @param fPoints .
 #' @param pPoints .
@@ -646,11 +664,13 @@ scurve <- function(
     medae = FALSE,
     smape = FALSE,
     rrmse = FALSE,
+    dataPoints = TRUE,
+    keyGrowth = TRUE,
+    ciPolygon = FALSE,
     ogf = FALSE,
     ogf_s = FALSE,
     sndPlot = FALSE,
     resPlot = FALSE,
-    keyGrowth = TRUE,
     res = 20,
     fPoints = NULL,
     pPoints = NULL,
@@ -688,11 +708,13 @@ scurve <- function(
         medae = medae,
         smape = smape,
         rrmse = rrmse,
+        dataPoints = dataPoints,
+        keyGrowth = keyGrowth,
+        ciPolygon = ciPolygon,
         ogf = ogf,
         ogf_s = ogf_s,
         sndPlot = sndPlot,
         resPlot = resPlot,
-        keyGrowth = keyGrowth,
         res = res,
         fPoints = fPoints,
         pPoints = pPoints,
