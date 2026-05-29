@@ -1,13 +1,13 @@
 ---
 title: Practical Growth Modeling
 name: PGM
-version: 0.7.0
+version: 0.8.0
 jms: '1.0'
 authors:
   - André L. R. Pessina
   - Manoel Garcia Neto
 maintainer: André L. R. Pessina <andre.pessina@unesp.br>
-date: '2026-05-28'
+date: '2026-05-29'
 type: R
 description: >-
   This package facilitates biological growth modeling through curve fitting, 
@@ -18,14 +18,6 @@ analyses:
     ns: PGM
     menuGroup: Growth
     menuTitle: Curve Modeling
-    menuSubtitle: Single Curve
-    category: analyses
-  - title: Growth Curve Comparison
-    name: mcurve
-    ns: PGM
-    menuGroup: Growth
-    menuTitle: Curve Comparison
-    menuSubtitle: Multiple Curves
     category: analyses
 datasets:
   - name: Plant Growth (Gregorczyk, 1998)

@@ -9,11 +9,10 @@ children:
     stretchFactor: 1
     children:
       - type: TargetLayoutBox
-        label: Dependent Variable
+        label: Dependent Variables
         children:
           - type: VariablesListBox
-            name: dep
-            maxItemCount: 1
+            name: deps
             isTarget: true
       - type: TargetLayoutBox
         label: Time Variable
@@ -244,6 +243,47 @@ children:
                     optionName: asymptote
                     optionPart: pda
   - type: CollapseBox
+    label: Area Under the Curve
+    collapsed: false
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Results
+                children:
+                  - type: CheckBox
+                    name: calcAuc
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Integration Interval
+                children:
+                  - type: CheckBox
+                    name: intInterval
+                    enable: (calcAuc)
+                    children:
+                      - type: TextBox
+                        name: intL
+                        format: number
+                        enable: (calcAuc && intInterval)
+                      - type: TextBox
+                        name: intU
+                        format: number
+                        enable: (calcAuc && intInterval)
+  - type: CollapseBox
     label: Plot
     collapsed: false
     stretchFactor: 1
@@ -281,6 +321,8 @@ children:
               - type: Label
                 label: Additional plots
                 children:
+                  - type: CheckBox
+                    name: multiPlot 
                   - type: CheckBox
                     name: sndPlot
                   - type: CheckBox

@@ -3,17 +3,16 @@ name:  scurve
 title: "Growth Curve Modeling"
 menuGroup: Growth
 menuTitle: Curve Modeling
-menuSubtitle: Single Curve
-version: '0.7.0'
+version: '0.8.0'
 jas: '1.2'
 
 options:
     - name: data
       type: Data
 
-    - name: dep
-      title: "Dependent Variable"
-      type: Variable
+    - name: deps
+      title: "Dependent Variables"
+      type: Variables
       suggested:
         - continuous
       permitted:
@@ -141,6 +140,10 @@ options:
       type: Bool
       default: false
     
+    - name: multiPlot
+      title: "Plot Multiple Curves"
+      type: Bool
+      default: false
     - name: sndPlot
       title: "Growth Rate and Acceleration"
       type: Bool
@@ -208,4 +211,24 @@ options:
         - name: pda
           title: "PDA"
       default: null
+      
+    - name: calcAuc
+      title: "Calculate AUC"
+      type: Bool
+      default: false
+    - name: intInterval
+      title: "Custom"
+      type: Bool
+      default: false
+    - name: intL
+      title: "Integral Lower"
+      type: Number
+      min: 0
+      default: 0
+    - name: intU
+      title: "Integral Upper"
+      type: Number
+      min: 0
+      default: 0
+
 ...

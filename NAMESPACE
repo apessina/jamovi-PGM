@@ -1,3 +1,2 @@
 exportPattern("^[[:alpha:]]+")
-import(minpack.lm)
 import(gslnls)

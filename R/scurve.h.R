@@ -6,7 +6,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     inherit = jmvcore::Options,
     public = list(
         initialize = function(
-            dep = NULL,
+            deps = NULL,
             time = NULL,
             model = "richards",
             wtype = "none",
@@ -28,6 +28,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             ciPolygon = FALSE,
             ogf = FALSE,
             ogf_s = FALSE,
+            multiPlot = FALSE,
             sndPlot = FALSE,
             resPlot = FALSE,
             res = 20,
@@ -35,7 +36,11 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             pPoints = NULL,
             lagEnd = NULL,
             thVal = 0.01,
-            asymptote = NULL, ...) {
+            asymptote = NULL,
+            calcAuc = FALSE,
+            intInterval = FALSE,
+            intL = 0,
+            intU = 0, ...) {
 
             super$initialize(
                 package="PGM",
@@ -43,9 +48,9 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 requiresData=TRUE,
                 ...)
 
-            private$..dep <- jmvcore::OptionVariable$new(
-                "dep",
-                dep,
+            private$..deps <- jmvcore::OptionVariables$new(
+                "deps",
+                deps,
                 suggested=list(
                     "continuous"),
                 permitted=list(
@@ -148,6 +153,10 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "ogf_s",
                 ogf_s,
                 default=FALSE)
+            private$..multiPlot <- jmvcore::OptionBool$new(
+                "multiPlot",
+                multiPlot,
+                default=FALSE)
             private$..sndPlot <- jmvcore::OptionBool$new(
                 "sndPlot",
                 sndPlot,
@@ -199,8 +208,26 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "ogf3",
                     "pda"),
                 default=NULL)
+            private$..calcAuc <- jmvcore::OptionBool$new(
+                "calcAuc",
+                calcAuc,
+                default=FALSE)
+            private$..intInterval <- jmvcore::OptionBool$new(
+                "intInterval",
+                intInterval,
+                default=FALSE)
+            private$..intL <- jmvcore::OptionNumber$new(
+                "intL",
+                intL,
+                min=0,
+                default=0)
+            private$..intU <- jmvcore::OptionNumber$new(
+                "intU",
+                intU,
+                min=0,
+                default=0)
 
-            self$.addOption(private$..dep)
+            self$.addOption(private$..deps)
             self$.addOption(private$..time)
             self$.addOption(private$..model)
             self$.addOption(private$..wtype)
@@ -222,6 +249,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..ciPolygon)
             self$.addOption(private$..ogf)
             self$.addOption(private$..ogf_s)
+            self$.addOption(private$..multiPlot)
             self$.addOption(private$..sndPlot)
             self$.addOption(private$..resPlot)
             self$.addOption(private$..res)
@@ -230,9 +258,13 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$.addOption(private$..lagEnd)
             self$.addOption(private$..thVal)
             self$.addOption(private$..asymptote)
+            self$.addOption(private$..calcAuc)
+            self$.addOption(private$..intInterval)
+            self$.addOption(private$..intL)
+            self$.addOption(private$..intU)
         }),
     active = list(
-        dep = function() private$..dep$value,
+        deps = function() private$..deps$value,
         time = function() private$..time$value,
         model = function() private$..model$value,
         wtype = function() private$..wtype$value,
@@ -254,6 +286,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ciPolygon = function() private$..ciPolygon$value,
         ogf = function() private$..ogf$value,
         ogf_s = function() private$..ogf_s$value,
+        multiPlot = function() private$..multiPlot$value,
         sndPlot = function() private$..sndPlot$value,
         resPlot = function() private$..resPlot$value,
         res = function() private$..res$value,
@@ -261,9 +294,13 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         pPoints = function() private$..pPoints$value,
         lagEnd = function() private$..lagEnd$value,
         thVal = function() private$..thVal$value,
-        asymptote = function() private$..asymptote$value),
+        asymptote = function() private$..asymptote$value,
+        calcAuc = function() private$..calcAuc$value,
+        intInterval = function() private$..intInterval$value,
+        intL = function() private$..intL$value,
+        intU = function() private$..intU$value),
     private = list(
-        ..dep = NA,
+        ..deps = NA,
         ..time = NA,
         ..model = NA,
         ..wtype = NA,
@@ -285,6 +322,7 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..ciPolygon = NA,
         ..ogf = NA,
         ..ogf_s = NA,
+        ..multiPlot = NA,
         ..sndPlot = NA,
         ..resPlot = NA,
         ..res = NA,
@@ -292,7 +330,11 @@ scurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         ..pPoints = NA,
         ..lagEnd = NA,
         ..thVal = NA,
-        ..asymptote = NA)
+        ..asymptote = NA,
+        ..calcAuc = NA,
+        ..intInterval = NA,
+        ..intL = NA,
+        ..intU = NA)
 )
 
 scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
@@ -303,10 +345,12 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         pTable = function() private$.items[["pTable"]],
         eTable = function() private$.items[["eTable"]],
         meval = function() private$.items[["meval"]],
+        aucTable = function() private$.items[["aucTable"]],
         fpoints = function() private$.items[["fpoints"]],
+        resplot = function() private$.items[["resplot"]],
         mplot = function() private$.items[["mplot"]],
-        dplot = function() private$.items[["dplot"]],
-        resplot = function() private$.items[["resplot"]]),
+        multiplot = function() private$.items[["multiplot"]],
+        dplot = function() private$.items[["dplot"]]),
     private = list(),
     public=list(
         initialize=function(options) {
@@ -369,7 +413,6 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="eTable",
                 title="Estimation",
                 visible="(est)",
-                rows=3,
                 columns=list(
                     list(
                         `name`="var", 
@@ -407,7 +450,7 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                                 "dep",
                                 "time",
                                 "model"),
-                            rows="(dep)",
+                            rows="(deps)",
                             columns=list(
                                 list(
                                     `name`="var", 
@@ -449,7 +492,7 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                                 "dep",
                                 "time",
                                 "model"),
-                            rows="(dep)",
+                            rows="(deps)",
                             columns=list(
                                 list(
                                     `name`="var", 
@@ -478,6 +521,34 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                                     `visible`="(rrmse)")),
                             refs=list(
                                 "pgm")))}))$new(options=options))
+            self$add(jmvcore::Table$new(
+                options=options,
+                name="aucTable",
+                visible="(calcAuc)",
+                title="Area Under the Curve",
+                rows="(deps)",
+                columns=list(
+                    list(
+                        `name`="var", 
+                        `title`="", 
+                        `type`="text", 
+                        `content`="($key)"),
+                    list(
+                        `name`="Lower", 
+                        `type`="number", 
+                        `superTitle`="Time interval"),
+                    list(
+                        `name`="Upper", 
+                        `type`="number", 
+                        `superTitle`="Time interval"),
+                    list(
+                        `name`="AUC", 
+                        `type`="number"),
+                    list(
+                        `name`="Rank", 
+                        `type`="text")),
+                refs=list(
+                    "pgm")))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="fpoints",
@@ -537,38 +608,60 @@ scurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "pgm",
                     "ppfm",
                     "pda")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="mplot",
-                title="Growth Curve",
-                width=700,
-                height=500,
-                renderFun=".mplot",
-                requiresData=TRUE,
-                refs=list(
-                    "pgm")))
-            self$add(jmvcore::Image$new(
-                options=options,
-                name="dplot",
-                visible="(sndPlot)",
-                title="Growth Rate and Acceleration",
-                width=700,
-                height=500,
-                renderFun=".dplot",
-                requiresData=TRUE,
-                refs=list(
-                    "pgm")))
-            self$add(jmvcore::Image$new(
+            self$add(jmvcore::Array$new(
                 options=options,
                 name="resplot",
                 visible="(resPlot)",
                 title="Residual Analysis",
+                items=0,
+                template=jmvcore::Image$new(
+                    options=options,
+                    title="",
+                    width=700,
+                    height=500,
+                    renderFun=".resplot",
+                    requiresData=TRUE,
+                    refs=list(
+                        "pgm"))))
+            self$add(jmvcore::Array$new(
+                options=options,
+                name="mplot",
+                title="Growth Curves",
+                items=0,
+                template=jmvcore::Image$new(
+                    options=options,
+                    title="",
+                    width=700,
+                    height=500,
+                    renderFun=".mplot",
+                    requiresData=TRUE,
+                    refs=list(
+                        "pgm"))))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="multiplot",
+                visible="(multiPlot)",
+                title="Multiple Growth Curves",
                 width=700,
                 height=500,
-                renderFun=".resplot",
-                requiresData=TRUE,
+                renderFun=".multiplot",
                 refs=list(
-                    "pgm")))}))
+                    "pgm")))
+            self$add(jmvcore::Array$new(
+                options=options,
+                name="dplot",
+                visible="(sndPlot)",
+                title="Growth Rate and Acceleration",
+                items=0,
+                template=jmvcore::Image$new(
+                    options=options,
+                    title="",
+                    width=700,
+                    height=500,
+                    renderFun=".dplot",
+                    requiresData=TRUE,
+                    refs=list(
+                        "pgm"))))}))
 
 scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "scurveBase",
@@ -578,7 +671,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "scurve",
-                version = c(0,7,0),
+                version = c(0,8,0),
                 options = options,
                 results = scurveResults$new(options=options),
                 data = data,
@@ -595,7 +688,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'
 #' 
 #' @param data .
-#' @param dep .
+#' @param deps .
 #' @param time .
 #' @param model .
 #' @param wtype .
@@ -617,6 +710,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param ciPolygon .
 #' @param ogf .
 #' @param ogf_s .
+#' @param multiPlot .
 #' @param sndPlot .
 #' @param resPlot .
 #' @param res .
@@ -625,6 +719,10 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param lagEnd .
 #' @param thVal .
 #' @param asymptote .
+#' @param calcAuc .
+#' @param intInterval .
+#' @param intL .
+#' @param intU .
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$equation} \tab \tab \tab \tab \tab a html \cr
@@ -632,10 +730,12 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'   \code{results$eTable} \tab \tab \tab \tab \tab a table containing information about estimation method \cr
 #'   \code{results$meval$gof} \tab \tab \tab \tab \tab a table containing GoF metrics \cr
 #'   \code{results$meval$em} \tab \tab \tab \tab \tab a table containing error metrics \cr
+#'   \code{results$aucTable} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$fpoints} \tab \tab \tab \tab \tab a table \cr
-#'   \code{results$mplot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$dplot} \tab \tab \tab \tab \tab an image \cr
-#'   \code{results$resplot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$resplot} \tab \tab \tab \tab \tab an array of images \cr
+#'   \code{results$mplot} \tab \tab \tab \tab \tab an array of images \cr
+#'   \code{results$multiplot} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$dplot} \tab \tab \tab \tab \tab an array of images \cr
 #' }
 #'
 #' Tables can be converted to data frames with \code{asDF} or \code{\link{as.data.frame}}. For example:
@@ -647,7 +747,7 @@ scurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @export
 scurve <- function(
     data,
-    dep,
+    deps,
     time,
     model = "richards",
     wtype = "none",
@@ -669,6 +769,7 @@ scurve <- function(
     ciPolygon = FALSE,
     ogf = FALSE,
     ogf_s = FALSE,
+    multiPlot = FALSE,
     sndPlot = FALSE,
     resPlot = FALSE,
     res = 20,
@@ -676,22 +777,26 @@ scurve <- function(
     pPoints = NULL,
     lagEnd = NULL,
     thVal = 0.01,
-    asymptote = NULL) {
+    asymptote = NULL,
+    calcAuc = FALSE,
+    intInterval = FALSE,
+    intL = 0,
+    intU = 0) {
 
     if ( ! requireNamespace("jmvcore", quietly=TRUE))
         stop("scurve requires jmvcore to be installed (restart may be required)")
 
-    if ( ! missing(dep)) dep <- jmvcore::resolveQuo(jmvcore::enquo(dep))
+    if ( ! missing(deps)) deps <- jmvcore::resolveQuo(jmvcore::enquo(deps))
     if ( ! missing(time)) time <- jmvcore::resolveQuo(jmvcore::enquo(time))
     if (missing(data))
         data <- jmvcore::marshalData(
             parent.frame(),
-            `if`( ! missing(dep), dep, NULL),
+            `if`( ! missing(deps), deps, NULL),
             `if`( ! missing(time), time, NULL))
 
 
     options <- scurveOptions$new(
-        dep = dep,
+        deps = deps,
         time = time,
         model = model,
         wtype = wtype,
@@ -713,6 +818,7 @@ scurve <- function(
         ciPolygon = ciPolygon,
         ogf = ogf,
         ogf_s = ogf_s,
+        multiPlot = multiPlot,
         sndPlot = sndPlot,
         resPlot = resPlot,
         res = res,
@@ -720,7 +826,11 @@ scurve <- function(
         pPoints = pPoints,
         lagEnd = lagEnd,
         thVal = thVal,
-        asymptote = asymptote)
+        asymptote = asymptote,
+        calcAuc = calcAuc,
+        intInterval = intInterval,
+        intL = intL,
+        intU = intU)
 
     analysis <- scurveClass$new(
         options = options,

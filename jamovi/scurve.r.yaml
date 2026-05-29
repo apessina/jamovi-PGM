@@ -53,7 +53,6 @@ items:
       type: Table
       description: a table containing information about estimation method
       visible: (est)
-      rows: 3
       columns:
         - name: var
           title: ''
@@ -82,7 +81,7 @@ items:
             - dep
             - time
             - model
-          rows: (dep)
+          rows: (deps)
           columns:
             - name: var
               title: ''
@@ -119,7 +118,7 @@ items:
             - dep
             - time
             - model
-          rows: (dep)
+          rows: (deps)
           columns:
             - name: var
               title: ''
@@ -143,6 +142,29 @@ items:
           refs:
             - pgm
       
+    - name: aucTable
+      visible: (calcAuc)
+      title: "Area Under the Curve"
+      type: Table
+      rows: (deps)
+      columns:
+        - name: var
+          title: ''
+          type: text
+          content: ($key)
+        - name: Lower
+          type: number
+          superTitle: Time interval
+        - name: Upper
+          type: number
+          superTitle: Time interval
+        - name: AUC
+          type: number
+        - name: Rank
+          type: text
+      refs:
+        - pgm
+
     - name: fpoints
       title: "Key Growth Points"
       type: Table
@@ -190,35 +212,58 @@ items:
         - ppfm
         - pda
 
-    - name: mplot
-      title: "Growth Curve"
-      type: Image
-      width:  700
-      height: 500
-      renderFun: .mplot
-      requiresData: true
-      refs:
-        - pgm
-                
-    - name: dplot
-      visible: (sndPlot)
-      title: "Growth Rate and Acceleration"
-      type: Image
-      width:  700
-      height: 500
-      renderFun: .dplot
-      requiresData: true
-      refs:
-        - pgm
-        
     - name: resplot
       visible: (resPlot)
       title: "Residual Analysis"
+      type: Array
+      items: 0
+      template:
+        type: Image
+        title: ""
+        width: 700
+        height: 500
+        renderFun: .resplot
+        requiresData: true
+        refs:
+          - pgm
+
+    - name: mplot
+      title: "Growth Curves"
+      type: Array
+      items: 0
+      template:
+        type: Image
+        title: ""
+        width: 700
+        height: 500
+        renderFun: .mplot
+        requiresData: true
+        refs:
+          - pgm
+
+    - name: multiplot
+      visible: (multiPlot)
+      title: "Multiple Growth Curves"
       type: Image
       width:  700
       height: 500
-      renderFun: .resplot
-      requiresData: true
+      renderFun: .multiplot
       refs:
         - pgm
+
+    - name: dplot
+      visible: (sndPlot)
+      title: "Growth Rate and Acceleration"
+      type: Array
+      items: 0
+      template:
+        type: Image
+        title: ""
+        width: 700
+        height: 500
+        renderFun: .dplot
+        requiresData: true
+        refs:
+          - pgm
+
 ...

@@ -25,13 +25,6 @@
         `publisher`="Open Journal of Modelling and Simulation", 
         `volume`=4, 
         `pages`="42-53"), 
-    `nlm`=list(
-        `type`="software", 
-        `author`="Elzhov, T. M.; Mullen, K. M.; Spiess, A.-N.; Bolker B.", 
-        `year`=2023, 
-        `title`="minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds", 
-        `publisher`="(Version 1.2-4) [R package]. Retrieved from https://cran.r-project.org/web/packages/minpack.lm/index.html", 
-        `url`="https://cran.r-project.org/web/packages/minpack.lm/index.html"), 
     `ppfm`=list(
         `type`="software", 
         `author`="Garcia Neto, M.; Kebreab, E.; Faria Junior, M. J. A.", 
