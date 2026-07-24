@@ -1,0 +1,640 @@
+---
+name:  gcurve
+title: Growth Curve Modeling
+menuGroup: Growth
+menuTitle: Curve Modeling
+version: '0.9.0'
+jas: '1.2'
+
+description:
+    main: |
+        The analysis of Growth Curve Modeling is used to explore the sigmoidal 
+        relationship between a continuous biological dependent variable, 
+        usually weight, height, or another expanding unit, and one continuous 
+        time variable. 
+        
+        Growth Curve Modeling first fits the chosen model using nonlinear 
+        least squares (NLS) with the Levenberg–Marquardt algorithm, assuming 
+        that the residuals are homoscedastic. If a variance function is 
+        selected, the parameters from the first model are provided as starting 
+        values for Generalized NLS (GNLS) to account for heteroscedasticity 
+        through error weights. 
+        
+        As growth modeling usually involves repeated measures on the same 
+        individuals, if their identifiers are provided, the parameters from 
+        NLS are provided to a Nonlinear Mixed-Effects function instead of GNLS, 
+        considering both fixed and random effects. At this point, it is also 
+        possible to consider residual heteroscedasticity and autocorrelation.
+
+completeWhenFilled: false
+
+options:
+    - name: data
+      type: Data
+      description:
+          R: the data as a data frame
+
+    - name: deps
+      title: Dependent Variables
+      type: Variables
+      required: true
+      suggested:
+        - continuous
+      permitted:
+        - numeric
+      description:
+          ui: >
+            the continuous dependent variables.
+          R: >
+            the dependent variables from `data`, variables must be numeric
+
+    - name: time
+      title: Time Variable
+      type: Variable
+      required: true
+      suggested:
+        - continuous
+      permitted:
+        - numeric
+      description:
+          ui: >
+            the continuous independent variable. Usually some time unit for 
+            growth modeling.
+          R: >
+            the explanatory variable in `data`, must be numeric
+
+    - name: iid
+      title: Individual Identifier
+      type: Variable
+      required: false
+      rejectUnusedLevels: true
+      suggested:
+        - nominal
+      permitted:
+        - factor
+      default: null
+      description:
+          ui: >
+            the categorical individual identifier. Optionally used in mixed 
+            effects and residuals autocorrelation.
+          R: >
+            the individual identifier variable in `data`, must be categorical  
+
+    - name: eqHtmls
+      title: Equation
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide the equation of Richards model parametrization.
+          R: >
+            `TRUE` (default) or `FALSE`, provide Richards model equation
+      
+    - name: parTables
+      title: Parameters
+      type: Bool
+      default: true
+      description:
+          ui: >
+            provide a table of the estimated values for the parameters of each 
+            model setup.
+          R: >
+            `TRUE` (default) or `FALSE`, provide estimated parameters values tables
+      
+    - name: estTables
+      title: Estimation Info
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide a table with detailed information about estimation methods 
+            for each model setup.
+          R: >
+            `TRUE` or `FALSE` (default), provide estimated parameters values 
+            tables
+
+    - name: modeling
+      title: Models Setup
+      type: Array
+      default: []
+      template:
+          type: Group
+          elements:
+            - name: setupId
+              type: String
+            - name: setupLabel
+              type: String
+            - name: var
+              type: Variable
+            - name: model
+              type: List
+              options:
+                - name: richards
+                  title: Richards
+              default: richards
+            - name: errorVarType
+              type: List
+              options:
+                - name: none
+                  title: None
+                - name: power
+                  title: Power
+                - name: exp
+                  title: Exponential
+                - name: cpower
+                  title: ConstPower
+              default: none
+            - name: errorCorType
+              type: List
+              options:
+                - name: none
+                  title: None
+                - name: ar1
+                  title: AR(1)
+                - name: car1
+                  title: CAR(1)
+              default: none
+      description:
+          ui: >
+            the specifications for each model setup. Provide dependent variable, 
+            predefined terms equation, error variance function and error 
+            autocorrelation function.
+          R: >
+            an array describing the specifications for each model.
+
+    - name: duplicateSetup
+      title: Duplicate
+      type: Action
+      description:
+          ui: >
+            duplicate the selected model setup with the same variable.
+          R: >
+            an action to duplicate the selected model setup with the same 
+            variable in UI.
+      
+    - name: removeSetup
+      title: Remove
+      type: Action
+      description:
+          ui: >
+            remove the selected model setup.
+          R: >
+            an action to remove the selected model setup in UI.
+
+    - name: gofMetrics
+      title: Goodness of Fit
+      type: NMXList
+      options:
+        - name: aic
+          title: AIC
+        - name: aicc
+          title: AICc
+        - name: bic
+          title: BIC
+        - name: r2
+          title: R²  
+        - name: r2adj
+          title: Adjusted R²
+      default: null
+      description:
+          ui: >
+            provide goodness of fit metrics for each model setup.
+          R: >
+            one or more of `'aic'`, `'aicc'`, `'bic'`, `'r2'`, or `'r2adj'`
+
+    - name: errorMetrics
+      title: Error Metrics
+      type: NMXList
+      options:
+        - name: rmse
+          title: RMSE
+        - name: mae
+          title: MAE
+        - name: medae
+          title: MedAE
+        - name: smape
+          title: sMAPE  
+        - name: rrmse
+          title: RRMSE
+      default: null
+      description:
+          ui: >
+            provide error metrics for each model setup.
+          R: >
+            one or more of `'rmse'`, `'mae'`, `'medae'`, `'smape'`, or `'rrmse'`
+      
+    - name: iPoints
+      title: Inflection (I)
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide the inflection point for the growth curve of each model setup.
+          R: >
+            `TRUE` or `FALSE` (default), provide the inflection point of the
+            growth curve
+
+    - name: lagPoints
+      title: Effective Growth
+      type: NMXList
+      options:
+        - name: ogf0
+          title: OGF (F0)
+        - name: paa
+          title: PAA  
+        - name: tangent
+          title: Tangent
+        - name: threshold
+          title: Threshold
+      default: null
+      description:
+          ui: >
+            provide critical points associated with the onset of effective 
+            growth and with the end of the lag phase in bacterial growth, for 
+            the growth curve of each model setup.
+          R: >
+            one or more of `'ogf0'`, `'paa'`, `'tangent'`, or `'threshold'`
+            
+    - name: thValue
+      title: ''
+      type: Number
+      min: 0
+      max: 1
+      default: 0.01
+      description:
+          ui: >
+            the custom value to calculate end of the lag phase by the threshold
+            method.
+          R: >
+            a number between 0 and 1 (default: 0.01)
+    
+    - name: ogfPoints
+      title: Ontogenetic Growth Force
+      type: NMXList
+      options:
+        - name: ogfMax
+          title: Maximum (F1)
+        - name: ogfMin
+          title: Minimum (F2)
+      default: null
+      description:
+          ui: >
+            provide critical points derived from the ontogenetic growth force 
+            for the growth curve of each model setup.
+          R: >
+            one or more of `'ogfMax'`, or `'ogfMin'`
+      
+    - name: accPoints
+      title: Acceleration
+      type: NMXList
+      options:
+        - name: accMax
+          title: Maximum (P1)
+        - name: accMin
+          title: Minimum (P2)
+      default: null
+      description:
+          ui: >
+            provide critical points derived from the second derivative for the 
+            growth curve of each model setup.
+          R: >
+            one or more of `'accMax'`, or `'accMin'`
+
+    - name: asyPoints
+      title: Asymptotic Deceleration
+      type: NMXList
+      options:
+        - name: ogf3
+          title: OGF (F3)
+        - name: pda
+          title: PDA
+      default: null
+      description:
+          ui: >
+            provide critical points associated with the saturation phase for 
+            the growth curve of each model setup.
+          R: >
+            one or more of `'ogf3'`, or `'pda'`
+    
+    - name: aucFunction
+      title: Geometric descriptors
+      type: NMXList
+      options:
+        - name: growthFunction
+          title: Growth function
+        - name: squaredRate
+          title: Squared rate
+        - name: gfSquaredRate
+          title: Weighted rate²
+      default: null
+      description:
+          ui: >
+            provide functions for calculating the area under the curve and 
+            performing comparative geometric analyses based on relative AUC 
+            values; Growth funtion, Squared Growth Rate, or Squared Growth Rate 
+            weighted by the Growth Function.
+          R: >
+            one or more of `'growthFunction'`, `'squaredRate'`, or 
+            `'gfSquaredRate'`, the function for AUC calculation
+      
+    - name: aucInterval
+      title: Custom
+      type: Bool
+      default: false
+      description:
+          ui: >
+            activate the custom time interval for area under the curve 
+            calculation. The standard interval is from the minimum to the 
+            maximum value of the time variable provided.
+          R: >
+            `TRUE` or `FALSE` (default), 
+      
+    - name: aucLower
+      title: Integral Lower
+      type: Number
+      min: 0
+      default: 0
+      description:
+          ui: >
+            the custom lower time interval for AUC calculation.
+          R: >
+            a number >= 0 (default: 0), lower interval for AUC calculation
+      
+    - name: aucUpper
+      title: Integral Upper
+      type: Number
+      min: 0
+      default: 0
+      description:
+          ui: >
+            the custom upper time interval for AUC calculation. 
+          R: >
+            a number >= 0 (default: 0), upper interval for AUC calculation
+
+    - name: growthPlots
+      title: Growth Curve Plot
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide line plots for each model setup -- a plot of the fitted 
+            nonlinear function for the dependent variable over time. The x-axis 
+            represents time, and the y-axis represents the growth unit.
+          R: >
+            `TRUE` or `FALSE` (default), provide a plot of the growth curve
+    
+    - name: growthCurveColor
+      title: Growth curve color
+      type: List
+      options:
+        - title: Black
+          name:  black
+        - title: Red
+          name:  red
+      default: red
+      description:
+          ui: >
+            the color of the fitted function in the Growth Curve Plots; Black, 
+            or Red.
+          R: >
+            `'black'`, or `'red'` (default), the model fitted function color 
+            in growthPlots
+
+    - name: growthRightAxis
+      title: Right axis
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide an additional right axis with a predefined function to 
+            Growth Curve Plots.
+          R: >
+            `TRUE` or `FALSE` (default), provide right axis to growthPlots
+      
+    - name: growthRightAxisFunc
+      title: Function
+      type: List
+      options:
+        - title: OGF
+          name:  ogf
+        - title: Growth rate
+          name:  growthRate
+        - title: Acceleration
+          name:  acceleration
+        - title: Squared rate
+          name:  squaredRate
+        - title: Weighted rate²
+          name:  gfSquaredRate
+      default: growthRate
+      description:
+          ui: >
+            the function of the right axis in the Growth Curve Plots; 
+            Ontogenetic Growth Force (OGF), Growth Rate, Acceleration, Squared
+            Growth Rate, or Squared Growth Rate weighted by the Growth 
+            Function.
+          R: >
+            `'ogf'`, `'growthRate'` (default), `'acceleration'`, `'squaredRate'`, 
+            or `'gfSquaredRate'`, the function of right axis in growthPlots
+    
+    - name: growthRightAxisLine
+      title: Line
+      type: List
+      options:
+        - title: Solid
+          name:  solid
+        - title: Dashed
+          name:  dashed
+      default: dashed
+      description:
+          ui: >
+            the line type for the right axis function in the Growth Curve Plots; 
+            Solid, or Dashed.
+          R: >
+            `'solid'`, or `'dashed'` (default), the line type for 
+            growthRightAxisFunc
+      
+    - name: growthRightAxisColor
+      title: Color
+      type: List
+      options:
+        - title: Orange
+          name:  orange
+        - title: Blue
+          name:  blue    
+        - title: Dark blue
+          name:  darkblue            
+        - title: Dark green
+          name:  darkgreen
+        - title: Black
+          name:  black          
+      default: black
+      description:
+          ui: >
+            the line color for the right axis function in the Growth Curve 
+            Plots; Orange, Blue, Dark blue, Dark green, or Black.
+          R: >
+            `'orange'`, 'blue'`, 'darkblue'`, 'darkgreen'`, or 
+            `'black'` (default), the line color for growthRightAxisFunc
+
+    - name: growthNoAxis
+      title: Shape (no axis)
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide an additional function, without visible axis, to analyze the
+            shape of a predefined function to Growth Curve Plots.
+          R: >
+            `TRUE` or `FALSE` (default), provide additional function to 
+            growthPlots
+      
+    - name: growthNoAxisFunc
+      title: Function
+      type: List
+      options:
+        - title: OGF
+          name:  ogf
+        - title: Growth rate
+          name:  growthRate
+        - title: Acceleration
+          name:  acceleration
+        - title: Squared rate
+          name:  squaredRate
+        - title: Weighted rate²
+          name:  gfSquaredRate
+      default: ogf
+      description:
+          ui: >
+            the additional function without visible axis in Growth Curve Plots; 
+            Ontogenetic Growth Force (OGF), Growth Rate, Acceleration, Squared
+            Growth Rate, or Squared Growth Rate weighted by the Growth 
+            Function.
+          R: >
+            `'ogf'` (default), `'growthRate'`, `'acceleration'`, `'squaredRate'`, 
+            or `'gfSquaredRate'`, the additional function of growthPlots
+      
+    - name: growthNoAxisLine
+      title: Line
+      type: List
+      options:
+        - title: Solid
+          name:  solid
+        - title: Dashed
+          name:  dashed
+      default: solid
+      description:
+          ui: >
+            the line type for the additional function without visible axis in
+            the Growth Curve Plots; Solid, or Dashed.
+          R: >
+            `'solid'` (default), or `'dashed'`, the line type for 
+            growthNoAxisLine
+      
+    - name: growthNoAxisColor
+      title: Color
+      type: List
+      options:
+        - title: Orange
+          name:  orange
+        - title: Blue
+          name:  blue    
+        - title: Dark blue
+          name:  darkblue            
+        - title: Dark green
+          name:  darkgreen
+        - title: Black
+          name:  black
+      default: darkgreen
+      description:
+          ui: >
+            the line color for the additional function without visible axis in
+            the Growth Curve Plots; Orange, Blue, Dark blue, Dark green, 
+            or Black.
+          R: >
+            `'orange'`, 'blue'`, 'darkblue'`, 'darkgreen'`, or `'black'` 
+            (default), the line color for growthRightAxisFunc
+
+    - name: residualPlots
+      title: Residual plots
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide residual diagnostic plots for each model setup -- a set of 
+            plots, including normalized residuals versus fitted values, a normal 
+            Q–Q plot with a reference line, an autocorrelation plot, and 
+            normalized residuals versus time.
+          R: >
+            `TRUE` or `FALSE` (default), provide residual diagnostic plots of 
+            the fitted growth curves
+      
+    - name: growthComparisonPlots
+      title: Comparison plot
+      type: Bool
+      default: false
+      description:
+          ui: >
+            provide a single plot overlaying the growth curves of all models.
+          R: >
+            `TRUE` or `FALSE` (default), provide a single plot of all fitted
+            growth curves
+      
+    - name: comparisonRightFunc
+      type: List
+      options:
+        - title: None
+          name:  none
+        - title: Growth rate
+          name:  growthRate
+        - title: Acceleration
+          name:  acceleration
+        - title: Growth rate²
+          name:  squaredRate
+        - title: Weighted rate²
+          name:  gfSquaredRate
+        - title: OGF
+          name:  ogf
+      default: none
+      description:
+          ui: >
+            the additional function for right axis in the comparison plot; 
+            None, Growth Rate, Acceleration, Squared Growth Rate, 
+            Squared Growth Rate weighted by the Growth Function, or 
+            Ontogenetic Growth Force (OGF)
+          R: >
+            `'none'` (default), `'acceleration'`, `'squaredRate'`, 
+            `'gfSquaredRate'`, or `'ogf'`, the function of overlaid curves in 
+            growthComparisonPlots
+
+    - name: plotsElements
+      title: Plots elements
+      type: NMXList
+      options:
+        - name: dataPoints
+          title: Data points
+        - name: critPoints
+          title: Critical points
+      default: null
+      description:
+          ui: >
+            provide additional elements to active growth curve plots. Data 
+            observations, and critical points location.
+          R: >
+            one or more of `'dataPoints'`, or `'critPoints'`
+      
+    - name: timeAxisFactor
+      title: Time axis
+      type: Number
+      min: 1
+      max: 30
+      default: 20
+      description:
+          ui: >
+            the multiplication factor for the final number of elements in the 
+            time axis. Used to create dense numerical vectors for plots and 
+            critical points calculation.
+          R: >
+            a number between 1 and 30 (default: 20), multiplication factor for 
+            the time vector used in plots and critical points
+
+...

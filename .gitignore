@@ -62,6 +62,12 @@ old*/
 *.omv
 *.xlsx
 
+# documentation build files
+/documentation/_book/
+/documentation/.quarto/
+/documentation/*_cache/
+/documentation/*_files/
+
 # other files / folders
 temp/
 man/

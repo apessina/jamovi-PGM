@@ -1,0 +1,306 @@
+---
+name:  gcurve
+title: Growth Curve Modeling
+jrs:   '1.1'
+
+items:
+    
+    - name: eqHtml
+      type: Html
+      description: a HTML block for models equations
+      visible: (eqHtmls)
+      refs:
+        - richards
+
+    - name: parTable
+      title: Model Parameters
+      type: Table
+      description: a table containing models parameters estimation
+      visible: (parTables)
+      clearWith:
+        - deps
+        - time
+        - model
+      columns:
+        - name: var
+          title: ''
+          type: text
+          
+        - name: Parameter
+          type: text
+          
+        - name: Estimate
+          type: number
+          
+        - name: SE
+          type: number
+          
+        - name: Lower
+          type: number
+          superTitle: 95% Confidence Interval
+          
+        - name: Upper
+          type: number
+          superTitle: 95% Confidence Interval
+      refs:
+        - pgm
+    
+    - name: estTable
+      title: Estimation Methods
+      type: Table
+      description: a table containing information about estimation methods
+      visible: (estTables)
+      columns:
+        - name: var
+          title: ''
+          type: text
+          
+        - name: category
+          title: 'Category'
+          type: text
+          
+        - name: method
+          title: 'Method Used'
+          type: text
+      refs:
+        - pgm
+        - nlsLM
+        - nlme
+
+    - name: modelEval
+      title: 'Model Evaluation'
+      type: Group
+      items:
+        - name: gofTable
+          title: Goodness of Fit
+          type: Table
+          description: a table containing GoF metrics
+          visible: false
+          clearWith:
+            - deps
+            - time
+            - model
+          columns:
+            - name: var
+              title: ''
+              type: text
+              
+            - name: AIC
+              type: number
+              visible: (gofMetrics:aic)
+              
+            - name: AICc
+              type: number
+              visible: (gofMetrics:aicc)
+              
+            - name: BIC
+              type: number
+              visible: (gofMetrics:bic)
+              
+            - name: r2
+              title: R²
+              type: number
+              visible: (gofMetrics:r2)
+              
+            - name: r2adj
+              title: Adjusted R²
+              type: number
+              visible: (gofMetrics:r2adj)
+          refs:
+            - pgm
+
+        - name: emTable
+          title: Error Metrics
+          type: Table
+          description: a table containing error metrics
+          visible: false
+          clearWith:
+            - deps
+            - time
+            - model
+          columns:
+            - name: var
+              title: ''
+              type: text
+              
+            - name: RMSE
+              type: number
+              visible: (errorMetrics:rmse)
+              
+            - name: MAE
+              type: number
+              visible: (errorMetrics:mae)
+              
+            - name: MedAE
+              type: number
+              visible: (errorMetrics:medae)
+              
+            - name: sMAPE
+              type: text
+              visible: (errorMetrics:smape)
+              
+            - name: RRMSE
+              type: text
+              visible: (errorMetrics:rrmse)
+          refs:
+            - pgm
+      
+    - name: aucTable
+      title: Area Under the Curve
+      visible: false
+      type: Table
+      columns:
+        - name: var
+          title: ''
+          type: text
+          
+        - name: Lower
+          type: number
+          superTitle: Time interval
+          
+        - name: Upper
+          type: number
+          superTitle: Time interval
+          
+        - name: gf
+          title: AUC
+          superTitle: Growth function
+          type: number
+          visible: (aucFunction:growthFunction)
+          
+        - name: gfRank
+          title: Rank
+          superTitle: Growth function
+          type: text
+          visible: (aucFunction:growthFunction)
+          
+        - name: sgr
+          title: AUC
+          superTitle: Squared rate
+          type: number
+          visible: (aucFunction:squaredRate)
+          
+        - name: sgrRank
+          title: Rank
+          superTitle: Squared rate
+          type: text
+          visible: (aucFunction:squaredRate)
+          
+        - name: gfSgr
+          title: AUC
+          superTitle: Weighted rate²
+          type: number
+          visible: (aucFunction:gfSquaredRate)
+          
+        - name: gfSgrRank
+          title: Rank
+          superTitle: Weighted rate²
+          type: text
+          visible: (aucFunction:gfSquaredRate)
+      refs:
+        - pgm
+        - ppfm
+
+    - name: critPointsTable
+      title: Critical points
+      type: Table
+      visible: false
+      columns:
+        - name: var
+          title: ''
+          type: text
+          
+        - name: Axis
+          type: text
+          
+        - name: F0
+          type: number
+          visible: (lagPoints:ogf0)
+        
+        - name: PAA
+          type: number
+          visible: (lagPoints:paa)
+          
+        - name: Tangent
+          type: number
+          visible: (lagPoints:tangent)
+          
+        - name: Threshold
+          type: number
+          visible: (lagPoints:threshold)
+          
+        - name: P1
+          type: number
+          visible: (accPoints:accMax)
+          
+        - name: F1
+          type: number
+          visible: (ogfPoints:ogfMax)
+          
+        - name: iPoint
+          title: Inflection (I)
+          type: number
+          visible: (iPoints)
+          
+        - name: F2
+          type: number
+          visible: (ogfPoints:ogfMin)
+          
+        - name: P2
+          type: number
+          visible: (accPoints:accMin)
+          
+        - name: F3
+          type: number
+          visible: (asyPoints:ogf3)
+          
+        - name: PDA
+          type: number
+          visible: (asyPoints:pda)  
+      refs:
+        - pgm
+        - ppfm
+        - paa
+        - pda
+
+    - name: residualPlot
+      visible: (residualPlots)
+      title: Residual Analysis
+      type: Array
+      items: 0
+      template:
+        type: Image
+        title: ''
+        width: 700
+        height: 500
+        renderFun: .residualPlot
+        requiresData: true
+        refs:
+          - pgm
+
+    - name: growthPlot
+      visible: (growthPlots)
+      title: Growth Curves
+      type: Array
+      items: 0
+      template:
+        type: Image
+        title: ''
+        width: 700
+        height: 500
+        renderFun: .growthPlot
+        requiresData: true
+        refs:
+          - pgm
+
+    - name: growthComparisonPlot
+      visible: (growthComparisonPlots)
+      title: Multiple Growth Curves
+      type: Image
+      width:  700
+      height: 500
+      renderFun: .growthComparisonPlot
+      refs:
+        - pgm
+
+...
