@@ -1,0 +1,74 @@
+---
+title: "Installation"
+format: html
+---
+
+## Installing jamovi
+
+PGM is an add-on module for jamovi. Before installing the module, download and install the current version of jamovi from its [official website](https://www.jamovi.org/download.html).
+
+After installation, open jamovi and verify that the main analysis interface is working correctly.
+
+## Installing PGM from the jamovi library
+
+PGM is available in the official jamovi library:
+
+1.  Open jamovi.
+
+2.  Select the Modules icon, in the upper-right of Analysis menu.
+
+3.  Open the jamovi module library.
+
+4.  Search for PGM.
+
+5.  Select Install.
+
+After installation, PGM will appear in the main analysis ribbon.
+
+## Installing a development version
+
+Development versions may be distributed as .jmo files on [PGM GitHub repository](https://github.com/apessina/jamovi-PGM).
+
+1.  To install a local module:
+
+2.  Open jamovi.
+
+3.  Select the Modules icon.
+
+4.  Select Sideload.
+
+5.  Locate the .jmo file.
+
+6.  Confirm the installation.
+
+Development versions may contain recently added features that have not yet been included in a stable release.
+
+## Updating PGM
+
+When PGM is installed through the jamovi library, available updates can be installed through the module manager.
+
+For reproducible academic work, record the PGM and jamovi versions.
+
+## Verifying the installation
+
+After installation, open a dataset containing numeric time and response variables. The module includes example datasets for testing and learning purposes. They are available from the jamovi menu in the upper-left corner: **Open → Data Library → PGM**.
+
+Next, select **Growth** from the analysis ribbon and open **Curve Modeling**. Assign at least one response variable and one time variable.
+
+If the analysis interface opens and produces an initial result, the module has been installed successfully.
+
+## Reporting problems
+
+When reporting an error, include:
+
+- the PGM version;
+
+- the jamovi version;
+
+- the operating system;
+
+- the selected model and options;
+
+- the complete error message;
+
+- a reproducible or anonymized dataset, when possible.

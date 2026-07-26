@@ -1,0 +1,80 @@
+---
+title: "Growth Models"
+format: html
+---
+
+## General formulation
+
+A parametric growth model represents the expected response at time $t$ as
+
+$$y_i = W(t_i;\boldsymbol\theta) + \varepsilon_i,$$
+
+where:
+
+$W(t_i;\boldsymbol\theta)$ is the selected growth function; $\boldsymbol\theta$ is the vector of model parameters; $\varepsilon_i$ is the residual error.
+
+The interpretation of $\boldsymbol\theta$ depends on the exact equation and parametrization.
+
+Models with similar names may be expressed using different parameter definitions in different authors and software implementations.
+
+## Parameter units
+
+The units of each parameter should be determined from the model equation.
+
+Common interpretations include:
+
+- $A$: response unit;
+- $T_i$: time unit;
+- rate parameters: inverse time or a parametrization-specific rate unit;
+- shape parameters: dimensionless.
+
+Parameters should not be compared directly across equations unless their mathematical definitions are equivalent.
+
+## Richards model
+
+PGM implements the Richards parametrization described by @tjorve2010.
+
+The growth function is
+
+$$A
+\left[
+1+
+(d-1)
+\exp\left(
+-\frac{K(t-T_i)}
+{d^{d/(1-d)}}
+\right)
+\right]^{1/(1-d)}.$$
+
+The parameters are:
+
+- $A$: asymptotic response;
+- $K$: growth-rate parameter under this parametrization;
+- $T_i$: time at the inflection point;
+- $d$: shape parameter controlling curve asymmetry.
+
+The meaning of $K$ is specific to this parametrization and should not be assumed to equal the rate parameter of another Richards equation.
+
+## Parameter constraints
+
+PGM fits the Richards model using transformed parameters:
+
+$$A=\exp(\alpha),$$
+
+$$K=\exp(\kappa),$$
+
+and
+
+$$d=1.05+\exp(\delta).$$
+
+Consequently:
+$$
+(A>0); (K>0); (d>1.05).
+$$
+The $d>1.05$ restriction is part of the current computational implementation and restricts the range of Richards shapes that can be fitted.
+
+## Starting values
+
+Starting values are generated automatically from the observed trajectory.
+
+The initial asymptote is based on a value above the observed maximum response. The initial inflection time is informed by the largest numerical growth rate, and the initial rate parameter is derived from that rate relative to the initial asymptote.

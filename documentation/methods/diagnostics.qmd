@@ -1,0 +1,48 @@
+---
+title: "Residual diagnostics"
+format: html
+---
+
+PGM provides a four-panel residual diagnostic display.
+
+## Residuals versus fitted values
+
+This plot is used to investigate:
+
+- nonconstant residual variance;
+- systematic curvature;
+- regions of poor fit;
+- influential or extreme observations.
+
+A satisfactory pattern should be centered near zero without pronounced systematic structure.
+
+## Residuals versus time
+
+This plot is used to investigate:
+
+- temporal trends not represented by the growth function;
+- early- or late-stage model inadequacy;
+- changes in residual variability over time;
+- local clusters of positive or negative residuals.
+
+## Normal Q--Q plot
+
+The Q--Q plot compares the empirical residual distribution with the normal distribution.
+
+Large systematic departures from the diagonal may indicate skewness, heavy tails, outliers, or model misspecification.
+
+Minor departures should not be interpreted mechanically, particularly with large datasets.
+
+## Residual autocorrelation
+
+The autocorrelation plot assesses whether residuals remain associated across neighboring measurement occasions.
+
+For longitudinal models, residual autocorrelation is evaluated within subjects.
+
+Persistent residual autocorrelation may indicate that the selected random effects or residual correlation structure is insufficient.
+
+## Residual scale
+
+For generalized nonlinear and nonlinear mixed-effects models, PGM uses normalized residuals that account for the fitted variance and correlation structure.
+
+For ordinary nonlinear least squares, raw residuals are standardized by the estimated residual standard deviation.

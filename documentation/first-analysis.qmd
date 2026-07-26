@@ -1,0 +1,134 @@
+---
+title: "Running an analysis"
+format: html
+---
+
+## Opening the analysis
+
+To begin:
+
+1.  Open the dataset in jamovi.
+
+2.  Select PGM from the analysis ribbon.
+
+3.  Open the growth-curve analysis.
+
+4.  Assign the time variable.
+
+5.  Assign one or more response variables.
+
+6.  Add a modeling setup for each response-model combination.
+
+Each modeling setup defines the response variable, growth model, residual variance structure, and residual correlation structure to be used in that analysis.
+
+## Selecting the response
+
+The response should be numeric and should represent a process compatible with the selected growth equation.
+
+Examples include: body weight; organism size; microbial concentration; plant height; cumulative production; other continuous responses measured over time.
+
+A sigmoidal growth model should not be selected solely because the observations increase over time. The observed trajectory should also exhibit a biologically and statistically plausible sigmoidal form.
+
+## Selecting time
+
+The time variable must be numeric.
+
+**Its measurement unit determines the units of:**
+
+- rate parameters;
+
+- inflection time;
+
+- critical-point locations;
+
+- derivative-based descriptors;
+
+- autocorrelation distances.
+
+Changing time from days to weeks changes the numerical values of time-dependent parameters.
+
+## Subject identifier
+
+For repeated measurements, assign a subject or experimental-unit identifier.
+
+**When no identifier is supplied, observations are treated as independent.**
+
+When an identifier is supplied, PGM fits a *nonlinear mixed-effects model* in which repeated observations are grouped within subjects.
+
+The identifier should represent the unit that generates the repeated trajectory, such as: animal; plant; patient; experimental vessel; microbial batch; plot.
+
+Treatment group, sex, breed, or experimental condition should not be used as the subject identifier unless each category genuinely represents one repeated observational unit.
+
+## Selecting a model
+
+Choose the growth equation according to: the expected trajectory shape; parameter interpretability; biological context; data coverage; convergence; residual diagnostics; comparative model performance.
+
+Different equations may fit similarly while producing parameters with different meanings.
+
+***The current version fits only the 4-parameter Richards, that should cover the shapes of both Gompertz and Logistic models.***
+
+## Selecting a residual variance structure
+
+Use a variance function when residual spread changes systematically with the fitted response.
+
+Available structures may include:
+
+- constant variance;
+
+- power variance;
+
+- exponential variance;
+
+- constant-plus-power variance.
+
+The selection should be supported by residual diagnostics and comparative model evaluation.
+
+Selecting residual correlation
+
+Residual correlation structures are available for longitudinal analyses.
+
+Use:
+
+AR(1) when measurements are approximately equally spaced and correlation is interpreted by measurement lag; CAR(1) when measurement intervals are irregular and correlation depends on the actual temporal distance.
+
+Random effects and residual autocorrelation represent different dependence mechanisms and may be included simultaneously.
+
+## Recommended workflow
+
+A defensible analysis commonly follows this sequence:
+
+1.  inspect the raw trajectories;
+
+2.  fit a biologically plausible mean curve;
+
+3.  assess parameter estimates and convergence;
+
+4.  inspect residuals versus fitted values and time;
+
+5.  evaluate heteroscedasticity;
+
+6.  account for repeated measurements using a subject identifier;
+
+7.  investigate residual autocorrelation;
+
+8.  compare candidate specifications;
+
+9.  verify parameter plausibility;
+
+10. interpret derived growth descriptors only after accepting the underlying fitted model.
+
+## Multiple modeling setups
+
+PGM allows multiple response-model configurations in the same analysis.
+
+This can be used to:
+
+- compare candidate growth models;
+
+- compare variance structures;
+
+- compare response variables;
+
+- inspect alternative residual-correlation structures.
+
+Comparisons should only be interpreted formally when the models use the same response observations and compatible likelihoods.

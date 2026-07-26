@@ -1,0 +1,112 @@
+---
+title: "Academic Reporting"
+format: html
+---
+
+## Citation
+
+Pessina ALR, Garcia-Neto M (2026). PGM: Practical Growth Modeling for jamovi \[Version x.x.x\]. doi: [10.5281/zenodo.15764773](https://doi.org/10.5281/zenodo.15764773)
+
+***The jamovi project [@jamovi]*** **and *The R project*[@R] should also be cited.** We also encourage authors to cite the packages and references used in the module’s analyses:
+
+- minpack.lm [@nlsLM]
+- nlme [@nlme]
+
+## Recommended information
+
+An academic report should identify:
+
+- the PGM version;
+- the jamovi version;
+- the selected growth equation;
+- the equation parametrization;
+- the response and time units;
+- the number of observations;
+- the number of subjects, when longitudinal;
+- the estimation framework;
+- the random-effects structure;
+- the residual variance structure;
+- the residual correlation structure;
+- the estimation method;
+- the model-comparison criteria;
+- the residual diagnostics examined.
+
+## Ordinary nonlinear model
+
+A possible methods statement is:
+
+> Growth trajectories were fitted using the PGM module for jamovi. The \[[Richards\]]{.underline} growth equation was estimated by nonlinear least squares, with initial optimization performed using the Levenberg--Marquardt algorithm. Model adequacy was evaluated using parameter estimates, information criteria, prediction-error measures, and residual diagnostics.
+
+## Generalized nonlinear least squares
+
+When a variance function is included:
+
+> Growth trajectories were fitted using the PGM module for jamovi. The \[[Richards\]]{.underline} growth equation was estimated by nonlinear least squares, with initial optimization performed using the Levenberg--Marquardt algorithm. The resulting estimates were used to initialize a generalized nonlinear least-squares model with a [\[power/exponential/constant-plus-power\]]{.underline} residual variance function based on the fitted response.
+
+## Nonlinear mixed-effects model
+
+For longitudinal data:
+
+> Growth trajectories were fitted using the PGM module for jamovi. Repeated growth measurements were analyzed using a nonlinear mixed-effects model. Population growth parameters were represented by fixed effects, and between-subject variation in the asymptotic parameter was represented by a random effect. Parameters were estimated by maximum likelihood after initialization using a Levenberg--Marquardt nonlinear fit.
+
+### Residual autocorrelation
+
+When applicable:
+
+> Within-subject residual dependence was modeled using a first-order [\[AR(1)/CAR(1)\]]{.underline} correlation structure.
+
+For CAR(1), the report may clarify:
+
+> Correlation was modeled as a function of the actual temporal distance between observations.
+
+### Heteroscedasticity
+
+When applicable:
+
+> Residual variance was modeled as a [\[power/exponential/constant-plus-power\]]{.underline} function of the absolute fitted response.
+
+## Model comparison
+
+A possible statement is:
+
+> Candidate specifications were compared using [\[AIC/AICc\]]{.underline} and BIC, together with residual diagnostics and biological plausibility of the estimated parameters. Information criteria were compared only across models fitted to the same response observations.
+
+## Derived growth descriptors
+
+When reporting derivative-based descriptors:
+
+> Derived growth values and times were calculated from the fitted growth function and its derivatives, presented as point estimates. These quantities were treated as model-based geometric descriptors.
+
+## Tables
+
+### Parameter tables
+
+- estimate;
+- standard error;
+- confidence interval;
+- parameter unit;
+- model parametrization.
+
+### Model-comparison tables
+
+- model;
+- variance structure;
+- correlation structure;
+- random-effects structure;
+- number of observations;
+- information criteria;
+- relevant error metrics.
+
+## Figures
+
+### Growth-curve figures
+
+- observed data;
+- fitted trajectory;
+- response and time units;
+- group or subject definition;
+- critical-point labels, when used.
+
+### Residual figures
+
+Residual figures should be reported or summarized whenever model assumptions are important to the conclusions.

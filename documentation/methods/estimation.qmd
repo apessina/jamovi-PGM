@@ -1,0 +1,52 @@
+---
+title: "Estimation"
+format: html
+---
+
+## Initial nonlinear fit
+
+PGM first fits the selected growth equation using nonlinear least squares and the Levenberg--Marquardt algorithm [@nlsLM].
+
+The initial fit serves two purposes:
+
+1.  it provides estimates for an ordinary nonlinear analysis;
+2.  it supplies starting values for generalized nonlinear least-squares or nonlinear mixed-effects estimation.
+
+Starting values are generated automatically from the observed data and the selected growth model.
+
+## Parameter transformations
+
+Some models are fitted using transformed parameters to impose parameter constraints and improve numerical stability.
+
+For example, a positive parameter $A$ may be represented internally as
+
+$$A = \exp(\alpha).$$
+
+The reported estimate is returned to the natural parameter scale.
+
+## Standard errors
+
+The covariance matrix is initially obtained on the transformed estimation scale.
+
+For parameters reported after nonlinear back-transformation, uncertainty is propagated to the natural scale using a first-order delta method.
+
+If $\boldsymbol\theta$ denotes the transformed parameters and $g(\boldsymbol\theta)$ their natural-scale representation, then
+
+$$\operatorname{Var}\!\left[g(\hat{\boldsymbol\theta})\right]
+\approx
+J
+\operatorname{Var}(\hat{\boldsymbol\theta})
+J^\mathsf{T},$$
+
+where $J$ is the Jacobian matrix of the back-transformation.
+
+## Confidence intervals
+
+Approximate 95% confidence intervals are first constructed on the transformed scale and subsequently back-transformed.
+
+These intervals depend on asymptotic normal approximations and may be unreliable when:
+
+- the sample size is small;
+- parameters are weakly identified;
+- estimates are near parameter boundaries;
+- the fitted model is numerically unstable.

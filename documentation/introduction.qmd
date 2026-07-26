@@ -1,0 +1,51 @@
+---
+title: "Introduction"
+format: html
+---
+
+Growth is a dynamic process in which the size, mass, concentration, or other measurable characteristic of a biological system changes over time.
+
+Sigmoidal growth models summarize an entire trajectory using a small number of parameters related to characteristics such as:
+
+- asymptotic response;
+- growth rate;
+- timing of the inflection point;
+- symmetry or shape of the trajectory.
+
+PGM provides a graphical interface for fitting these models in jamovi, while retaining statistical procedures commonly implemented in R.
+
+## Why use parametric growth models?
+
+Parametric growth models can provide interpretable summaries of nonlinear trajectories. Depending on the selected model, their parameters may describe:
+
+- the expected mature or asymptotic value;
+- the temporal scale of growth;
+- the maximum growth rate;
+- the age or time of maximum growth rate;
+- the shape and asymmetry of the curve.
+
+These interpretations depend on the equation and parametrization used. Parameters with similar names are not necessarily equivalent across different growth models.
+
+## Statistical challenges
+
+Biological growth data frequently present characteristics that are not adequately represented by ordinary nonlinear least squares, including:
+
+- increasing or decreasing residual variability;
+- repeated observations from the same experimental unit;
+- between-individual variation in growth parameters;
+- serial correlation between observations;
+- incomplete or irregular measurement schedules.
+
+PGM therefore includes variance functions, nonlinear mixed-effects models, and residual correlation structures.
+
+## Documentation conventions
+
+Throughout this documentation:
+
+- $W(t)$ denotes the fitted growth function;
+- $W'(t)$ denotes the instantaneous growth rate;
+- $W''(t)$ denotes growth acceleration;
+- $t$ denotes time or age;
+- $y$ denotes the observed response.
+
+The interpretation of each model-specific parameter is presented in the chapter on growth models.

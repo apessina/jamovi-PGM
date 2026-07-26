@@ -1,0 +1,156 @@
+---
+title: "Model Evaluation"
+format: html
+---
+
+## Estimation information
+
+The estimation-information table describes the computational and statistical framework used for each modeling setup.
+
+Depending on the selected options, it may report:
+
+- nonlinear least squares (NLS);
+- generalized nonlinear least squares (GNLS);
+- nonlinear mixed-effects estimation (NLME);
+- Levenberg--Marquardt initialization (LM);
+- Gauss--Newton estimation;
+- residual variance structure;
+- residual correlation structure;
+- random-effects structure.
+
+This table should be consulted before reporting the model because **the same mean equation may be fitted under different residual and dependence assumptions**.
+
+## Parameter estimates
+
+The parameter table reports estimates on the natural parameter scale.
+
+Available columns may include:
+
+- parameter estimate;
+- standard error;
+- lower confidence limit;
+- upper confidence limit.
+
+Some parameters are estimated internally on a transformed scale and subsequently returned to their natural scale.
+
+Approximate uncertainty is propagated through the back-transformation using a first-order delta method.
+
+## Interpreting confidence intervals
+
+Confidence intervals quantify uncertainty under the fitted model and its asymptotic approximation.
+
+Wide intervals may indicate:
+
+- insufficient sample size;
+- inadequate coverage of the growth trajectory;
+- strong correlation among model parameters;
+- weak identification;
+- excessive model flexibility;
+- numerical instability.
+
+## Goodness-of-fit measures
+
+### Akaike information criterion
+
+The Akaike information criterion is
+$$-2\ell + 2k,$$
+
+where $\ell$ is the maximized log-likelihood and $k$ is the number of estimated parameters counted by the fitted likelihood.
+
+Lower AIC values indicate better expected predictive information performance among comparable models.
+
+The absolute AIC value is not interpreted independently.
+
+# Corrected Akaike information criterion
+
+For finite samples, PGM calculates
+$$\mathrm{AIC}
++
+\frac{2k(k+1)}
+{n-k-1}.$$
+
+AICc is unavailable when the sample size is not sufficiently larger than the parameter count.
+
+## Bayesian information criterion
+
+The Bayesian information criterion is
+$$-2\ell+k\log(n).$$
+
+BIC generally penalizes model complexity more strongly than AIC as the sample size increases.
+
+## Descriptive coefficient of determination
+
+PGM calculates
+$$1-
+\frac{\sum_i(y_i-\hat y_i)^2}
+{\sum_i(y_i-\bar y)^2}.$$
+
+This is a descriptive residual-based statistic on the response scale.
+
+For nonlinear mixed-effects models, it should not be described as the marginal or conditional $R^2$ commonly defined specifically for mixed models.
+
+## Adjusted descriptive coefficient of determination
+
+PGM calculates an adjusted form based on residual degrees of freedom:
+$$1-
+\frac{\mathrm{SSE}/(n-p)}
+{\mathrm{SST}/(n-1)}.$$
+
+Its interpretation remains descriptive.
+
+## Error metrics
+
+### Root mean squared error
+
+$$\sqrt{
+\frac{1}{n}
+\sum_i
+(y_i-\hat y_i)^2
+}.$$
+
+RMSE uses the response unit and is relatively sensitive to large residuals.
+
+### Relative RMSE
+
+$$\frac{\mathrm{RMSE}}{\bar y}.$$
+
+RRMSE is dimensionless but may behave poorly when the response mean is close to zero.
+
+### Mean absolute error
+
+$$\frac{1}{n}
+\sum_i
+|y_i-\hat y_i|.$$
+
+### Median absolute error
+
+$$\operatorname{median}
+\left(
+|y_i-\hat y_i|
+\right).$$
+
+MedAE is less sensitive to isolated large residuals than RMSE or MAE.
+
+### Symmetric mean absolute percentage error
+
+PGM calculates
+$$\frac{100}{n}
+\sum_i
+\frac{2|y_i-\hat y_i|}
+{|y_i|+|\hat y_i|}.$$
+
+A small numerical safeguard is used when both the observed and fitted values are close to zero.
+
+## Comparing models
+
+AIC, AICc, and BIC comparisons require:
+
+- the same response variable;
+- the same response scale;
+- the same observations;
+- compatible likelihood definitions;
+- the same treatment of missing values.
+
+RMSE, MAE, and related error metrics should also be compared only across the same observations.
+
+Model selection should combine statistical performance, residual diagnostics, parameter plausibility, convergence, and interpretability.

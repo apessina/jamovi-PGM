@@ -1,0 +1,42 @@
+---
+title: "Index"
+format: html
+---
+
+**PGM — Practical Growth Models** is a jamovi module for fitting, evaluating, and interpreting nonlinear growth curves.
+
+The module provides tools for:
+
+- fitting parametric growth models;
+- modeling heteroscedastic residual variance;
+- fitting nonlinear mixed-effects models for longitudinal data;
+- modeling residual autocorrelation;
+- evaluating model fit and prediction error;
+- estimating biologically and geometrically relevant growth points;
+- visualizing fitted curves, derivatives, and residual diagnostics.
+
+## Scope
+
+PGM is intended for researchers analyzing longitudinal or cross-sectional growth data in animal science, plant science, microbiology, ecology, developmental biology, and related fields.
+
+The documentation is divided into four main parts:
+
+1.  **Getting started**, covering installation, data organization, and a first analysis;
+2.  **Methods**, describing the models, estimation procedures and analysis implemented in PGM;
+3.  **Academic**, providing reporting guidance and references.
+
+## Important considerations
+
+PGM assists with model estimation and interpretation but does not replace statistical judgment. Model selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, residual variance, dependence structure, parameter plausibility, and residual diagnostics should be considered jointly.
+
+## Acknowledgments and Contact
+
+This project is being developed at the School of Veterinary Medicine, São Paulo State University (UNESP), Araçatuba, São Paulo, Brazil.
+
+We extend our special thanks to the jamovi development team, particularly Jonathon Love, for his support, as well as to all users and testers who have contributed to the development of this project.
+
+Comments and feedback are welcome. Please contact us if you identify any errors, have suggestions or questions, or require methodological support for academic research.
+
+The development team can be reached at andre.pessina\@unesp.br
+
+***Citation instructions are provided in the chapter on academic reporting.***

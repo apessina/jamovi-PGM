@@ -1,0 +1,36 @@
+---
+title: "Overview"
+format: html
+---
+
+PGM selects the estimation framework according to the structure of the data and the analysis options.
+
+## Estimation pathways
+
+| Subject identifier | Residual variance | Estimation framework |
+|:--:|:--:|:---|
+| No | Constant | Nonlinear least squares |
+| No | Modeled | Generalized nonlinear least squares |
+| Yes | Any available option | Nonlinear mixed-effects model |
+
+All estimation pathways begin with an initial nonlinear fit using the Levenberg--Marquardt algorithm [@nlsLM].
+
+When a residual variance function is selected without a subject identifier, the initial estimates are used to initialize a generalized nonlinear least-squares model [@nlme].
+
+When a subject identifier is selected, the initial estimates are used to initialize a nonlinear mixed-effects model [@nlme].
+
+## Mean, variance, and dependence
+
+The complete statistical specification may contain three components:
+
+1.  **Mean structure:** the selected parametric growth equation;
+2.  **Variance structure:** the relationship between residual variance and fitted response;
+3.  **Dependence structure:** random effects and, optionally, residual autocorrelation.
+
+These components address different features of the data and should not be treated as interchangeable.
+
+## Maximum likelihood
+
+Nonlinear mixed-effects models in PGM are estimated using maximum likelihood.
+
+This facilitates comparisons between nested models with different fixed effects, provided that the models use the same response, observations, and likelihood framework.

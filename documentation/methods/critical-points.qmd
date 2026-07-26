@@ -1,0 +1,138 @@
+---
+title: "Critical Points"
+format: html
+---
+
+## Derivative notation
+
+Let $W(t)$ denote the fitted growth function.
+
+PGM may calculate:
+
+$$W'(t),$$
+
+the instantaneous growth rate, and
+
+$$W''(t),$$
+
+the growth acceleration.
+
+Higher-order derivatives are used for selected geometric descriptors.
+
+These quantities are properties of the fitted curve and inherit any misspecification or uncertainty in the underlying growth model.
+
+## Inflection point
+
+The inflection point is identified from a sign change in the second derivative:
+
+$$W''(t)=0.$$
+
+At the inflection point of a standard sigmoidal trajectory, the growth rate is at its maximum.
+
+When no sign change is found within the evaluated interval, PGM reports that no inflection point was detected.
+
+## Acceleration extrema
+
+Following @gregorczyk1991, PGM defines:
+
+- $P1$: time of maximum positive growth acceleration before the inflection point;
+- $P2$: time of minimum, or most negative, growth acceleration after the inflection point.
+
+Thus, $$\arg\max_{t<T_i} W''(t),$$ and $$\arg\min_{t>T_i} W''(t).$$
+
+These points describe the transition from increasing acceleration toward maximum growth rate and the subsequent period of strongest deceleration.
+
+## Ontogenetic growth force
+
+The ontogenetic growth force is defined as in @ppfm:
+
+$$W'(t)W''(t).$$
+
+PGM may report:
+
+- $F1$: maximum OGF before the inflection point; 
+- $F2$: the inflection-point location represented in the OGF sequence;
+
+Because $W'(t)$ is nonnegative for an increasing growth trajectory, the sign of OGF generally follows the sign of $W''(t)$.
+
+OGF-based points consider the magnitude of growth rate in the transition points from acceleration.
+
+## Effective growth onset
+
+Available onset descriptors may include:
+
+- $Tan.$: tangent-based onset;
+- $Thr.$: threshold-based onset;
+- $PAA$: Acceleration-derived onset;
+- $F0$: OGF-derived onset.
+
+### Tangent method
+
+The tangent method uses the tangent line at the point of maximum growth rate and calculates its intersection with the baseline response represented by the fitted value at the beginning of the evaluated interval.
+
+Its result depends on the observed or selected lower time boundary.
+
+### Threshold method
+
+The threshold method identifies the first time at which the fitted trajectory reaches a selected proportion of its fitted late-stage value.
+
+The result depends directly on the chosen threshold.
+
+### Absolute Acceleration Point
+
+PAA is identified before $P1$ from a zero crossing of the fourth derivative of the growth function [@korkmaz2018].
+
+It represents a transition in the evolution of growth acceleration.
+
+### OGF-derived onset
+
+The OGF-derived onset is calculated using the third derivative of the OGF before $P1$.
+
+It represents a transition in the evolution of the weighted growth acceleration.
+
+## Late-growth descriptors
+
+Available late-stage descriptors may include:
+
+- $F3$: an OGF-derived late point;
+- $PDA$: Point of Asymptotic Deceleration [@mischan2011].
+
+These are identified after $P2$ using derivative-based rules.
+
+They indicate geometric transitions toward the late portion of the fitted trajectory. From that point, growth acceleration decreases very slowly, as it asymptotically approach zero [@mischan2011].
+
+## Integral descriptors
+
+PGM may calculate the area under the curve (AUC) for the fitted growth function and its first derivative.
+
+It may be useful to summarize growth "intensity" in a single metric across different trajectories (treatments, lineages, or other factors). Comparisons require the same time unit, response unit, interval, and fitted-variable definition.
+
+The area under the fitted growth curve:
+
+$$\int_{t_L}^{t_U} W(t),dt.$$
+
+It may also calculate the integrated squared growth rate:
+
+$$\int_{t_L}^{t_U}
+\left[W'(t)\right]^2dt,$$
+
+and the response-weighted integrated squared growth rate [@ppfm]:
+
+$$\int_{t_L}^{t_U}
+W(t)\left[W'(t)\right]^2dt.$$
+
+If a custom integration interval is not provided, the AUC will be calculated for the complete time vector provided.
+
+## Numerical evaluation
+
+Critical points are located on a dense time grid spanning the fitted interval.
+
+Consequently, their reported precision is affected by the numerical grid resolution and should not be interpreted as exact analytic precision.
+
+## Uncertainty
+
+The current critical-point and integral tables provide point estimates.
+
+Confidence intervals for derived times and integral descriptors are not automatically implied by confidence intervals for the model parameters.
+
+Bootstrap, simulation, or delta-method procedures would be required to quantify their uncertainty separately.

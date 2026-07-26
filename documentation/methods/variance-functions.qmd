@@ -1,0 +1,57 @@
+---
+title: "Variance Functions"
+format: html
+---
+
+Ordinary nonlinear least squares assumes constant residual variance:
+
+$$\operatorname{Var}(\varepsilon_i)=\sigma^2.$$
+
+This assumption is often unrealistic for biological growth data because larger responses may exhibit greater absolute variability.
+
+PGM provides alternative residual variance functions based on the fitted response $\hat y_i$.
+
+## Power variance function
+
+$$\operatorname{Var}(\varepsilon_i)
+=
+\sigma^2 |\hat y_i|^{2\theta}.$$
+
+Interpretation:
+
+- $\theta=0$ corresponds to constant variance;
+- $\theta>0$ indicates increasing variance with fitted response;
+- $\theta<0$ indicates decreasing variance with fitted response.
+
+## Exponential variance function
+
+$$\operatorname{Var}(\varepsilon_i)
+=
+\sigma^2 \exp(2\theta\hat y_i).$$
+
+This model represents an exponential relationship between residual standard deviation and fitted response.
+
+## Constant-plus-power variance function
+
+$$\operatorname{Var}(\varepsilon_i)
+=
+\sigma^2
+\left(
+\theta_1 + |\hat y_i|^{\theta_2}
+\right)^2.$$
+
+This structure permits a nonzero baseline component together with a power-related increase or decrease in residual variation.
+
+## Choosing a variance structure
+
+A variance function should be considered when residual spread changes systematically across fitted values or time.
+
+Selection should consider:
+
+- residual-versus-fitted plots;
+- normalized residuals;
+- information criteria;
+- parameter stability;
+- biological plausibility.
+
+A lower *AIC* alone is insufficient if the fitted variance structure produces unstable parameters or implausible trajectories.

@@ -1,0 +1,65 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "PGM: Practical Growth Modeling for jamovi"
+  subtitle: "Methods and User Guide"
+  author: "André L. R. Pessina and Manoel Garcia Neto"
+
+  search: true
+  reader-mode: true
+
+  repo-url: https://github.com/apessina/jamovi-PGM
+  repo-actions:
+    - edit
+    - issue
+
+  chapters:
+    - index.qmd
+    - introduction.qmd
+    - installation.qmd
+    - data.qmd
+    - first-analysis.qmd
+
+    - part: "Methods"
+      chapters:
+        - methods/overview.qmd
+        - methods/growth-models.qmd
+        - methods/estimation.qmd
+        - methods/mixed-effects.qmd
+        - methods/variance-functions.qmd
+        - methods/residual-correlation.qmd
+        - methods/critical-points.qmd
+        - methods/model-evaluation.qmd
+        - methods/diagnostics.qmd
+
+    - part: "Tutorials"
+      chapters:
+        - tutorials/example-datasets.qmd
+        - tutorials/external-links.qmd
+
+    - academic-reporting.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-copy: true
+    code-overflow: wrap
+    citations-hover: true
+    crossrefs-hover: true
+    link-external-newwindow: true
+
+execute:
+  freeze: auto
+
+lang: en
+

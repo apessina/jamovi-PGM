@@ -1,0 +1,1922 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  english,
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrreprt}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+\ifLuaTeX
+\usepackage[bidi=basic,shorthands=off]{babel}
+\else
+\usepackage[bidi=default,shorthands=off]{babel}
+\fi
+\ifLuaTeX
+  \usepackage{selnolig} % disable illegal ligatures
+\fi
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{bookmark}{}{\usepackage{bookmark}}
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={PGM: Practical Growth Modeling for jamovi},
+  pdfauthor={André L. R. Pessina and Manoel Garcia Neto},
+  pdflang={en},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{PGM: Practical Growth Modeling for jamovi}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Methods and User Guide}
+\author{André L. R. Pessina and Manoel Garcia Neto}
+\date{}
+\begin{document}
+\maketitle
+
+\renewcommand*\contentsname{Table of contents}
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+
+\bookmarksetup{startatroot}
+
+\chapter{Index}\label{index}
+
+\bookmarksetup{startatroot}
+
+\chapter{PGM}\label{pgm}
+
+\textbf{PGM --- Practical Growth Models} is a jamovi module for fitting,
+evaluating, and interpreting nonlinear growth curves.
+
+The module provides tools for:
+
+\begin{itemize}
+\tightlist
+\item
+  fitting parametric growth models;
+\item
+  modeling heteroscedastic residual variance;
+\item
+  fitting nonlinear mixed-effects models for longitudinal data;
+\item
+  modeling residual autocorrelation;
+\item
+  evaluating model fit and prediction error;
+\item
+  estimating biologically and geometrically relevant growth points;
+\item
+  visualizing fitted curves, derivatives, and residual diagnostics.
+\end{itemize}
+
+\section{Scope}\label{scope}
+
+PGM is intended for researchers analyzing longitudinal or
+cross-sectional growth data in animal science, plant science,
+microbiology, ecology, developmental biology, and related fields.
+
+The documentation is divided into four main parts:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Getting started}, covering installation, data organization,
+  and a first analysis;
+\item
+  \textbf{Methods}, describing the models and estimation procedures
+  implemented in PGM;
+\item
+  \textbf{Results}, explaining the output tables, diagnostics, and
+  derived growth descriptors;
+\item
+  \textbf{Academic}, providing reporting guidance and limitations.
+\end{enumerate}
+
+\section{Important considerations}\label{important-considerations}
+
+PGM assists with model estimation and interpretation but does not
+replace statistical judgment. Model selection should not be based on a
+single goodness-of-fit statistic. The adequacy of the mean function,
+residual variance, dependence structure, parameter plausibility, and
+residual diagnostics should be considered jointly.
+
+\section{Acknowledgments and Contact}\label{acknowledgments-and-contact}
+
+This project is being developed at the School of Veterinary Medicine,
+São Paulo State University (UNESP), Araçatuba, São Paulo, Brazil.
+
+We extend our special thanks to the jamovi development team,
+particularly Jonathon Love, for his support, as well as to all users and
+testers who have contributed to the development of this project.
+
+Comments and feedback are welcome. Please contact us if you identify any
+errors, have suggestions or questions, or require methodological support
+for academic research. The development team can be reached at
+andre.pessina@unesp.br
+
+Citation information for the current version is provided in the chapter
+on academic reporting. In addition to citing PGM, we encourage authors
+to cite the R Project and the jamovi project. We also recommend citing
+the packages and references used in the module's analyses.
+
+\bookmarksetup{startatroot}
+
+\chapter{Introduction}\label{introduction}
+
+\bookmarksetup{startatroot}
+
+\chapter{Introduction}\label{introduction-1}
+
+Growth is a dynamic process in which the size, mass, concentration, or
+other measurable characteristic of a biological system changes over
+time.
+
+Sigmoidal growth models summarize an entire trajectory using a small
+number of parameters related to characteristics such as:
+
+\begin{itemize}
+\tightlist
+\item
+  asymptotic response \texttt{A};
+\item
+  growth rate \texttt{K};
+\item
+  timing of the inflection point \texttt{Ti};
+\item
+  symmetry or shape of the trajectory \texttt{d}.
+\end{itemize}
+
+PGM provides a graphical interface for fitting these models in jamovi,
+while retaining statistical procedures commonly implemented in R.
+
+\section{Why use parametric growth
+models?}\label{why-use-parametric-growth-models}
+
+Parametric growth models can provide interpretable summaries of
+nonlinear trajectories. Depending on the selected model, their
+parameters may describe:
+
+\begin{itemize}
+\tightlist
+\item
+  the expected mature or asymptotic value;
+\item
+  the temporal scale of growth;
+\item
+  the maximum growth rate;
+\item
+  the age or time of maximum growth rate;
+\item
+  the shape and asymmetry of the curve.
+\end{itemize}
+
+These interpretations depend on the equation and parametrization used.
+Parameters with similar names are not necessarily equivalent across
+different growth models.
+
+\section{Statistical challenges}\label{statistical-challenges}
+
+Biological growth data frequently present characteristics that are not
+adequately represented by ordinary nonlinear least squares, including:
+
+\begin{itemize}
+\tightlist
+\item
+  increasing or decreasing residual variability;
+\item
+  repeated observations from the same experimental unit;
+\item
+  between-individual variation in growth parameters;
+\item
+  serial correlation between observations;
+\item
+  incomplete or irregular measurement schedules.
+\end{itemize}
+
+PGM therefore includes variance functions, nonlinear mixed-effects
+models, and residual correlation structures.
+
+\section{Documentation conventions}\label{documentation-conventions}
+
+Throughout this documentation:
+
+\begin{itemize}
+\tightlist
+\item
+  \(W(t)\) denotes the fitted growth function;
+\item
+  \(W'(t)\) denotes the instantaneous growth rate;
+\item
+  \(W''(t)\) denotes growth acceleration;
+\item
+  \(t\) denotes time or age;
+\item
+  \(y\) denotes the observed response.
+\end{itemize}
+
+The interpretation of each model-specific parameter is presented in the
+chapter on growth models.
+
+\bookmarksetup{startatroot}
+
+\chapter{Installation}\label{installation}
+
+\bookmarksetup{startatroot}
+
+\chapter{Installation}\label{installation-1}
+
+\section{Installing jamovi}\label{installing-jamovi}
+
+PGM is an add-on module for jamovi. Before installing the module,
+download and install the current version of jamovi from its
+\href{https://www.jamovi.org/download.html}{official website}.
+
+After installation, open jamovi and verify that the main analysis
+interface is working correctly.
+
+\section{Installing PGM from the jamovi
+library}\label{installing-pgm-from-the-jamovi-library}
+
+PGM is available in the official jamovi library:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Open jamovi.
+\item
+  Select the Modules icon, in the upper-right of Analysis menu.
+\item
+  Open the jamovi module library.
+\item
+  Search for PGM.
+\item
+  Select Install.
+\end{enumerate}
+
+After installation, PGM will appear in the main analysis ribbon.
+
+\section{Installing a development
+version}\label{installing-a-development-version}
+
+Development versions may be distributed as .jmo files on
+\href{https://github.com/apessina/jamovi-PGM}{PGM GitHub repository}.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  To install a local module:
+\item
+  Open jamovi.
+\item
+  Select the Modules icon.
+\item
+  Select Sideload.
+\item
+  Locate the .jmo file.
+\item
+  Confirm the installation.
+\end{enumerate}
+
+Development versions may contain recently added features that have not
+yet been included in a stable release.
+
+\section{Updating PGM}\label{updating-pgm}
+
+When PGM is installed through the jamovi library, available updates can
+be installed through the module manager.
+
+For reproducible academic work, record the PGM and jamovi versions.
+
+\section{Verifying the installation}\label{verifying-the-installation}
+
+After installation, open a dataset containing numeric time and response
+variables. The module includes example datasets for testing and learning
+purposes. They are available from the jamovi menu in the upper-left
+corner: \textbf{Open → Data Library → PGM}.
+
+Next, select \textbf{Growth} from the analysis ribbon and open
+\textbf{Curve Modeling}. Assign at least one response variable and one
+time variable.
+
+If the analysis interface opens and produces an initial result, the
+module has been installed successfully.
+
+\section{Reporting problems}\label{reporting-problems}
+
+When reporting an error, include:
+
+\begin{itemize}
+\item
+  the PGM version;
+\item
+  the jamovi version;
+\item
+  the operating system;
+\item
+  the selected model and options;
+\item
+  the complete error message;
+\item
+  a reproducible or anonymized dataset, when possible.
+\end{itemize}
+
+\bookmarksetup{startatroot}
+
+\chapter{Data}\label{data}
+
+\bookmarksetup{startatroot}
+
+\chapter{Data preparation}\label{data-preparation}
+
+\section{Example datasets}\label{example-datasets}
+
+The module includes example datasets derived from published studies for
+testing and learning purposes. References for the original data sources
+are provided with each dataset.
+
+They are available from the jamovi menu in the upper-left corner:
+\textbf{Open → Data Library → PGM}.
+
+\section{Basic structure}\label{basic-structure}
+
+Data should be provided in long format, with one row per observation.
+
+At minimum, the dataset must contain:
+
+\begin{itemize}
+\tightlist
+\item
+  one numeric response variable;
+\item
+  one numeric time or age variable.
+\end{itemize}
+
+For longitudinal analyses, the dataset must also contain:
+
+\begin{itemize}
+\tightlist
+\item
+  one identification variable indicating the experimental unit or
+  subject.
+\end{itemize}
+
+\section{Cross-sectional structure}\label{cross-sectional-structure}
+
+A dataset without an identification variable is interpreted as
+containing independent observations.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}rr@{}}
+\toprule\noalign{}
+time & response \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 12.4 \\
+2 & 18.9 \\
+3 & 27.5 \\
+\end{longtable}
+}
+
+\section{Longitudinal structure}\label{longitudinal-structure}
+
+For repeated measurements, each subject must have a stable identifier.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+subject & time & response \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+A01 & 1 & 12.4 \\
+A01 & 2 & 18.9 \\
+A01 & 3 & 27.5 \\
+A02 & 1 & 11.8 \\
+A02 & 2 & 19.7 \\
+A02 & 3 & 29.1 \\
+\end{longtable}
+}
+
+\section{Variable requirements}\label{variable-requirements}
+
+\subsection{Response}\label{response}
+
+The response must be numeric and should represent a cumulative or
+monotonic biological growth process when a sigmoidal growth model is
+used.
+
+\subsection{Time}\label{time}
+
+Time must be numeric. Examples include:
+
+\begin{itemize}
+\tightlist
+\item
+  age in days;
+\item
+  age in weeks;
+\item
+  hours after inoculation;
+\item
+  days after planting.
+\end{itemize}
+
+The unit of time determines the unit of rate parameters and derivative
+quantities.
+
+\subsection{Subject identifier}\label{subject-identifier}
+
+The subject identifier may be numeric or categorical. It is used to
+associate repeated observations with the same experimental unit.
+
+Selecting an identifier changes the statistical model from an
+\emph{ordinary or generalized nonlinear model} to a \emph{nonlinear
+mixed-effects model}.
+
+\section{Missing observations}\label{missing-observations}
+
+Rows containing missing values in variables required by a given analysis
+are excluded from that analysis.
+
+Different response variables may therefore be fitted using different
+numbers of observations.
+
+\section{Measurement schedule}\label{measurement-schedule}
+
+For models using discrete AR(1) residual correlation, equally spaced
+observations are generally expected.
+
+For irregularly spaced measurements, continuous-time CAR(1) correlation
+is usually more appropriate.
+
+\section{Data coverage}\label{data-coverage}
+
+A nonlinear growth curve should ideally contain observations from the
+early, rapidly growing, and late portions of the trajectory.
+
+If the observed data do not adequately cover the upper part of the
+curve, the asymptotic parameter may be weakly identified and highly
+uncertain.
+
+\bookmarksetup{startatroot}
+
+\chapter{First analysis}\label{first-analysis}
+
+\bookmarksetup{startatroot}
+
+\chapter{Running an analysis}\label{running-an-analysis}
+
+\section{Opening the analysis}\label{opening-the-analysis}
+
+To begin:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Open the dataset in jamovi.
+\item
+  Select PGM from the analysis ribbon.
+\item
+  Open the growth-curve analysis.
+\item
+  Assign the time variable.
+\item
+  Assign one or more response variables.
+\item
+  Add a modeling setup for each response-model combination.
+\end{enumerate}
+
+Each modeling setup defines the response variable, growth model,
+residual variance structure, and residual correlation structure to be
+used in that analysis.
+
+\section{Selecting the response}\label{selecting-the-response}
+
+The response should be numeric and should represent a process compatible
+with the selected growth equation.
+
+Examples include: body weight; organism size; microbial concentration;
+plant height; cumulative production; other continuous responses measured
+over time.
+
+A sigmoidal growth model should not be selected solely because the
+observations increase over time. The observed trajectory should also
+exhibit a biologically and statistically plausible sigmoidal form.
+
+\section{Selecting time}\label{selecting-time}
+
+The time variable must be numeric.
+
+\textbf{Its measurement unit determines the units of:}
+
+\begin{itemize}
+\item
+  rate parameters;
+\item
+  inflection time;
+\item
+  critical-point locations;
+\item
+  derivative-based descriptors;
+\item
+  autocorrelation distances.
+\end{itemize}
+
+Changing time from days to weeks changes the numerical values of
+time-dependent parameters.
+
+\section{Subject identifier}\label{subject-identifier-1}
+
+For repeated measurements, assign a subject or experimental-unit
+identifier.
+
+\textbf{When no identifier is supplied, observations are treated as
+independent.}
+
+When an identifier is supplied, PGM fits a \emph{nonlinear mixed-effects
+model} in which repeated observations are grouped within subjects.
+
+The identifier should represent the unit that generates the repeated
+trajectory, such as: animal; plant; patient; experimental vessel;
+microbial batch; plot.
+
+Treatment group, sex, breed, or experimental condition should not be
+used as the subject identifier unless each category genuinely represents
+one repeated observational unit.
+
+\section{Selecting a model}\label{selecting-a-model}
+
+Choose the growth equation according to: the expected trajectory shape;
+parameter interpretability; biological context; data coverage;
+convergence; residual diagnostics; comparative model performance.
+
+Different equations may fit similarly while producing parameters with
+different meanings.
+
+\textbf{\emph{The current version fits only the 4-parameter Richards,
+that should cover the shapes of both Gompertz and Logistic models.}}
+
+\section{Selecting a residual variance
+structure}\label{selecting-a-residual-variance-structure}
+
+Use a variance function when residual spread changes systematically with
+the fitted response.
+
+Available structures may include:
+
+\begin{itemize}
+\item
+  constant variance;
+\item
+  power variance;
+\item
+  exponential variance;
+\item
+  constant-plus-power variance.
+\end{itemize}
+
+The selection should be supported by residual diagnostics and
+comparative model evaluation.
+
+Selecting residual correlation
+
+Residual correlation structures are available for longitudinal analyses.
+
+Use:
+
+AR(1) when measurements are approximately equally spaced and correlation
+is interpreted by measurement lag; CAR(1) when measurement intervals are
+irregular and correlation depends on the actual temporal distance.
+
+Random effects and residual autocorrelation represent different
+dependence mechanisms and may be included simultaneously.
+
+\section{Recommended workflow}\label{recommended-workflow}
+
+A defensible analysis commonly follows this sequence:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  inspect the raw trajectories;
+\item
+  fit a biologically plausible mean curve;
+\item
+  assess parameter estimates and convergence;
+\item
+  inspect residuals versus fitted values and time;
+\item
+  evaluate heteroscedasticity;
+\item
+  account for repeated measurements using a subject identifier;
+\item
+  investigate residual autocorrelation;
+\item
+  compare candidate specifications;
+\item
+  verify parameter plausibility;
+\item
+  interpret derived growth descriptors only after accepting the
+  underlying fitted model.
+\end{enumerate}
+
+\section{Multiple modeling setups}\label{multiple-modeling-setups}
+
+PGM allows multiple response-model configurations in the same analysis.
+
+This can be used to:
+
+\begin{itemize}
+\item
+  compare candidate growth models;
+\item
+  compare variance structures;
+\item
+  compare response variables;
+\item
+  inspect alternative residual-correlation structures.
+\end{itemize}
+
+Comparisons should only be interpreted formally when the models use the
+same response observations and compatible likelihoods.
+
+\part{Methods}
+
+\chapter{overview}\label{overview}
+
+\chapter{Modeling framework}\label{modeling-framework}
+
+PGM selects the estimation framework according to the structure of the
+data and the analysis options.
+
+\section{Estimation pathways}\label{estimation-pathways}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ccl@{}}
+\toprule\noalign{}
+Subject identifier & Residual variance & Estimation framework \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+No & Constant & Nonlinear least squares \\
+No & Modeled & Generalized nonlinear least squares \\
+Yes & Any available option & Nonlinear mixed-effects model \\
+\end{longtable}
+}
+
+All estimation pathways begin with an initial nonlinear fit using the
+Levenberg--Marquardt algorithm.
+
+When a residual variance function is selected without a subject
+identifier, the initial estimates are used to initialize a generalized
+nonlinear least-squares model.
+
+When a subject identifier is selected, the initial estimates are used to
+initialize a nonlinear mixed-effects model.
+
+\section{Mean, variance, and
+dependence}\label{mean-variance-and-dependence}
+
+The complete statistical specification may contain three components:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Mean structure:} the selected parametric growth equation;
+\item
+  \textbf{Variance structure:} the relationship between residual
+  variance and fitted response;
+\item
+  \textbf{Dependence structure:} random effects and, optionally,
+  residual autocorrelation.
+\end{enumerate}
+
+These components address different features of the data and should not
+be treated as interchangeable.
+
+\section{Maximum likelihood}\label{maximum-likelihood}
+
+Nonlinear mixed-effects models in PGM are estimated using maximum
+likelihood.
+
+This facilitates comparisons between nested models with different fixed
+effects, provided that the models use the same response, observations,
+and likelihood framework.
+
+\chapter{growth-models}\label{growth-models}
+
+Growth models General formulation
+
+A parametric growth model represents the expected response at time (t)
+as
+
+\[
+y_i = W(t_i;\boldsymbol\theta) + \varepsilon_i,
+\]
+
+where:
+
+(W(t\_i;\boldsymbol\theta)) is the selected growth function;
+(\boldsymbol\theta) is the vector of model parameters; (\varepsilon\_i)
+is the residual error.
+
+The interpretation of (\boldsymbol\theta) depends on the exact equation
+and parametrization.
+
+Models with similar names may be expressed using different parameter
+definitions in different publications and software implementations.
+
+Parameter units
+
+The units of each parameter should be determined from the model
+equation.
+
+Common interpretations include:
+
+(A): response unit; (T\_i): time unit; rate parameters: inverse time or
+a parametrization-specific rate unit; shape parameters: dimensionless.
+
+Parameters should not be compared directly across equations unless their
+mathematical definitions are equivalent.
+
+Richards model
+
+PGM implements the Richards parametrization described by Tjørve and
+Tjørve.
+
+The growth function is
+
+\[
+A
+\left[
+1+
+(d-1)
+\exp\left(
+-\frac{K(t-T_i)}
+{d^{d/(1-d)}}
+\right)
+\right]^{1/(1-d)}.
+\]
+
+The parameters are:
+
+(A): asymptotic response; (K): growth-rate parameter under this
+parametrization; (T\_i): time at the inflection point; (d): shape
+parameter controlling curve asymmetry.
+
+The meaning of (K) is specific to this parametrization and should not be
+assumed to equal the rate parameter of another Richards equation.
+
+Parameter constraints
+
+PGM fits the Richards model using transformed parameters:
+
+\[
+A=\exp(\alpha),
+\]
+
+\[
+K=\exp(\kappa),
+\]
+
+and
+
+\[
+d=1.05+\exp(\delta).
+\]
+
+Consequently:
+
+(A\textgreater0); (K\textgreater0); (d\textgreater1.05).
+
+The (d\textgreater1.05) restriction is part of the current computational
+implementation and restricts the range of Richards shapes that can be
+fitted.
+
+Starting values
+
+Starting values are generated automatically from the observed
+trajectory.
+
+The initial asymptote is based on a value above the observed maximum
+response. The initial inflection time is informed by the largest
+numerical growth rate, and the initial rate parameter is derived from
+that rate relative to the initial asymptote.
+
+Automatic starting values facilitate routine use but do not guarantee
+convergence or parameter identifiability.
+
+Documenting additional models
+
+For every additional model included in PGM, this chapter should provide:
+
+the exact implemented equation; the source or parametrization reference;
+parameter definitions; parameter units; parameter constraints; the
+location of the inflection point; limiting or nested cases, when
+relevant; cautions about comparison with alternative parametrizations.
+
+The equation shown in this manual must match the equation implemented by
+the module, rather than a generically named version found elsewhere in
+the literature.
+
+\chapter{estimation}\label{estimation}
+
+\chapter{Estimation}\label{estimation-1}
+
+\section{Initial nonlinear fit}\label{initial-nonlinear-fit}
+
+PGM first fits the selected growth equation using nonlinear least
+squares and the Levenberg--Marquardt algorithm.
+
+The initial fit serves two purposes:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  it provides estimates for an ordinary nonlinear analysis;
+\item
+  it supplies starting values for generalized nonlinear least-squares or
+  nonlinear mixed-effects estimation.
+\end{enumerate}
+
+Starting values are generated automatically from the observed data and
+the selected growth model.
+
+\section{Parameter transformations}\label{parameter-transformations}
+
+Some models are fitted using transformed parameters to impose parameter
+constraints and improve numerical stability.
+
+For example, a positive parameter (A) may be represented internally as
+
+\[
+A = \exp(\alpha).
+\]
+
+The reported estimate is returned to the natural parameter scale.
+
+\section{Standard errors}\label{standard-errors}
+
+The covariance matrix is initially obtained on the transformed
+estimation scale.
+
+For parameters reported after nonlinear back-transformation, uncertainty
+is propagated to the natural scale using a first-order delta method.
+
+If (\boldsymbol\theta) denotes the transformed parameters and
+(g(\boldsymbol\theta)) their natural-scale representation, then
+
+\[
+\operatorname{Var}\!\left[g(\hat{\boldsymbol\theta})\right]
+\approx
+J
+\operatorname{Var}(\hat{\boldsymbol\theta})
+J^\mathsf{T},
+\]
+
+where (J) is the Jacobian matrix of the back-transformation.
+
+\section{Confidence intervals}\label{confidence-intervals}
+
+Approximate 95\% confidence intervals are first constructed on the
+transformed scale and subsequently back-transformed.
+
+These intervals depend on asymptotic normal approximations and may be
+unreliable when:
+
+\begin{itemize}
+\tightlist
+\item
+  the sample size is small;
+\item
+  parameters are weakly identified;
+\item
+  estimates are near parameter boundaries;
+\item
+  the fitted model is numerically unstable.
+\end{itemize}
+
+\chapter{mixed-effects}\label{mixed-effects}
+
+\chapter{Nonlinear mixed-effects
+models}\label{nonlinear-mixed-effects-models}
+
+\section{When mixed effects are used}\label{when-mixed-effects-are-used}
+
+A nonlinear mixed-effects model is fitted when a subject identification
+variable is supplied.
+
+The model separates:
+
+\begin{itemize}
+\tightlist
+\item
+  population-level growth parameters, represented by fixed effects;
+\item
+  individual deviations from the population trajectory, represented by
+  random effects;
+\item
+  within-individual residual variation.
+\end{itemize}
+
+\section{Current random-effects
+structure}\label{current-random-effects-structure}
+
+In the current implementation, the asymptotic parameter (A) contains an
+individual random effect.
+
+On the transformed scale, the subject-specific asymptote may be written
+as
+
+\[
+\log(A_i) = \log(A) + b_{Ai},
+\]
+
+where
+
+\[
+b_{Ai} \sim N(0,\sigma_A^2).
+\]
+
+All remaining growth parameters are treated as fixed population
+parameters.
+
+\section{Interpretation}\label{interpretation}
+
+The fixed asymptotic parameter represents the population-level central
+trajectory on the model scale.
+
+The random effect represents persistent between-individual variation in
+the asymptotic level.
+
+Residual error represents observation-level variation remaining after
+accounting for the fixed effects, random effects, variance function, and
+residual correlation structure.
+
+\section{Conditional fitted values}\label{conditional-fitted-values}
+
+Residual diagnostics for nonlinear mixed-effects models use conditional
+fitted values. These include the estimated individual random effects.
+
+Consequently, the diagnostic residuals describe fit to individual
+trajectories rather than only to the population-average trajectory.
+
+\chapter{variance-functions}\label{variance-functions}
+
+\chapter{Residual variance functions}\label{residual-variance-functions}
+
+Ordinary nonlinear least squares assumes constant residual variance:
+
+\[
+\operatorname{Var}(\varepsilon_i)=\sigma^2.
+\]
+
+This assumption is often unrealistic for biological growth data because
+larger responses may exhibit greater absolute variability.
+
+PGM provides alternative residual variance functions based on the fitted
+response (\hat y\_i).
+
+\section{Power variance function}\label{power-variance-function}
+
+\[
+\operatorname{Var}(\varepsilon_i)
+=
+\sigma^2 |\hat y_i|^{2\theta}.
+\]
+
+Interpretation:
+
+\begin{itemize}
+\tightlist
+\item
+  (\theta=0) corresponds to constant variance;
+\item
+  (\theta\textgreater0) indicates increasing variance with fitted
+  response;
+\item
+  (\theta\textless0) indicates decreasing variance with fitted response.
+\end{itemize}
+
+\section{Exponential variance
+function}\label{exponential-variance-function}
+
+\[
+\operatorname{Var}(\varepsilon_i)
+=
+\sigma^2 \exp(2\theta\hat y_i).
+\]
+
+This model represents an exponential relationship between residual
+standard deviation and fitted response.
+
+\section{Constant-plus-power variance
+function}\label{constant-plus-power-variance-function}
+
+\[
+\operatorname{Var}(\varepsilon_i)
+=
+\sigma^2
+\left(
+\theta_1 + |\hat y_i|^{\theta_2}
+\right)^2.
+\]
+
+This structure permits a nonzero baseline component together with a
+power-related increase or decrease in residual variation.
+
+\section{Choosing a variance
+structure}\label{choosing-a-variance-structure}
+
+A variance function should be considered when residual spread changes
+systematically across fitted values or time.
+
+Selection should consider:
+
+\begin{itemize}
+\tightlist
+\item
+  residual-versus-fitted plots;
+\item
+  normalized residuals;
+\item
+  information criteria;
+\item
+  parameter stability;
+\item
+  biological plausibility.
+\end{itemize}
+
+A lower AIC alone is insufficient if the fitted variance structure
+produces unstable parameters or implausible trajectories.
+
+\chapter{residual-correlation}\label{residual-correlation}
+
+\chapter{Residual correlation}\label{residual-correlation-1}
+
+Repeated observations from the same subject may remain correlated even
+after individual random effects are included.
+
+PGM provides first-order discrete and continuous-time correlation
+structures.
+
+\section{AR(1)}\label{ar1}
+
+For observations separated by (h) measurement steps,
+
+\[
+\operatorname{Corr}
+(\varepsilon_{i,t},\varepsilon_{i,t+h})
+=
+\phi^{|h|},
+\]
+
+where (-1 \textless{} \phi \textless{} 1).
+
+AR(1) is most naturally interpreted when observations are ordered and
+approximately equally spaced.
+
+\section{CAR(1)}\label{car1}
+
+For observations made at times (t\_\{ij\}) and (t\_\{ik\}),
+
+\[
+\operatorname{Corr}
+(\varepsilon_{ij},\varepsilon_{ik})
+=
+\phi^{|t_{ij}-t_{ik}|}.
+\]
+
+CAR(1) uses the actual temporal distance between observations and is
+therefore suitable for irregularly spaced measurements.
+
+\section{Random effects are not
+autocorrelation}\label{random-effects-are-not-autocorrelation}
+
+Random effects and residual correlation represent different sources of
+dependence.
+
+A random effect represents persistent individual differences in the
+growth trajectory.
+
+Residual autocorrelation represents association between
+observation-level departures occurring close together in time.
+
+A model may require one, both, or neither structure.
+
+\part{Results}
+
+\chapter{model-evaluation}\label{model-evaluation}
+
+Results and interpretation Estimation information
+
+The estimation-information table describes the computational and
+statistical framework used for each modeling setup.
+
+Depending on the selected options, it may report:
+
+nonlinear least squares; generalized nonlinear least squares; nonlinear
+mixed-effects estimation; Levenberg--Marquardt initialization;
+Gauss--Newton estimation; residual variance structure; residual
+correlation structure; random-effects structure.
+
+This table should be consulted before reporting the model because the
+same mean equation may be fitted under different residual and dependence
+assumptions.
+
+Parameter estimates
+
+The parameter table reports estimates on the natural parameter scale.
+
+Available columns may include:
+
+parameter estimate; standard error; lower confidence limit; upper
+confidence limit.
+
+Some parameters are estimated internally on a transformed scale and
+subsequently returned to their natural scale.
+
+Approximate uncertainty is propagated through the back-transformation
+using a first-order delta method.
+
+Interpreting confidence intervals
+
+Confidence intervals quantify uncertainty under the fitted model and its
+asymptotic approximation.
+
+Wide intervals may indicate:
+
+insufficient sample size; inadequate coverage of the growth trajectory;
+strong correlation among model parameters; weak identification;
+excessive model flexibility; numerical instability.
+
+A narrow confidence interval does not establish biological validity if
+the selected model is structurally inappropriate.
+
+Goodness-of-fit measures Akaike information criterion
+
+The Akaike information criterion is
+
+-2\ell + 2k, \$\$
+
+where (\ell) is the maximized log-likelihood and (k) is the number of
+estimated parameters counted by the fitted likelihood.
+
+Lower AIC values indicate better expected predictive information
+performance among comparable models.
+
+The absolute AIC value is not interpreted independently.
+
+Corrected Akaike information criterion
+
+For finite samples, PGM calculates
+
+\mathrm{AIC}
+
+\begin{itemize}
+\item
+  \frac{2k(k+1)}
+
+  \{n-k-1\}. \$\$
+\end{itemize}
+
+AICc is unavailable when the sample size is not sufficiently larger than
+the parameter count.
+
+Bayesian information criterion
+
+The Bayesian information criterion is
+
+-2\ell+k\log(n). \$\$
+
+BIC generally penalizes model complexity more strongly than AIC as the
+sample size increases.
+
+Descriptive coefficient of determination
+
+PGM calculates
+
+1- \frac{\sum_i(y_i-\hat y_i)^2} \{\sum\_i(y\_i-\bar y)\^{}2\}. \$\$
+
+This is a descriptive residual-based statistic on the response scale.
+
+For nonlinear mixed-effects models, it should not be described as the
+marginal or conditional (R\^{}2) commonly defined specifically for mixed
+models.
+
+Adjusted descriptive coefficient of determination
+
+PGM calculates an adjusted form based on residual degrees of freedom:
+
+1- \frac{\mathrm{SSE}/(n-p)} \{\mathrm{SST}/(n-1)\}. \$\$
+
+Its interpretation remains descriptive.
+
+Error metrics Root mean squared error
+
+\sqrt{
+\frac{1}{n}
+\sum_i
+(y_i-\hat y_i)^2
+}. \$\$
+
+RMSE uses the response unit and is relatively sensitive to large
+residuals.
+
+Relative RMSE
+
+\frac{\mathrm{RMSE}}{\bar y}. \$\$
+
+RRMSE is dimensionless but may behave poorly when the response mean is
+close to zero.
+
+Mean absolute error
+
+\frac{1}{n}
+
+\sum\_i \textbar y\_i-\hat y\_i\textbar. \$\$
+
+Median absolute error
+
+\operatorname{median}
+
+\left( \textbar y\_i-\hat y\_i\textbar{} \right). \$\$
+
+MedAE is less sensitive to isolated large residuals than RMSE or MAE.
+
+Symmetric mean absolute percentage error
+
+PGM calculates
+
+\frac{100}{n}
+
+\sum\_i \frac{2|y_i-\hat y_i|}
+\{\textbar y\_i\textbar+\textbar{}\hat y\_i\textbar\}. \$\$
+
+A small numerical safeguard is used when both the observed and fitted
+values are close to zero.
+
+Comparing models
+
+AIC, AICc, and BIC comparisons require:
+
+the same response variable; the same response scale; the same
+observations; compatible likelihood definitions; the same treatment of
+missing values.
+
+RMSE, MAE, and related error metrics should also be compared only across
+the same observations.
+
+Model selection should combine statistical performance, residual
+diagnostics, parameter plausibility, convergence, and scientific
+interpretability.
+
+\chapter{diagnostics}\label{diagnostics}
+
+\chapter{Residual diagnostics}\label{residual-diagnostics}
+
+PGM provides a four-panel residual diagnostic display.
+
+\section{Residuals versus fitted
+values}\label{residuals-versus-fitted-values}
+
+This plot is used to investigate:
+
+\begin{itemize}
+\tightlist
+\item
+  nonconstant residual variance;
+\item
+  systematic curvature;
+\item
+  regions of poor fit;
+\item
+  influential or extreme observations.
+\end{itemize}
+
+A satisfactory pattern should be centered near zero without pronounced
+systematic structure.
+
+\section{Residuals versus time}\label{residuals-versus-time}
+
+This plot is used to investigate:
+
+\begin{itemize}
+\tightlist
+\item
+  temporal trends not represented by the growth function;
+\item
+  early- or late-stage model inadequacy;
+\item
+  changes in residual variability over time;
+\item
+  local clusters of positive or negative residuals.
+\end{itemize}
+
+\section{Normal Q--Q plot}\label{normal-qq-plot}
+
+The Q--Q plot compares the empirical residual distribution with the
+normal distribution.
+
+Large systematic departures from the diagonal may indicate skewness,
+heavy tails, outliers, or model misspecification.
+
+Minor departures should not be interpreted mechanically, particularly
+with large datasets.
+
+\section{Residual autocorrelation}\label{residual-autocorrelation}
+
+The autocorrelation plot assesses whether residuals remain associated
+across neighboring measurement occasions.
+
+For longitudinal models, residual autocorrelation is evaluated within
+subjects.
+
+Persistent residual autocorrelation may indicate that the selected
+random effects or residual correlation structure is insufficient.
+
+\section{Residual scale}\label{residual-scale}
+
+For generalized nonlinear and nonlinear mixed-effects models, PGM uses
+normalized residuals that account for the fitted variance and
+correlation structure.
+
+For ordinary nonlinear least squares, raw residuals are standardized by
+the estimated residual standard deviation.
+
+\chapter{critical-points}\label{critical-points}
+
+Growth descriptors Derivative notation
+
+Let (W(t)) denote the fitted growth function.
+
+PGM may calculate:
+
+\[
+W'(t),
+\]
+
+the instantaneous growth rate, and
+
+\[
+W''(t),
+\]
+
+the growth acceleration.
+
+Higher-order derivatives are used for selected geometric descriptors.
+
+These quantities are properties of the fitted curve and inherit any
+misspecification or uncertainty in the underlying growth model.
+
+Inflection point
+
+The inflection point is identified from a sign change in the second
+derivative:
+
+\[
+W''(t)=0.
+\]
+
+At the inflection point of a standard sigmoidal trajectory, the growth
+rate is at its maximum.
+
+When no sign change is found within the evaluated interval, PGM reports
+that no inflection point was detected.
+
+Acceleration extrema
+
+PGM defines:
+
+(P\_1): time of maximum positive growth acceleration before the
+inflection point; (P\_2): time of minimum, or most negative, growth
+acceleration after the inflection point.
+
+Thus,
+
+\arg\max\_\{t\textless T\_i\} W'\,'(t), \$\$
+
+and
+
+\arg\min\_\{t\textgreater T\_i\} W'\,'(t). \$\$
+
+These points describe the transition from increasing acceleration toward
+maximum growth rate and the subsequent period of strongest deceleration.
+
+Ontogenetic growth force
+
+The ontogenetic growth force is defined as
+
+\[
+W'(t)W''(t).
+\]
+
+PGM may report:
+
+(F\_1): maximum OGF before the inflection point; (F\_i): the
+inflection-point location represented in the OGF sequence; (F\_2):
+minimum OGF after the inflection point.
+
+Because (W'(t)) is nonnegative for an increasing growth trajectory, the
+sign of OGF generally follows the sign of (W'\,'(t)).
+
+OGF-based points should be interpreted as geometric or operational
+descriptors unless independent biological validation is available.
+
+Effective growth onset
+
+Available onset descriptors may include:
+
+tangent-based onset; threshold-based onset; OGF-derived onset;
+PAA-derived onset. Tangent method
+
+The tangent method uses the tangent line at the point of maximum growth
+rate and calculates its intersection with the baseline response
+represented by the fitted value at the beginning of the evaluated
+interval.
+
+Its result depends on the observed or selected lower time boundary.
+
+Threshold method
+
+The threshold method identifies the first time at which the fitted
+trajectory reaches a selected proportion of its fitted late-stage value.
+
+The result depends directly on the chosen threshold.
+
+OGF-derived onset
+
+The OGF-derived onset is calculated using the third derivative of the
+OGF before (P\_1).
+
+It should be treated as a model-derived geometric descriptor rather than
+as a universally established biological boundary.
+
+PAA
+
+PAA is identified before (P\_1) from a zero crossing of the fourth
+derivative of the growth function.
+
+It represents a transition in the evolution of growth acceleration.
+
+Late-growth descriptors
+
+Available late-stage descriptors may include:
+
+an OGF-derived late point; PDA.
+
+These are identified after (P\_2) using derivative-based rules.
+
+They indicate geometric transitions toward the late portion of the
+fitted trajectory and are not direct evidence that biological growth has
+completely ceased.
+
+Integral descriptors
+
+PGM may calculate the area under the fitted growth curve:
+
+\[
+\int_{t_L}^{t_U} W(t),dt.
+\]
+
+It may also calculate the integrated squared growth rate:
+
+\[
+\int_{t_L}^{t_U}
+\left[W'(t)\right]^2dt,
+\]
+
+and the response-weighted integrated squared growth rate:
+
+\[
+\int_{t_L}^{t_U}
+W(t)\left[W'(t)\right]^2dt.
+\]
+
+These descriptors depend on the selected integration interval.
+
+Comparisons require the same time unit, response unit, interval, and
+fitted-variable definition.
+
+Numerical evaluation
+
+Critical points are located on a dense time grid spanning the fitted
+interval.
+
+Consequently, their reported precision is affected by the numerical grid
+resolution and should not be interpreted as exact analytic precision.
+
+Uncertainty
+
+The current critical-point and integral tables provide point estimates.
+
+Confidence intervals for derived times and integral descriptors are not
+automatically implied by confidence intervals for the model parameters.
+
+Bootstrap, simulation, or delta-method procedures would be required to
+quantify their uncertainty separately.
+
+\part{Academic use}
+
+\chapter{reporting}\label{reporting}
+
+Academic reporting Minimum information
+
+An academic report should identify:
+
+the PGM version; the jamovi version; the selected growth equation; the
+equation parametrization; the response and time units; the number of
+observations; the number of subjects, when longitudinal; the estimation
+framework; the random-effects structure; the residual variance
+structure; the residual correlation structure; the estimation method;
+the model-comparison criteria; the residual diagnostics examined.
+Ordinary nonlinear model
+
+A possible methods statement is:
+
+Growth trajectories were fitted using the PGM module for jamovi. The
+selected nonlinear growth equation was estimated by nonlinear least
+squares, with initial optimization performed using the
+Levenberg--Marquardt algorithm. Model adequacy was evaluated using
+parameter estimates, information criteria, prediction-error measures,
+and residual diagnostics.
+
+Generalized nonlinear least squares
+
+When a variance function is included:
+
+Growth trajectories were initially fitted by nonlinear least squares
+using the Levenberg--Marquardt algorithm. The resulting estimates were
+used to initialize a generalized nonlinear least-squares model with a
+{[}power/exponential/constant-plus-power{]} residual variance function
+based on the fitted response.
+
+Nonlinear mixed-effects model
+
+For longitudinal data:
+
+Repeated growth measurements were analyzed using a nonlinear
+mixed-effects model. Population growth parameters were represented by
+fixed effects, and between-subject variation in the asymptotic parameter
+was represented by a random effect. Parameters were estimated by maximum
+likelihood after initialization using a Levenberg--Marquardt nonlinear
+fit.
+
+Residual autocorrelation
+
+When applicable:
+
+Within-subject residual dependence was modeled using a first-order
+{[}AR(1)/CAR(1){]} correlation structure.
+
+For CAR(1), the report may clarify:
+
+Correlation was modeled as a function of the actual temporal distance
+between observations.
+
+Heteroscedasticity
+
+For a power variance model:
+
+Residual variance was modeled as a power function of the absolute fitted
+response.
+
+Avoid writing only that ``weighted regression'' was performed because
+that does not identify the fitted variance model.
+
+Model comparison
+
+A possible statement is:
+
+Candidate specifications were compared using AIC, AICc, and BIC,
+together with residual diagnostics and biological plausibility of the
+estimated parameters. Information criteria were compared only across
+models fitted to the same response observations.
+
+Derived growth descriptors
+
+When reporting derivative-based descriptors:
+
+Derived growth times were calculated from the fitted growth function and
+its derivatives. These quantities were treated as model-based geometric
+descriptors.
+
+When uncertainty was not calculated, state:
+
+Derived growth times are presented as point estimates; confidence
+intervals were not calculated.
+
+Tables
+
+Parameter tables should report:
+
+estimate; standard error; confidence interval; parameter unit; model
+parametrization.
+
+Model-comparison tables should report:
+
+model; variance structure; correlation structure; random-effects
+structure; number of observations; AIC; AICc; BIC; relevant error
+metrics. Figures
+
+Growth-curve figures should identify:
+
+observed data; fitted trajectory; response and time units; group or
+subject definition; critical-point labels, when shown.
+
+Residual figures should be reported or summarized whenever model
+assumptions are important to the conclusions.
+
+Citation
+
+The final software citation should include:
+
+module authors; year; module title; version; software type; repository
+or archival DOI.
+
+The jamovi software and relevant statistical libraries should also be
+cited according to the requirements of the target journal.
+
+\chapter{Limitations}\label{limitations}
+
+Limitations Model dependence
+
+All parameter estimates and derived descriptors depend on the selected
+mean function.
+
+A good numerical fit does not guarantee that the equation is
+biologically appropriate.
+
+Different growth equations may produce similar fitted values but
+different parameter estimates, asymptotes, inflection times, and
+derivative-based descriptors.
+
+Data coverage
+
+Asymptotic parameters are weakly supported when observations do not
+cover the late growth phase.
+
+Early or truncated datasets may produce:
+
+unstable asymptotes; strong parameter correlations; wide confidence
+intervals; implausible extrapolation; convergence failures. Current
+random-effects structure
+
+The current nonlinear mixed-effects implementation includes a random
+effect on the asymptotic parameter (A).
+
+It does not automatically test all possible random-effects structures.
+
+If individuals differ substantially in growth rate, inflection time, or
+shape, the current structure may be insufficient.
+
+Distributional assumptions
+
+The fitted models rely on assumptions about:
+
+residual normality; the selected variance function; random-effect
+normality; the selected residual correlation structure.
+
+Residual diagnostics can reveal important violations but cannot prove
+that all assumptions are correct.
+
+Numerical estimation
+
+Nonlinear models may be sensitive to:
+
+starting values; parameter scaling; sparse data; weakly identified
+parameters; highly flexible equations; extreme observations.
+
+Failure to converge should not be resolved merely by repeatedly changing
+optimizer settings without reconsidering the data and model
+specification.
+
+Approximate confidence intervals
+
+Parameter confidence intervals use asymptotic approximations and
+first-order uncertainty propagation.
+
+They may be inaccurate near parameter boundaries or under strong
+nonlinearity.
+
+Descriptive (R\^{}2)
+
+The (R\^{}2) and adjusted (R\^{}2) values produced by PGM are
+descriptive residual-based measures.
+
+For mixed-effects models, they are not equivalent to specialized
+marginal and conditional mixed-model (R\^{}2) measures.
+
+Information criteria
+
+Information criteria support relative comparison among compatible
+models.
+
+They do not:
+
+test biological truth; establish residual adequacy; guarantee predictive
+performance outside the observed range; replace subject-matter
+interpretation. Critical points
+
+Derivative-based critical points depend on:
+
+the selected growth equation; the fitted parameters; the observed time
+interval; numerical grid resolution; existence of the required extrema
+or zero crossings.
+
+A missing point may indicate that the mathematical condition was not
+found within the evaluated interval.
+
+It should not automatically be interpreted as evidence that the
+biological process lacks the corresponding phase.
+
+Uncertainty of derived descriptors
+
+PGM currently reports point estimates for critical times and integral
+descriptors.
+
+Their uncertainty is not automatically quantified.
+
+Extrapolation
+
+Predictions beyond the observed time range should be treated cautiously,
+especially when the asymptotic phase is not well represented in the
+data.
+
+\bookmarksetup{startatroot}
+
+\chapter*{References}\label{references}
+\addcontentsline{toc}{chapter}{References}
+
+\markboth{References}{References}
+
+\protect\phantomsection\label{refs}
+
+
+
+
+\end{document}

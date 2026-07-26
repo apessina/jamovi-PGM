@@ -1,0 +1,97 @@
+---
+title: "Data preparation"
+format: html
+---
+
+## Example datasets
+
+The module includes example datasets derived from published studies for testing and learning purposes. References for the original data sources are provided with each dataset.
+
+They are available from the jamovi menu in the upper-left corner: **Open → Data Library → PGM**.
+
+## Basic structure
+
+Data should be provided in long format, with one row per observation.
+
+At minimum, the dataset must contain:
+
+- one numeric response variable;
+- one numeric time or age variable.
+
+For longitudinal analyses, the dataset must also contain:
+
+- one identification variable indicating the experimental unit or subject.
+
+## Cross-sectional structure
+
+A dataset without an identification variable is interpreted as containing independent observations.
+
+| time | response |
+|-----:|---------:|
+|    1 |     12.4 |
+|    2 |     18.9 |
+|    3 |     27.5 |
+
+## Longitudinal structure
+
+For repeated measurements, each subject must have a stable identifier.
+
+| subject | time | response |
+|:--------|-----:|---------:|
+| A01     |    1 |     12.4 |
+| A01     |    2 |     18.9 |
+| A01     |    3 |     27.5 |
+| A02     |    1 |     11.8 |
+| A02     |    2 |     19.7 |
+| A02     |    3 |     29.1 |
+
+## Variable requirements
+
+### Response
+
+The response must be numeric and should represent a cumulative or monotonic biological growth process when a sigmoidal growth model is used.
+
+### Time
+
+Time must be numeric. Examples include:
+
+- age in days;
+- age in weeks;
+- hours after inoculation;
+- days after planting.
+
+The unit of time determines the unit of rate parameters and derivative quantities.
+
+### Subject identifier
+
+The subject identifier may be numeric or categorical. It is used to associate repeated observations with the same experimental unit.
+
+Selecting an identifier changes the statistical model from an *ordinary or generalized nonlinear model* to a *nonlinear mixed-effects model*.
+
+## Missing observations
+
+Rows containing missing values in variables required by a given analysis are excluded from that analysis.
+
+Different response variables may therefore be fitted using different numbers of observations.
+
+## Measurement schedule
+
+For models using discrete AR(1) residual correlation, equally spaced observations are generally expected.
+
+For irregularly spaced measurements, continuous-time CAR(1) correlation is usually more appropriate.
+
+## Data coverage
+
+A nonlinear growth curve should ideally contain observations from the early, rapidly growing, and late portions of the trajectory.
+
+If the observed data do not adequately cover the upper part of the curve, the asymptotic parameter may be weakly identified and highly uncertain.
+
+Early or truncated datasets may produce:
+
+- unstable asymptotes and geometric descriptors;
+- strong parameter correlations;
+- wide confidence intervals;
+- implausible extrapolation;
+- **convergence failures**.
+
+Predictions beyond the observed time range should be treated cautiously, especially when the asymptotic phase is not well represented in the data.

@@ -1,0 +1,42 @@
+---
+title: "Residual Correlation"
+format: html
+---
+
+Repeated observations from the same subject may remain correlated even after individual random effects are included.
+
+PGM provides first-order discrete and continuous-time correlation structures.
+
+## AR(1)
+
+For observations separated by $h$ measurement steps,
+
+$$\operatorname{Corr}
+(\varepsilon_{i,t},\varepsilon_{i,t+h})
+=
+\phi^{|h|},$$
+
+where $-1 < \phi < 1$.
+
+AR(1) is most naturally interpreted when observations are ordered and **approximately equally spaced**.
+
+## CAR(1)
+
+For observations made at times $t\_{ij}$ and $t\_{ik}$,
+
+$$\operatorname{Corr}
+(\varepsilon_{ij},\varepsilon_{ik})
+=
+\phi^{|t_{ij}-t_{ik}|}.$$
+
+CAR(1) uses the actual temporal distance between observations and is therefore suitable for **irregularly spaced measurements**.
+
+## Random effects are not autocorrelation
+
+Random effects and residual correlation represent different sources of dependence.
+
+A random effect represents persistent individual differences in the growth trajectory.
+
+Residual autocorrelation represents association between observation-level departures occurring close together in time.
+
+A model may require one, both, or neither structure.

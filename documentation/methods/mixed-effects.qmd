@@ -1,0 +1,42 @@
+---
+title: "Mixed Effects"
+format: html
+---
+
+## When mixed effects are used
+
+A nonlinear mixed-effects model is fitted when a subject identification variable is supplied [@nlme].
+
+The model separates:
+
+- population-level growth parameters, represented by fixed effects;
+- individual deviations from the population trajectory, represented by random effects;
+- within-individual residual variation.
+
+## Current random-effects structure
+
+In the current implementation, the asymptotic parameter $A$ contains an individual random effect.
+
+On the transformed scale, the subject-specific asymptote may be written as
+
+$$\log(A_i) = \log(A) + b_{Ai},$$
+
+where
+
+$$b_{Ai} \sim N(0,\sigma_A^2).$$
+
+All remaining growth parameters are treated as fixed population parameters.
+
+## Interpretation
+
+The fixed asymptotic parameter represents the population-level central trajectory on the model scale.
+
+The random effect represents persistent between-individual variation in the asymptotic level.
+
+Residual error represents observation-level variation remaining after accounting for the fixed effects, random effects, variance function, and residual correlation structure.
+
+## Conditional fitted values
+
+Residual diagnostics for nonlinear mixed-effects models use conditional fitted values. These include the estimated individual random effects.
+
+Consequently, the diagnostic residuals describe fit to individual trajectories rather than only to the population-average trajectory.
