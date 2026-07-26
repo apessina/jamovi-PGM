@@ -1,0 +1,383 @@
+title: Growth Curve Modeling
+name: gcurve
+jus: '3.0'
+stage: 0
+compilerMode: tame
+children:
+  - type: VariableSupplier
+    persistentItems: false
+    stretchFactor: 1
+    children:
+      - type: TargetLayoutBox
+        label: Dependent Variables
+        children:
+          - type: VariablesListBox
+            name: deps
+            isTarget: true
+      - type: TargetLayoutBox
+        label: Time Variable
+        children:
+          - type: VariablesListBox
+            name: time
+            maxItemCount: 1
+            isTarget: true
+      - type: TargetLayoutBox
+        label: Individual Identifier
+        children:
+          - type: VariablesListBox
+            name: iid
+            maxItemCount: 1
+            isTarget: true
+  - type: CollapseBox
+    label: Modeling
+    collapsed: false
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        stretchFactor: 1
+        children:
+          - type: Label
+            label: Show
+            style: inline
+            children:
+              - type: CheckBox
+                name: eqHtmls
+              - type: CheckBox
+                name: parTables
+              - type: CheckBox
+                name: estTables
+      - type: ListBox
+        name: modeling
+        stretchFactor: 1
+        showColumnHeaders: true
+        columns:
+          - name: setupLabel
+            label: Setup
+            stretchFactor: 0.5
+            maxWidth: 100
+            template:
+              type: Label
+          - name: var
+            label: Variable
+            stretchFactor: 1
+            maxWidth: 300
+            template:
+              type: VariableLabel
+          - name: model
+            label: Model
+            stretchFactor: 1
+            template:
+              type: ComboBox
+          - name: errorVarType
+            label: Weight
+            stretchFactor: 1
+            template:
+              type: ComboBox
+          - name: errorCorType
+            label: AR
+            stretchFactor: 1
+            template:
+              type: ComboBox
+      - type: LayoutBox
+        style: inline
+        children:
+          - type: ActionButton
+            name: duplicateSetup
+          - type: ActionButton
+            name: removeSetup
+  - type: CollapseBox
+    label: Model Evaluation
+    collapsed: true
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Goodness of Fit
+                children:
+                  - name: gofMetrics_aic
+                    type: CheckBox
+                    optionName: gofMetrics
+                    optionPart: aic
+                  - name: gofMetrics_aicc
+                    type: CheckBox
+                    optionName: gofMetrics
+                    optionPart: aicc
+                  - name: gofMetrics_bic
+                    type: CheckBox
+                    optionName: gofMetrics
+                    optionPart: bic
+                  - name: gofMetrics_r2
+                    type: CheckBox
+                    optionName: gofMetrics
+                    optionPart: r2
+                  - name: gofMetrics_r2adj
+                    type: CheckBox
+                    optionName: gofMetrics
+                    optionPart: r2adj
+                name: gofMetrics
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Error Metrics
+                children:
+                  - name: errorMetrics_rmse
+                    type: CheckBox
+                    optionName: errorMetrics
+                    optionPart: rmse
+                  - name: errorMetrics_mae
+                    type: CheckBox
+                    optionName: errorMetrics
+                    optionPart: mae
+                  - name: errorMetrics_medae
+                    type: CheckBox
+                    optionName: errorMetrics
+                    optionPart: medae
+                  - name: errorMetrics_smape
+                    type: CheckBox
+                    optionName: errorMetrics
+                    optionPart: smape
+                  - name: errorMetrics_rrmse
+                    type: CheckBox
+                    optionName: errorMetrics
+                    optionPart: rrmse
+                name: errorMetrics
+  - type: CollapseBox
+    label: Critical Points
+    collapsed: true
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Inflection Point
+                children:
+                  - type: CheckBox
+                    name: iPoints            
+              - type: Label
+                label: Acceleration
+                children:
+                  - name: accPoints_accMax
+                    type: CheckBox
+                    optionName: accPoints
+                    optionPart: accMax
+                  - name: accPoints_accMin
+                    type: CheckBox
+                    optionName: accPoints
+                    optionPart: accMin
+                name: accPoints
+                style: list
+              - type: Label
+                label: Ontogenetic Growth Force
+                children:
+                  - name: ogfPoints_ogfMax
+                    type: CheckBox
+                    optionName: ogfPoints
+                    optionPart: ogfMax
+                  - name: ogfPoints_ogfMin
+                    type: CheckBox
+                    optionName: ogfPoints
+                    optionPart: ogfMin
+                name: ogfPoints
+                style: list                
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Effective Growth
+                children:
+                  - name: effGrowth_ogf0
+                    type: CheckBox
+                    optionName: lagPoints
+                    optionPart: ogf0
+                  - name: effGrowth_paa
+                    type: CheckBox
+                    optionName: lagPoints
+                    optionPart: paa
+                  - name: effGrowth_tangent
+                    type: CheckBox
+                    optionName: lagPoints
+                    optionPart: tangent
+                  - name: effGrowth_threshold
+                    type: CheckBox
+                    optionName: lagPoints
+                    optionPart: threshold
+                    children:
+                      - type: TextBox
+                        name: thValue
+                        format: number
+                        enable: (effGrowth_threshold)
+                name: lagPoints            
+              - type: Label
+                label: Asymptotic Deceleration
+                children:
+                  - name: asymptote_ogf3
+                    type: CheckBox
+                    optionName: asyPoints
+                    optionPart: ogf3
+                  - name: asymptote_pda
+                    type: CheckBox
+                    optionName: asyPoints
+                    optionPart: pda
+                name: asyPoints
+  - type: CollapseBox
+    label: Area Under the Curve
+    collapsed: true
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Geometric descriptors
+                children:
+                  - name: aucFunction_growthFunction
+                    type: CheckBox
+                    optionName: aucFunction
+                    optionPart: growthFunction
+                  - name: aucFunction_squaredRate
+                    type: CheckBox
+                    optionName: aucFunction
+                    optionPart: squaredRate
+                  - name: aucFunction_gfSquaredRate
+                    type: CheckBox
+                    optionName: aucFunction
+                    optionPart: gfSquaredRate
+                name: aucFunction
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Integration Interval
+                children:
+                  - type: CheckBox
+                    name: aucInterval
+                    children:
+                      - type: TextBox
+                        name: aucLower
+                        format: number
+                        enable: (aucInterval)
+                      - type: TextBox
+                        name: aucUpper
+                        format: number
+                        enable: (aucInterval)
+  - type: CollapseBox
+    label: Plot
+    collapsed: true
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: LayoutBox
+            cell:
+              column: 0
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: CheckBox
+                name: growthPlots
+                children:
+                  - type: ComboBox
+                    name: growthCurveColor
+                    enable: (growthPlots)
+                  - type: CheckBox
+                    name: growthRightAxis
+                    enable: (growthPlots)
+                    children:
+                      - type: ComboBox
+                        name: growthRightAxisFunc
+                        enable: (growthRightAxis)
+                      - type: ComboBox
+                        name: growthRightAxisLine
+                        enable: (growthRightAxis)
+                      - type: ComboBox
+                        name: growthRightAxisColor
+                        enable: (growthRightAxis)
+                  - type: CheckBox
+                    name: growthNoAxis
+                    enable: (growthPlots)
+                    children:
+                      - type: ComboBox
+                        name: growthNoAxisFunc
+                        enable: (growthNoAxis)
+                      - type: ComboBox
+                        name: growthNoAxisLine
+                        enable: (growthNoAxis)
+                      - type: ComboBox
+                        name: growthNoAxisColor
+                        enable: (growthNoAxis)
+          - type: LayoutBox
+            cell:
+              column: 1
+              row: 0
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Additional plots
+                children:
+                  - type: CheckBox
+                    name: residualPlots
+                  - type: CheckBox
+                    name: growthComparisonPlots
+                    children:
+                      - type: Label
+                        label: Right axis
+                        children:
+                          - type: ComboBox
+                            name: comparisonRightFunc
+                            enable: (growthComparisonPlots)
+              - type: Label
+                label: Plots elements
+                children:
+                  - name: plotsElements_dataPoints
+                    type: CheckBox
+                    optionName: plotsElements
+                    optionPart: dataPoints
+                  - name: plotsElements_critPoints
+                    type: CheckBox
+                    optionName: plotsElements
+                    optionPart: critPoints
+                name: plotsElements
+                enable: (growthPlots || growthComparisonPlots)
+                style: list
+              - type: Label
+                label: Resolution Factor
+                children:
+                  - type: TextBox
+                    name: timeAxisFactor
+                    format: number

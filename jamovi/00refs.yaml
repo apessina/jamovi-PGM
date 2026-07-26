@@ -1,0 +1,66 @@
+---
+refs:
+    pgm:
+        type: 'software'
+        author: Pessina ALR, Garcia Neto M
+        year: 2026
+        title: 'PGM: Practical Growth Modeling'
+        publisher: '(Version 0.9.0) [jamovi module]. DOI: 10.5281/zenodo.15764773'
+        url: https://github.com/apessina/jamovi-PGM/tree/main
+    
+    richards:
+        type: 'article'
+        author: Tjørve E, Tjørve KMC
+        year: 2010
+        title: 'A unified approach to the Richards-model family for use in growth analyses: why we need only two model forms'
+        publisher: 'Journal of Theoretical Biology'
+        volume: 267
+        pages: '417–425'
+        
+    ppfm:
+        type: 'software'
+        author: Garcia-Neto M, Kebreab E, Faria Junior MJA
+        year: 2020
+        title: 'PPFM: Practical Program for Forces Modeling'
+        publisher: 'Available on https://sites.google.com/view/ppfm-spreadsheet/'
+        url: https://sites.google.com/view/ppfm-spreadsheet/
+        
+    paa:
+        type: 'article'
+        author: Korkmaz M, Oda V,  Basustaoglu EO
+        year: 2018
+        title: 'A Study Over Determination of Asymptotic Deceleration and 
+        Absolute Acceleration Points in Logistic Growth Model'
+        publisher: 'Turk. J. Math. Comput. Sci.'
+        volume: 10
+        pages: '33–37'
+    
+    pda:
+        type: 'article'
+        author: Mischan MM, Pinho SZ, Carvalho LR
+        year: 2011
+        title: 'Determination of a point sufficiently close to the asymptote 
+        in nonlinear growth functions'
+        publisher: 'Scientia Agricola'
+        volume: 68
+        pages: '109–114'
+        
+    nlsLM:
+        type: 'software'
+        author: Elzhov TV, Mullen KM, Spiess A-N, Bolker B
+        year: 2023
+        title: 'minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear 
+        Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds'
+        publisher: '(Version 1.2-4) [R package]. doi: 10.32614/CRAN.package.minpack.lm'
+        url: https://cran.r-project.org/package=minpack.lm      
+        
+    nlme:
+        type: 'software'
+        author: Pinheiro JC, Bates DM
+        year: 2026
+        title: 'nlme: Linear and Nonlinear Mixed Effects Models'
+        publisher: '(Version 3.1-170) [R package]. doi: 10.32614/CRAN.package.nlme'
+        url: https://CRAN.R-project.org/package=nlme   
+
+
+...

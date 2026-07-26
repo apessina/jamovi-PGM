@@ -1,0 +1,20 @@
+Package: PGM
+Type: Package
+Title: Practical Growth Modeling
+Version: 0.9.0
+Author: c(person("André", "L. R. Pessina", 
+            role=c("aut", "cre", "cph"), 
+            email="andre.pessina@unesp.br"),
+          person("Manoel", "Garcia Neto", 
+            role=c("aut",  "cph"), 
+            email="m.garcia@unesp.br")
+          )
+Maintainer: André L. R. Pessina <andre.pessina@unesp.br>
+Description: This package facilitates biological growth modeling through curve 
+  fitting, graphical analysis, calculation of fit quality and critial points.
+  Repository and more information on
+  https://github.com/apessina/jamovi-PGM/tree/main.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: jmvcore (>= 0.8.5), R6, nlme, minpack.lm
