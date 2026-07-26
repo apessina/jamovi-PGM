@@ -1,0 +1,1016 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "PGM: Practical Growth Modeling for jamovi",
+    "section": "",
+    "text": "0.1 Scope\nPGM — Practical Growth Models is a jamovi module for fitting, evaluating, and interpreting nonlinear growth curves.\nThe module provides tools for:\nPGM is intended for researchers analyzing longitudinal or cross-sectional growth data in animal science, plant science, microbiology, ecology, developmental biology, and related fields.\nThe documentation is divided into four main parts:",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#scope",
+    "href": "index.html#scope",
+    "title": "PGM: Practical Growth Modeling for jamovi",
+    "section": "",
+    "text": "Getting started, covering installation, data organization, and a first analysis;\nMethods, describing the models, estimation procedures and analysis implemented in PGM;\nAcademic, providing reporting guidance and references.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#important-considerations",
+    "href": "index.html#important-considerations",
+    "title": "PGM: Practical Growth Modeling for jamovi",
+    "section": "0.2 Important considerations",
+    "text": "0.2 Important considerations\nPGM assists with model estimation and interpretation but does not replace statistical judgment. Model selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, residual variance, dependence structure, parameter plausibility, and residual diagnostics should be considered jointly.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#acknowledgments-and-contact",
+    "href": "index.html#acknowledgments-and-contact",
+    "title": "PGM: Practical Growth Modeling for jamovi",
+    "section": "0.3 Acknowledgments and Contact",
+    "text": "0.3 Acknowledgments and Contact\nThis project is being developed at the School of Veterinary Medicine, São Paulo State University (UNESP), Araçatuba, São Paulo, Brazil.\nWe extend our special thanks to the jamovi development team, particularly Jonathon Love, for his support, as well as to all users and testers who have contributed to the development of this project.\nComments and feedback are welcome. Please contact us if you identify any errors, have suggestions or questions, or require methodological support for academic research.\nThe development team can be reached at andre.pessina@unesp.br\nCitation instructions are provided in the chapter on academic reporting.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
+    ]
+  },
+  {
+    "objectID": "introduction.html",
+    "href": "introduction.html",
+    "title": "2  Introduction",
+    "section": "",
+    "text": "2.1 Why use parametric growth models?\nGrowth is a dynamic process in which the size, mass, concentration, or other measurable characteristic of a biological system changes over time.\nSigmoidal growth models summarize an entire trajectory using a small number of parameters related to characteristics such as:\nPGM provides a graphical interface for fitting these models in jamovi, while retaining statistical procedures commonly implemented in R.\nParametric growth models can provide interpretable summaries of nonlinear trajectories. Depending on the selected model, their parameters may describe:\nThese interpretations depend on the equation and parametrization used. Parameters with similar names are not necessarily equivalent across different growth models.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "introduction.html#why-use-parametric-growth-models",
+    "href": "introduction.html#why-use-parametric-growth-models",
+    "title": "2  Introduction",
+    "section": "",
+    "text": "the expected mature or asymptotic value;\nthe temporal scale of growth;\nthe maximum growth rate;\nthe age or time of maximum growth rate;\nthe shape and asymmetry of the curve.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "introduction.html#statistical-challenges",
+    "href": "introduction.html#statistical-challenges",
+    "title": "2  Introduction",
+    "section": "2.2 Statistical challenges",
+    "text": "2.2 Statistical challenges\nBiological growth data frequently present characteristics that are not adequately represented by ordinary nonlinear least squares, including:\n\nincreasing or decreasing residual variability;\nrepeated observations from the same experimental unit;\nbetween-individual variation in growth parameters;\nserial correlation between observations;\nincomplete or irregular measurement schedules.\n\nPGM therefore includes variance functions, nonlinear mixed-effects models, and residual correlation structures.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "introduction.html#documentation-conventions",
+    "href": "introduction.html#documentation-conventions",
+    "title": "2  Introduction",
+    "section": "2.3 Documentation conventions",
+    "text": "2.3 Documentation conventions\nThroughout this documentation:\n\n\\(W(t)\\) denotes the fitted growth function;\n\\(W'(t)\\) denotes the instantaneous growth rate;\n\\(W''(t)\\) denotes growth acceleration;\n\\(t\\) denotes time or age;\n\\(y\\) denotes the observed response.\n\nThe interpretation of each model-specific parameter is presented in the chapter on growth models.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "installation.html",
+    "href": "installation.html",
+    "title": "3  Installation",
+    "section": "",
+    "text": "3.1 Installing jamovi\nPGM is an add-on module for jamovi. Before installing the module, download and install the current version of jamovi from its official website.\nAfter installation, open jamovi and verify that the main analysis interface is working correctly.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Installation</span>"
+    ]
+  },
+  {
+    "objectID": "installation.html#installing-pgm-from-the-jamovi-library",
+    "href": "installation.html#installing-pgm-from-the-jamovi-library",
+    "title": "3  Installation",
+    "section": "3.2 Installing PGM from the jamovi library",
+    "text": "3.2 Installing PGM from the jamovi library\nPGM is available in the official jamovi library:\n\nOpen jamovi.\nSelect the Modules icon, in the upper-right of Analysis menu.\nOpen the jamovi module library.\nSearch for PGM.\nSelect Install.\n\nAfter installation, PGM will appear in the main analysis ribbon.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Installation</span>"
+    ]
+  },
+  {
+    "objectID": "installation.html#installing-a-development-version",
+    "href": "installation.html#installing-a-development-version",
+    "title": "3  Installation",
+    "section": "3.3 Installing a development version",
+    "text": "3.3 Installing a development version\nDevelopment versions may be distributed as .jmo files on PGM GitHub repository.\n\nTo install a local module:\nOpen jamovi.\nSelect the Modules icon.\nSelect Sideload.\nLocate the .jmo file.\nConfirm the installation.\n\nDevelopment versions may contain recently added features that have not yet been included in a stable release.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Installation</span>"
+    ]
+  },
+  {
+    "objectID": "installation.html#updating-pgm",
+    "href": "installation.html#updating-pgm",
+    "title": "3  Installation",
+    "section": "3.4 Updating PGM",
+    "text": "3.4 Updating PGM\nWhen PGM is installed through the jamovi library, available updates can be installed through the module manager.\nFor reproducible academic work, record the PGM and jamovi versions.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Installation</span>"
+    ]
+  },
+  {
+    "objectID": "installation.html#verifying-the-installation",
+    "href": "installation.html#verifying-the-installation",
+    "title": "3  Installation",
+    "section": "3.5 Verifying the installation",
+    "text": "3.5 Verifying the installation\nAfter installation, open a dataset containing numeric time and response variables. The module includes example datasets for testing and learning purposes. They are available from the jamovi menu in the upper-left corner: Open → Data Library → PGM.\nNext, select Growth from the analysis ribbon and open Curve Modeling. Assign at least one response variable and one time variable.\nIf the analysis interface opens and produces an initial result, the module has been installed successfully.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Installation</span>"
+    ]
+  },
+  {
+    "objectID": "installation.html#reporting-problems",
+    "href": "installation.html#reporting-problems",
+    "title": "3  Installation",
+    "section": "3.6 Reporting problems",
+    "text": "3.6 Reporting problems\nWhen reporting an error, include:\n\nthe PGM version;\nthe jamovi version;\nthe operating system;\nthe selected model and options;\nthe complete error message;\na reproducible or anonymized dataset, when possible.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Installation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html",
+    "href": "data.html",
+    "title": "4  Data preparation",
+    "section": "",
+    "text": "4.1 Example datasets\nThe module includes example datasets derived from published studies for testing and learning purposes. References for the original data sources are provided with each dataset.\nThey are available from the jamovi menu in the upper-left corner: Open → Data Library → PGM.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#basic-structure",
+    "href": "data.html#basic-structure",
+    "title": "4  Data preparation",
+    "section": "4.2 Basic structure",
+    "text": "4.2 Basic structure\nData should be provided in long format, with one row per observation.\nAt minimum, the dataset must contain:\n\none numeric response variable;\none numeric time or age variable.\n\nFor longitudinal analyses, the dataset must also contain:\n\none identification variable indicating the experimental unit or subject.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#cross-sectional-structure",
+    "href": "data.html#cross-sectional-structure",
+    "title": "4  Data preparation",
+    "section": "4.3 Cross-sectional structure",
+    "text": "4.3 Cross-sectional structure\nA dataset without an identification variable is interpreted as containing independent observations.\n\n\n\ntime\nresponse\n\n\n\n\n1\n12.4\n\n\n2\n18.9\n\n\n3\n27.5",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#longitudinal-structure",
+    "href": "data.html#longitudinal-structure",
+    "title": "4  Data preparation",
+    "section": "4.4 Longitudinal structure",
+    "text": "4.4 Longitudinal structure\nFor repeated measurements, each subject must have a stable identifier.\n\n\n\nsubject\ntime\nresponse\n\n\n\n\nA01\n1\n12.4\n\n\nA01\n2\n18.9\n\n\nA01\n3\n27.5\n\n\nA02\n1\n11.8\n\n\nA02\n2\n19.7\n\n\nA02\n3\n29.1",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#variable-requirements",
+    "href": "data.html#variable-requirements",
+    "title": "4  Data preparation",
+    "section": "4.5 Variable requirements",
+    "text": "4.5 Variable requirements\n\n4.5.1 Response\nThe response must be numeric and should represent a cumulative or monotonic biological growth process when a sigmoidal growth model is used.\n\n\n4.5.2 Time\nTime must be numeric. Examples include:\n\nage in days;\nage in weeks;\nhours after inoculation;\ndays after planting.\n\nThe unit of time determines the unit of rate parameters and derivative quantities.\n\n\n4.5.3 Subject identifier\nThe subject identifier may be numeric or categorical. It is used to associate repeated observations with the same experimental unit.\nSelecting an identifier changes the statistical model from an ordinary or generalized nonlinear model to a nonlinear mixed-effects model.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#missing-observations",
+    "href": "data.html#missing-observations",
+    "title": "4  Data preparation",
+    "section": "4.6 Missing observations",
+    "text": "4.6 Missing observations\nRows containing missing values in variables required by a given analysis are excluded from that analysis.\nDifferent response variables may therefore be fitted using different numbers of observations.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#measurement-schedule",
+    "href": "data.html#measurement-schedule",
+    "title": "4  Data preparation",
+    "section": "4.7 Measurement schedule",
+    "text": "4.7 Measurement schedule\nFor models using discrete AR(1) residual correlation, equally spaced observations are generally expected.\nFor irregularly spaced measurements, continuous-time CAR(1) correlation is usually more appropriate.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#data-coverage",
+    "href": "data.html#data-coverage",
+    "title": "4  Data preparation",
+    "section": "4.8 Data coverage",
+    "text": "4.8 Data coverage\nA nonlinear growth curve should ideally contain observations from the early, rapidly growing, and late portions of the trajectory.\nIf the observed data do not adequately cover the upper part of the curve, the asymptotic parameter may be weakly identified and highly uncertain.\nEarly or truncated datasets may produce:\n\nunstable asymptotes and geometric descriptors;\nstrong parameter correlations;\nwide confidence intervals;\nimplausible extrapolation;\nconvergence failures.\n\nPredictions beyond the observed time range should be treated cautiously, especially when the asymptotic phase is not well represented in the data.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html",
+    "href": "first-analysis.html",
+    "title": "5  Running an analysis",
+    "section": "",
+    "text": "5.1 Opening the analysis\nTo begin:\nEach modeling setup defines the response variable, growth model, residual variance structure, and residual correlation structure to be used in that analysis.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#opening-the-analysis",
+    "href": "first-analysis.html#opening-the-analysis",
+    "title": "5  Running an analysis",
+    "section": "",
+    "text": "Open the dataset in jamovi.\nSelect PGM from the analysis ribbon.\nOpen the growth-curve analysis.\nAssign the time variable.\nAssign one or more response variables.\nAdd a modeling setup for each response-model combination.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#selecting-the-response",
+    "href": "first-analysis.html#selecting-the-response",
+    "title": "5  Running an analysis",
+    "section": "5.2 Selecting the response",
+    "text": "5.2 Selecting the response\nThe response should be numeric and should represent a process compatible with the selected growth equation.\nExamples include: body weight; organism size; microbial concentration; plant height; cumulative production; other continuous responses measured over time.\nA sigmoidal growth model should not be selected solely because the observations increase over time. The observed trajectory should also exhibit a biologically and statistically plausible sigmoidal form.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#selecting-time",
+    "href": "first-analysis.html#selecting-time",
+    "title": "5  Running an analysis",
+    "section": "5.3 Selecting time",
+    "text": "5.3 Selecting time\nThe time variable must be numeric.\nIts measurement unit determines the units of:\n\nrate parameters;\ninflection time;\ncritical-point locations;\nderivative-based descriptors;\nautocorrelation distances.\n\nChanging time from days to weeks changes the numerical values of time-dependent parameters.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#subject-identifier",
+    "href": "first-analysis.html#subject-identifier",
+    "title": "5  Running an analysis",
+    "section": "5.4 Subject identifier",
+    "text": "5.4 Subject identifier\nFor repeated measurements, assign a subject or experimental-unit identifier.\nWhen no identifier is supplied, observations are treated as independent.\nWhen an identifier is supplied, PGM fits a nonlinear mixed-effects model in which repeated observations are grouped within subjects.\nThe identifier should represent the unit that generates the repeated trajectory, such as: animal; plant; patient; experimental vessel; microbial batch; plot.\nTreatment group, sex, breed, or experimental condition should not be used as the subject identifier unless each category genuinely represents one repeated observational unit.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#selecting-a-model",
+    "href": "first-analysis.html#selecting-a-model",
+    "title": "5  Running an analysis",
+    "section": "5.5 Selecting a model",
+    "text": "5.5 Selecting a model\nChoose the growth equation according to: the expected trajectory shape; parameter interpretability; biological context; data coverage; convergence; residual diagnostics; comparative model performance.\nDifferent equations may fit similarly while producing parameters with different meanings.\nThe current version fits only the 4-parameter Richards, that should cover the shapes of both Gompertz and Logistic models.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#selecting-a-residual-variance-structure",
+    "href": "first-analysis.html#selecting-a-residual-variance-structure",
+    "title": "5  Running an analysis",
+    "section": "5.6 Selecting a residual variance structure",
+    "text": "5.6 Selecting a residual variance structure\nUse a variance function when residual spread changes systematically with the fitted response.\nAvailable structures may include:\n\nconstant variance;\npower variance;\nexponential variance;\nconstant-plus-power variance.\n\nThe selection should be supported by residual diagnostics and comparative model evaluation.\nSelecting residual correlation\nResidual correlation structures are available for longitudinal analyses.\nUse:\nAR(1) when measurements are approximately equally spaced and correlation is interpreted by measurement lag; CAR(1) when measurement intervals are irregular and correlation depends on the actual temporal distance.\nRandom effects and residual autocorrelation represent different dependence mechanisms and may be included simultaneously.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#recommended-workflow",
+    "href": "first-analysis.html#recommended-workflow",
+    "title": "5  Running an analysis",
+    "section": "5.7 Recommended workflow",
+    "text": "5.7 Recommended workflow\nA defensible analysis commonly follows this sequence:\n\ninspect the raw trajectories;\nfit a biologically plausible mean curve;\nassess parameter estimates and convergence;\ninspect residuals versus fitted values and time;\nevaluate heteroscedasticity;\naccount for repeated measurements using a subject identifier;\ninvestigate residual autocorrelation;\ncompare candidate specifications;\nverify parameter plausibility;\ninterpret derived growth descriptors only after accepting the underlying fitted model.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#multiple-modeling-setups",
+    "href": "first-analysis.html#multiple-modeling-setups",
+    "title": "5  Running an analysis",
+    "section": "5.8 Multiple modeling setups",
+    "text": "5.8 Multiple modeling setups\nPGM allows multiple response-model configurations in the same analysis.\nThis can be used to:\n\ncompare candidate growth models;\ncompare variance structures;\ncompare response variables;\ninspect alternative residual-correlation structures.\n\nComparisons should only be interpreted formally when the models use the same response observations and compatible likelihoods.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html",
+    "href": "methods/overview.html",
+    "title": "6  Overview",
+    "section": "",
+    "text": "6.1 Estimation pathways\nPGM selects the estimation framework according to the structure of the data and the analysis options.\nAll estimation pathways begin with an initial nonlinear fit using the Levenberg–Marquardt algorithm (Elzhov et al. 2023).\nWhen a residual variance function is selected without a subject identifier, the initial estimates are used to initialize a generalized nonlinear least-squares model (Pinheiro et al. 2026).\nWhen a subject identifier is selected, the initial estimates are used to initialize a nonlinear mixed-effects model (Pinheiro et al. 2026).",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#estimation-pathways",
+    "href": "methods/overview.html#estimation-pathways",
+    "title": "6  Overview",
+    "section": "",
+    "text": "Subject identifier\nResidual variance\nEstimation framework\n\n\n\n\nNo\nConstant\nNonlinear least squares\n\n\nNo\nModeled\nGeneralized nonlinear least squares\n\n\nYes\nAny available option\nNonlinear mixed-effects model",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#mean-variance-and-dependence",
+    "href": "methods/overview.html#mean-variance-and-dependence",
+    "title": "6  Overview",
+    "section": "6.2 Mean, variance, and dependence",
+    "text": "6.2 Mean, variance, and dependence\nThe complete statistical specification may contain three components:\n\nMean structure: the selected parametric growth equation;\nVariance structure: the relationship between residual variance and fitted response;\nDependence structure: random effects and, optionally, residual autocorrelation.\n\nThese components address different features of the data and should not be treated as interchangeable.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#maximum-likelihood",
+    "href": "methods/overview.html#maximum-likelihood",
+    "title": "6  Overview",
+    "section": "6.3 Maximum likelihood",
+    "text": "6.3 Maximum likelihood\nNonlinear mixed-effects models in PGM are estimated using maximum likelihood.\nThis facilitates comparisons between nested models with different fixed effects, provided that the models use the same response, observations, and likelihood framework.\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html",
+    "href": "methods/growth-models.html",
+    "title": "7  Growth Models",
+    "section": "",
+    "text": "7.1 General formulation\nA parametric growth model represents the expected response at time \\(t\\) as\n\\[y_i = W(t_i;\\boldsymbol\\theta) + \\varepsilon_i,\\]\nwhere:\n\\(W(t_i;\\boldsymbol\\theta)\\) is the selected growth function; \\(\\boldsymbol\\theta\\) is the vector of model parameters; \\(\\varepsilon_i\\) is the residual error.\nThe interpretation of \\(\\boldsymbol\\theta\\) depends on the exact equation and parametrization.\nModels with similar names may be expressed using different parameter definitions in different authors and software implementations.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#parameter-units",
+    "href": "methods/growth-models.html#parameter-units",
+    "title": "7  Growth Models",
+    "section": "7.2 Parameter units",
+    "text": "7.2 Parameter units\nThe units of each parameter should be determined from the model equation.\nCommon interpretations include:\n\n\\(A\\): response unit;\n\\(T_i\\): time unit;\nrate parameters: inverse time or a parametrization-specific rate unit;\nshape parameters: dimensionless.\n\nParameters should not be compared directly across equations unless their mathematical definitions are equivalent.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#richards-model",
+    "href": "methods/growth-models.html#richards-model",
+    "title": "7  Growth Models",
+    "section": "7.3 Richards model",
+    "text": "7.3 Richards model\nPGM implements the Richards parametrization described by Tjørve and Tjørve (2010).\nThe growth function is\n\\[A\n\\left[\n1+\n(d-1)\n\\exp\\left(\n-\\frac{K(t-T_i)}\n{d^{d/(1-d)}}\n\\right)\n\\right]^{1/(1-d)}.\\]\nThe parameters are:\n\n\\(A\\): asymptotic response;\n\\(K\\): growth-rate parameter under this parametrization;\n\\(T_i\\): time at the inflection point;\n\\(d\\): shape parameter controlling curve asymmetry.\n\nThe meaning of \\(K\\) is specific to this parametrization and should not be assumed to equal the rate parameter of another Richards equation.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#parameter-constraints",
+    "href": "methods/growth-models.html#parameter-constraints",
+    "title": "7  Growth Models",
+    "section": "7.4 Parameter constraints",
+    "text": "7.4 Parameter constraints\nPGM fits the Richards model using transformed parameters:\n\\[A=\\exp(\\alpha),\\]\n\\[K=\\exp(\\kappa),\\]\nand\n\\[d=1.05+\\exp(\\delta).\\]\nConsequently: \\[\n(A&gt;0); (K&gt;0); (d&gt;1.05).\n\\] The \\(d&gt;1.05\\) restriction is part of the current computational implementation and restricts the range of Richards shapes that can be fitted.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#starting-values",
+    "href": "methods/growth-models.html#starting-values",
+    "title": "7  Growth Models",
+    "section": "7.5 Starting values",
+    "text": "7.5 Starting values\nStarting values are generated automatically from the observed trajectory.\nThe initial asymptote is based on a value above the observed maximum response. The initial inflection time is informed by the largest numerical growth rate, and the initial rate parameter is derived from that rate relative to the initial asymptote.\n\n\n\n\nTjørve, Even, and Kathleen M. C. Tjørve. 2010. “A Unified Approach to the Richards-Model Family for Use in Growth Analyses: Why We Need Only Two Model Forms.” Journal of Theoretical Biology 267 (3): 417–25. https://doi.org/10.1016/j.jtbi.2010.09.008.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html",
+    "href": "methods/estimation.html",
+    "title": "8  Estimation",
+    "section": "",
+    "text": "8.1 Initial nonlinear fit\nPGM first fits the selected growth equation using nonlinear least squares and the Levenberg–Marquardt algorithm (Elzhov et al. 2023).\nThe initial fit serves two purposes:\nStarting values are generated automatically from the observed data and the selected growth model.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#initial-nonlinear-fit",
+    "href": "methods/estimation.html#initial-nonlinear-fit",
+    "title": "8  Estimation",
+    "section": "",
+    "text": "it provides estimates for an ordinary nonlinear analysis;\nit supplies starting values for generalized nonlinear least-squares or nonlinear mixed-effects estimation.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#parameter-transformations",
+    "href": "methods/estimation.html#parameter-transformations",
+    "title": "8  Estimation",
+    "section": "8.2 Parameter transformations",
+    "text": "8.2 Parameter transformations\nSome models are fitted using transformed parameters to impose parameter constraints and improve numerical stability.\nFor example, a positive parameter \\(A\\) may be represented internally as\n\\[A = \\exp(\\alpha).\\]\nThe reported estimate is returned to the natural parameter scale.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#standard-errors",
+    "href": "methods/estimation.html#standard-errors",
+    "title": "8  Estimation",
+    "section": "8.3 Standard errors",
+    "text": "8.3 Standard errors\nThe covariance matrix is initially obtained on the transformed estimation scale.\nFor parameters reported after nonlinear back-transformation, uncertainty is propagated to the natural scale using a first-order delta method.\nIf \\(\\boldsymbol\\theta\\) denotes the transformed parameters and \\(g(\\boldsymbol\\theta)\\) their natural-scale representation, then\n\\[\\operatorname{Var}\\!\\left[g(\\hat{\\boldsymbol\\theta})\\right]\n\\approx\nJ\n\\operatorname{Var}(\\hat{\\boldsymbol\\theta})\nJ^\\mathsf{T},\\]\nwhere \\(J\\) is the Jacobian matrix of the back-transformation.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#confidence-intervals",
+    "href": "methods/estimation.html#confidence-intervals",
+    "title": "8  Estimation",
+    "section": "8.4 Confidence intervals",
+    "text": "8.4 Confidence intervals\nApproximate 95% confidence intervals are first constructed on the transformed scale and subsequently back-transformed.\nThese intervals depend on asymptotic normal approximations and may be unreliable when:\n\nthe sample size is small;\nparameters are weakly identified;\nestimates are near parameter boundaries;\nthe fitted model is numerically unstable.\n\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html",
+    "href": "methods/mixed-effects.html",
+    "title": "9  Mixed Effects",
+    "section": "",
+    "text": "9.1 When mixed effects are used\nA nonlinear mixed-effects model is fitted when a subject identification variable is supplied (Pinheiro et al. 2026).\nThe model separates:",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#when-mixed-effects-are-used",
+    "href": "methods/mixed-effects.html#when-mixed-effects-are-used",
+    "title": "9  Mixed Effects",
+    "section": "",
+    "text": "population-level growth parameters, represented by fixed effects;\nindividual deviations from the population trajectory, represented by random effects;\nwithin-individual residual variation.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#current-random-effects-structure",
+    "href": "methods/mixed-effects.html#current-random-effects-structure",
+    "title": "9  Mixed Effects",
+    "section": "9.2 Current random-effects structure",
+    "text": "9.2 Current random-effects structure\nIn the current implementation, the asymptotic parameter \\(A\\) contains an individual random effect.\nOn the transformed scale, the subject-specific asymptote may be written as\n\\[\\log(A_i) = \\log(A) + b_{Ai},\\]\nwhere\n\\[b_{Ai} \\sim N(0,\\sigma_A^2).\\]\nAll remaining growth parameters are treated as fixed population parameters.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#interpretation",
+    "href": "methods/mixed-effects.html#interpretation",
+    "title": "9  Mixed Effects",
+    "section": "9.3 Interpretation",
+    "text": "9.3 Interpretation\nThe fixed asymptotic parameter represents the population-level central trajectory on the model scale.\nThe random effect represents persistent between-individual variation in the asymptotic level.\nResidual error represents observation-level variation remaining after accounting for the fixed effects, random effects, variance function, and residual correlation structure.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#conditional-fitted-values",
+    "href": "methods/mixed-effects.html#conditional-fitted-values",
+    "title": "9  Mixed Effects",
+    "section": "9.4 Conditional fitted values",
+    "text": "9.4 Conditional fitted values\nResidual diagnostics for nonlinear mixed-effects models use conditional fitted values. These include the estimated individual random effects.\nConsequently, the diagnostic residuals describe fit to individual trajectories rather than only to the population-average trajectory.\n\n\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/variance-functions.html",
+    "href": "methods/variance-functions.html",
+    "title": "10  Variance Functions",
+    "section": "",
+    "text": "10.1 Power variance function\nOrdinary nonlinear least squares assumes constant residual variance:\n\\[\\operatorname{Var}(\\varepsilon_i)=\\sigma^2.\\]\nThis assumption is often unrealistic for biological growth data because larger responses may exhibit greater absolute variability.\nPGM provides alternative residual variance functions based on the fitted response \\(\\hat y_i\\).\n\\[\\operatorname{Var}(\\varepsilon_i)\n=\n\\sigma^2 |\\hat y_i|^{2\\theta}.\\]\nInterpretation:",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Variance Functions</span>"
+    ]
+  },
+  {
+    "objectID": "methods/variance-functions.html#power-variance-function",
+    "href": "methods/variance-functions.html#power-variance-function",
+    "title": "10  Variance Functions",
+    "section": "",
+    "text": "\\(\\theta=0\\) corresponds to constant variance;\n\\(\\theta&gt;0\\) indicates increasing variance with fitted response;\n\\(\\theta&lt;0\\) indicates decreasing variance with fitted response.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Variance Functions</span>"
+    ]
+  },
+  {
+    "objectID": "methods/variance-functions.html#exponential-variance-function",
+    "href": "methods/variance-functions.html#exponential-variance-function",
+    "title": "10  Variance Functions",
+    "section": "10.2 Exponential variance function",
+    "text": "10.2 Exponential variance function\n\\[\\operatorname{Var}(\\varepsilon_i)\n=\n\\sigma^2 \\exp(2\\theta\\hat y_i).\\]\nThis model represents an exponential relationship between residual standard deviation and fitted response.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Variance Functions</span>"
+    ]
+  },
+  {
+    "objectID": "methods/variance-functions.html#constant-plus-power-variance-function",
+    "href": "methods/variance-functions.html#constant-plus-power-variance-function",
+    "title": "10  Variance Functions",
+    "section": "10.3 Constant-plus-power variance function",
+    "text": "10.3 Constant-plus-power variance function\n\\[\\operatorname{Var}(\\varepsilon_i)\n=\n\\sigma^2\n\\left(\n\\theta_1 + |\\hat y_i|^{\\theta_2}\n\\right)^2.\\]\nThis structure permits a nonzero baseline component together with a power-related increase or decrease in residual variation.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Variance Functions</span>"
+    ]
+  },
+  {
+    "objectID": "methods/variance-functions.html#choosing-a-variance-structure",
+    "href": "methods/variance-functions.html#choosing-a-variance-structure",
+    "title": "10  Variance Functions",
+    "section": "10.4 Choosing a variance structure",
+    "text": "10.4 Choosing a variance structure\nA variance function should be considered when residual spread changes systematically across fitted values or time.\nSelection should consider:\n\nresidual-versus-fitted plots;\nnormalized residuals;\ninformation criteria;\nparameter stability;\nbiological plausibility.\n\nA lower AIC alone is insufficient if the fitted variance structure produces unstable parameters or implausible trajectories.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Variance Functions</span>"
+    ]
+  },
+  {
+    "objectID": "methods/residual-correlation.html",
+    "href": "methods/residual-correlation.html",
+    "title": "11  Residual Correlation",
+    "section": "",
+    "text": "11.1 AR(1)\nRepeated observations from the same subject may remain correlated even after individual random effects are included.\nPGM provides first-order discrete and continuous-time correlation structures.\nFor observations separated by \\(h\\) measurement steps,\n\\[\\operatorname{Corr}\n(\\varepsilon_{i,t},\\varepsilon_{i,t+h})\n=\n\\phi^{|h|},\\]\nwhere \\(-1 &lt; \\phi &lt; 1\\).\nAR(1) is most naturally interpreted when observations are ordered and approximately equally spaced.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/residual-correlation.html#car1",
+    "href": "methods/residual-correlation.html#car1",
+    "title": "11  Residual Correlation",
+    "section": "11.2 CAR(1)",
+    "text": "11.2 CAR(1)\nFor observations made at times \\(t\\_{ij}\\) and \\(t\\_{ik}\\),\n\\[\\operatorname{Corr}\n(\\varepsilon_{ij},\\varepsilon_{ik})\n=\n\\phi^{|t_{ij}-t_{ik}|}.\\]\nCAR(1) uses the actual temporal distance between observations and is therefore suitable for irregularly spaced measurements.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/residual-correlation.html#random-effects-are-not-autocorrelation",
+    "href": "methods/residual-correlation.html#random-effects-are-not-autocorrelation",
+    "title": "11  Residual Correlation",
+    "section": "11.3 Random effects are not autocorrelation",
+    "text": "11.3 Random effects are not autocorrelation\nRandom effects and residual correlation represent different sources of dependence.\nA random effect represents persistent individual differences in the growth trajectory.\nResidual autocorrelation represents association between observation-level departures occurring close together in time.\nA model may require one, both, or neither structure.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html",
+    "href": "methods/critical-points.html",
+    "title": "12  Critical Points",
+    "section": "",
+    "text": "12.1 Derivative notation\nLet \\(W(t)\\) denote the fitted growth function.\nPGM may calculate:\n\\[W'(t),\\]\nthe instantaneous growth rate, and\n\\[W''(t),\\]\nthe growth acceleration.\nHigher-order derivatives are used for selected geometric descriptors.\nThese quantities are properties of the fitted curve and inherit any misspecification or uncertainty in the underlying growth model.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#inflection-point",
+    "href": "methods/critical-points.html#inflection-point",
+    "title": "12  Critical Points",
+    "section": "12.2 Inflection point",
+    "text": "12.2 Inflection point\nThe inflection point is identified from a sign change in the second derivative:\n\\[W''(t)=0.\\]\nAt the inflection point of a standard sigmoidal trajectory, the growth rate is at its maximum.\nWhen no sign change is found within the evaluated interval, PGM reports that no inflection point was detected.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#acceleration-extrema",
+    "href": "methods/critical-points.html#acceleration-extrema",
+    "title": "12  Critical Points",
+    "section": "12.3 Acceleration extrema",
+    "text": "12.3 Acceleration extrema\nFollowing Gregorczyk (1991), PGM defines:\n\n\\(P1\\): time of maximum positive growth acceleration before the inflection point;\n\\(P2\\): time of minimum, or most negative, growth acceleration after the inflection point.\n\nThus, \\[\\arg\\max_{t&lt;T_i} W''(t),\\] and \\[\\arg\\min_{t&gt;T_i} W''(t).\\]\nThese points describe the transition from increasing acceleration toward maximum growth rate and the subsequent period of strongest deceleration.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#ontogenetic-growth-force",
+    "href": "methods/critical-points.html#ontogenetic-growth-force",
+    "title": "12  Critical Points",
+    "section": "12.4 Ontogenetic growth force",
+    "text": "12.4 Ontogenetic growth force\nThe ontogenetic growth force is defined as in Garcia-Neto et al. (2020):\n\\[W'(t)W''(t).\\]\nPGM may report:\n\n\\(F1\\): maximum OGF before the inflection point;\n\\(F2\\): the inflection-point location represented in the OGF sequence;\n\nBecause \\(W'(t)\\) is nonnegative for an increasing growth trajectory, the sign of OGF generally follows the sign of \\(W''(t)\\).\nOGF-based points consider the magnitude of growth rate in the transition points from acceleration.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#effective-growth-onset",
+    "href": "methods/critical-points.html#effective-growth-onset",
+    "title": "12  Critical Points",
+    "section": "12.5 Effective growth onset",
+    "text": "12.5 Effective growth onset\nAvailable onset descriptors may include:\n\n\\(Tan.\\): tangent-based onset;\n\\(Thr.\\): threshold-based onset;\n\\(PAA\\): Acceleration-derived onset;\n\\(F0\\): OGF-derived onset.\n\n\n12.5.1 Tangent method\nThe tangent method uses the tangent line at the point of maximum growth rate and calculates its intersection with the baseline response represented by the fitted value at the beginning of the evaluated interval.\nIts result depends on the observed or selected lower time boundary.\n\n\n12.5.2 Threshold method\nThe threshold method identifies the first time at which the fitted trajectory reaches a selected proportion of its fitted late-stage value.\nThe result depends directly on the chosen threshold.\n\n\n12.5.3 Absolute Acceleration Point\nPAA is identified before \\(P1\\) from a zero crossing of the fourth derivative of the growth function (Korkmaz et al. 2018).\nIt represents a transition in the evolution of growth acceleration.\n\n\n12.5.4 OGF-derived onset\nThe OGF-derived onset is calculated using the third derivative of the OGF before \\(P1\\).\nIt represents a transition in the evolution of the weighted growth acceleration.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#late-growth-descriptors",
+    "href": "methods/critical-points.html#late-growth-descriptors",
+    "title": "12  Critical Points",
+    "section": "12.6 Late-growth descriptors",
+    "text": "12.6 Late-growth descriptors\nAvailable late-stage descriptors may include:\n\n\\(F3\\): an OGF-derived late point;\n\\(PDA\\): Point of Asymptotic Deceleration (Mischan et al. 2011).\n\nThese are identified after \\(P2\\) using derivative-based rules.\nThey indicate geometric transitions toward the late portion of the fitted trajectory. From that point, growth acceleration decreases very slowly, as it asymptotically approach zero (Mischan et al. 2011).",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#integral-descriptors",
+    "href": "methods/critical-points.html#integral-descriptors",
+    "title": "12  Critical Points",
+    "section": "12.7 Integral descriptors",
+    "text": "12.7 Integral descriptors\nPGM may calculate the area under the curve (AUC) for the fitted growth function and its first derivative.\nIt may be useful to summarize growth “intensity” in a single metric across different trajectories (treatments, lineages, or other factors). Comparisons require the same time unit, response unit, interval, and fitted-variable definition.\nThe area under the fitted growth curve:\n\\[\\int_{t_L}^{t_U} W(t),dt.\\]\nIt may also calculate the integrated squared growth rate:\n\\[\\int_{t_L}^{t_U}\n\\left[W'(t)\\right]^2dt,\\]\nand the response-weighted integrated squared growth rate (Garcia-Neto et al. 2020):\n\\[\\int_{t_L}^{t_U}\nW(t)\\left[W'(t)\\right]^2dt.\\]\nIf a custom integration interval is not provided, the AUC will be calculated for the complete time vector provided.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#numerical-evaluation",
+    "href": "methods/critical-points.html#numerical-evaluation",
+    "title": "12  Critical Points",
+    "section": "12.8 Numerical evaluation",
+    "text": "12.8 Numerical evaluation\nCritical points are located on a dense time grid spanning the fitted interval.\nConsequently, their reported precision is affected by the numerical grid resolution and should not be interpreted as exact analytic precision.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/critical-points.html#uncertainty",
+    "href": "methods/critical-points.html#uncertainty",
+    "title": "12  Critical Points",
+    "section": "12.9 Uncertainty",
+    "text": "12.9 Uncertainty\nThe current critical-point and integral tables provide point estimates.\nConfidence intervals for derived times and integral descriptors are not automatically implied by confidence intervals for the model parameters.\nBootstrap, simulation, or delta-method procedures would be required to quantify their uncertainty separately.\n\n\n\n\nGarcia-Neto, M., E. Kebreab, and M. J. A. Faria-Junior. 2020. PPFM: Practical Program for Forces Modeling. Software spreadsheet. https://sites.google.com/view/ppfm-spreadsheet/.\n\n\nGregorczyk, Andrzej. 1991. “The Logistic Function—Its Application to the Description and Prognosis of Plant Growth.” Acta Societatis Botanicorum Poloniae 60 (1–2): 67–76. https://doi.org/10.5586/asbp.1991.004.\n\n\nKorkmaz, Mehmet, Volkan Oda, and Elif Ozkurt Basustaoglu. 2018. “A Study over Determination of Asymptotic Deceleration and Absolute Acceleration Points in Logistic Growth Model.” Turkish Journal of Mathematics and Computer Science 10: 33–37. https://dergipark.org.tr/en/pub/tjmcs/article/448246.\n\n\nMischan, M. M., S. Z. Pinho, and L. R. Carvalho. 2011. “Determination of a Point Sufficiently Close to the Asymptote in Nonlinear Growth Functions.” Scientia Agricola 68 (1): 109–14. https://doi.org/10.1590/S0103-90162011000100016.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Critical Points</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html",
+    "href": "methods/model-evaluation.html",
+    "title": "13  Model Evaluation",
+    "section": "",
+    "text": "13.1 Estimation information\nThe estimation-information table describes the computational and statistical framework used for each modeling setup.\nDepending on the selected options, it may report:\nThis table should be consulted before reporting the model because the same mean equation may be fitted under different residual and dependence assumptions.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#estimation-information",
+    "href": "methods/model-evaluation.html#estimation-information",
+    "title": "13  Model Evaluation",
+    "section": "",
+    "text": "nonlinear least squares (NLS);\ngeneralized nonlinear least squares (GNLS);\nnonlinear mixed-effects estimation (NLME);\nLevenberg–Marquardt initialization (LM);\nGauss–Newton estimation;\nresidual variance structure;\nresidual correlation structure;\nrandom-effects structure.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#parameter-estimates",
+    "href": "methods/model-evaluation.html#parameter-estimates",
+    "title": "13  Model Evaluation",
+    "section": "13.2 Parameter estimates",
+    "text": "13.2 Parameter estimates\nThe parameter table reports estimates on the natural parameter scale.\nAvailable columns may include:\n\nparameter estimate;\nstandard error;\nlower confidence limit;\nupper confidence limit.\n\nSome parameters are estimated internally on a transformed scale and subsequently returned to their natural scale.\nApproximate uncertainty is propagated through the back-transformation using a first-order delta method.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#interpreting-confidence-intervals",
+    "href": "methods/model-evaluation.html#interpreting-confidence-intervals",
+    "title": "13  Model Evaluation",
+    "section": "13.3 Interpreting confidence intervals",
+    "text": "13.3 Interpreting confidence intervals\nConfidence intervals quantify uncertainty under the fitted model and its asymptotic approximation.\nWide intervals may indicate:\n\ninsufficient sample size;\ninadequate coverage of the growth trajectory;\nstrong correlation among model parameters;\nweak identification;\nexcessive model flexibility;\nnumerical instability.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#goodness-of-fit-measures",
+    "href": "methods/model-evaluation.html#goodness-of-fit-measures",
+    "title": "13  Model Evaluation",
+    "section": "13.4 Goodness-of-fit measures",
+    "text": "13.4 Goodness-of-fit measures\n\n13.4.1 Akaike information criterion\nThe Akaike information criterion is \\[-2\\ell + 2k,\\]\nwhere \\(\\ell\\) is the maximized log-likelihood and \\(k\\) is the number of estimated parameters counted by the fitted likelihood.\nLower AIC values indicate better expected predictive information performance among comparable models.\nThe absolute AIC value is not interpreted independently.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#bayesian-information-criterion",
+    "href": "methods/model-evaluation.html#bayesian-information-criterion",
+    "title": "13  Model Evaluation",
+    "section": "14.1 Bayesian information criterion",
+    "text": "14.1 Bayesian information criterion\nThe Bayesian information criterion is \\[-2\\ell+k\\log(n).\\]\nBIC generally penalizes model complexity more strongly than AIC as the sample size increases.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#descriptive-coefficient-of-determination",
+    "href": "methods/model-evaluation.html#descriptive-coefficient-of-determination",
+    "title": "13  Model Evaluation",
+    "section": "14.2 Descriptive coefficient of determination",
+    "text": "14.2 Descriptive coefficient of determination\nPGM calculates \\[1-\n\\frac{\\sum_i(y_i-\\hat y_i)^2}\n{\\sum_i(y_i-\\bar y)^2}.\\]\nThis is a descriptive residual-based statistic on the response scale.\nFor nonlinear mixed-effects models, it should not be described as the marginal or conditional \\(R^2\\) commonly defined specifically for mixed models.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#adjusted-descriptive-coefficient-of-determination",
+    "href": "methods/model-evaluation.html#adjusted-descriptive-coefficient-of-determination",
+    "title": "13  Model Evaluation",
+    "section": "14.3 Adjusted descriptive coefficient of determination",
+    "text": "14.3 Adjusted descriptive coefficient of determination\nPGM calculates an adjusted form based on residual degrees of freedom: \\[1-\n\\frac{\\mathrm{SSE}/(n-p)}\n{\\mathrm{SST}/(n-1)}.\\]\nIts interpretation remains descriptive.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#error-metrics",
+    "href": "methods/model-evaluation.html#error-metrics",
+    "title": "13  Model Evaluation",
+    "section": "14.4 Error metrics",
+    "text": "14.4 Error metrics\n\n14.4.1 Root mean squared error\n\\[\\sqrt{\n\\frac{1}{n}\n\\sum_i\n(y_i-\\hat y_i)^2\n}.\\]\nRMSE uses the response unit and is relatively sensitive to large residuals.\n\n\n14.4.2 Relative RMSE\n\\[\\frac{\\mathrm{RMSE}}{\\bar y}.\\]\nRRMSE is dimensionless but may behave poorly when the response mean is close to zero.\n\n\n14.4.3 Mean absolute error\n\\[\\frac{1}{n}\n\\sum_i\n|y_i-\\hat y_i|.\\]\n\n\n14.4.4 Median absolute error\n\\[\\operatorname{median}\n\\left(\n|y_i-\\hat y_i|\n\\right).\\]\nMedAE is less sensitive to isolated large residuals than RMSE or MAE.\n\n\n14.4.5 Symmetric mean absolute percentage error\nPGM calculates \\[\\frac{100}{n}\n\\sum_i\n\\frac{2|y_i-\\hat y_i|}\n{|y_i|+|\\hat y_i|}.\\]\nA small numerical safeguard is used when both the observed and fitted values are close to zero.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#comparing-models",
+    "href": "methods/model-evaluation.html#comparing-models",
+    "title": "13  Model Evaluation",
+    "section": "14.5 Comparing models",
+    "text": "14.5 Comparing models\nAIC, AICc, and BIC comparisons require:\n\nthe same response variable;\nthe same response scale;\nthe same observations;\ncompatible likelihood definitions;\nthe same treatment of missing values.\n\nRMSE, MAE, and related error metrics should also be compared only across the same observations.\nModel selection should combine statistical performance, residual diagnostics, parameter plausibility, convergence, and interpretability.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/diagnostics.html",
+    "href": "methods/diagnostics.html",
+    "title": "14  Residual diagnostics",
+    "section": "",
+    "text": "14.1 Residuals versus fitted values\nPGM provides a four-panel residual diagnostic display.\nThis plot is used to investigate:\nA satisfactory pattern should be centered near zero without pronounced systematic structure.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Residual diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "methods/diagnostics.html#residuals-versus-fitted-values",
+    "href": "methods/diagnostics.html#residuals-versus-fitted-values",
+    "title": "14  Residual diagnostics",
+    "section": "",
+    "text": "nonconstant residual variance;\nsystematic curvature;\nregions of poor fit;\ninfluential or extreme observations.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Residual diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "methods/diagnostics.html#residuals-versus-time",
+    "href": "methods/diagnostics.html#residuals-versus-time",
+    "title": "14  Residual diagnostics",
+    "section": "14.2 Residuals versus time",
+    "text": "14.2 Residuals versus time\nThis plot is used to investigate:\n\ntemporal trends not represented by the growth function;\nearly- or late-stage model inadequacy;\nchanges in residual variability over time;\nlocal clusters of positive or negative residuals.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Residual diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "methods/diagnostics.html#normal-qq-plot",
+    "href": "methods/diagnostics.html#normal-qq-plot",
+    "title": "14  Residual diagnostics",
+    "section": "14.3 Normal Q–Q plot",
+    "text": "14.3 Normal Q–Q plot\nThe Q–Q plot compares the empirical residual distribution with the normal distribution.\nLarge systematic departures from the diagonal may indicate skewness, heavy tails, outliers, or model misspecification.\nMinor departures should not be interpreted mechanically, particularly with large datasets.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Residual diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "methods/diagnostics.html#residual-autocorrelation",
+    "href": "methods/diagnostics.html#residual-autocorrelation",
+    "title": "14  Residual diagnostics",
+    "section": "14.4 Residual autocorrelation",
+    "text": "14.4 Residual autocorrelation\nThe autocorrelation plot assesses whether residuals remain associated across neighboring measurement occasions.\nFor longitudinal models, residual autocorrelation is evaluated within subjects.\nPersistent residual autocorrelation may indicate that the selected random effects or residual correlation structure is insufficient.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Residual diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "methods/diagnostics.html#residual-scale",
+    "href": "methods/diagnostics.html#residual-scale",
+    "title": "14  Residual diagnostics",
+    "section": "14.5 Residual scale",
+    "text": "14.5 Residual scale\nFor generalized nonlinear and nonlinear mixed-effects models, PGM uses normalized residuals that account for the fitted variance and correlation structure.\nFor ordinary nonlinear least squares, raw residuals are standardized by the estimated residual standard deviation.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Residual diagnostics</span>"
+    ]
+  },
+  {
+    "objectID": "tutorials/example-datasets.html",
+    "href": "tutorials/example-datasets.html",
+    "title": "15  Example Datasets",
+    "section": "",
+    "text": "16 Example Datasets",
+    "crumbs": [
+      "Tutorials",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Example Datasets</span>"
+    ]
+  },
+  {
+    "objectID": "tutorials/external-links.html",
+    "href": "tutorials/external-links.html",
+    "title": "16  External links",
+    "section": "",
+    "text": "17 External links",
+    "crumbs": [
+      "Tutorials",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>External links</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html",
+    "href": "academic-reporting.html",
+    "title": "17  Academic Reporting",
+    "section": "",
+    "text": "17.1 Citation\nPessina ALR, Garcia-Neto M (2026). PGM: Practical Growth Modeling for jamovi [Version x.x.x]. doi: 10.5281/zenodo.15764773\nThe jamovi project (The jamovi project 2026) and The R project(R Core Team 2026) should also be cited. We also encourage authors to cite the packages and references used in the module’s analyses:",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#citation",
+    "href": "academic-reporting.html#citation",
+    "title": "17  Academic Reporting",
+    "section": "",
+    "text": "minpack.lm (Elzhov et al. 2023)\nnlme (Pinheiro et al. 2026)",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#recommended-information",
+    "href": "academic-reporting.html#recommended-information",
+    "title": "17  Academic Reporting",
+    "section": "17.2 Recommended information",
+    "text": "17.2 Recommended information\nAn academic report should identify:\n\nthe PGM version;\nthe jamovi version;\nthe selected growth equation;\nthe equation parametrization;\nthe response and time units;\nthe number of observations;\nthe number of subjects, when longitudinal;\nthe estimation framework;\nthe random-effects structure;\nthe residual variance structure;\nthe residual correlation structure;\nthe estimation method;\nthe model-comparison criteria;\nthe residual diagnostics examined.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#ordinary-nonlinear-model",
+    "href": "academic-reporting.html#ordinary-nonlinear-model",
+    "title": "17  Academic Reporting",
+    "section": "17.3 Ordinary nonlinear model",
+    "text": "17.3 Ordinary nonlinear model\nA possible methods statement is:\n\nGrowth trajectories were fitted using the PGM module for jamovi. The [Richards] growth equation was estimated by nonlinear least squares, with initial optimization performed using the Levenberg–Marquardt algorithm. Model adequacy was evaluated using parameter estimates, information criteria, prediction-error measures, and residual diagnostics.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#generalized-nonlinear-least-squares",
+    "href": "academic-reporting.html#generalized-nonlinear-least-squares",
+    "title": "17  Academic Reporting",
+    "section": "17.4 Generalized nonlinear least squares",
+    "text": "17.4 Generalized nonlinear least squares\nWhen a variance function is included:\n\nGrowth trajectories were fitted using the PGM module for jamovi. The [Richards] growth equation was estimated by nonlinear least squares, with initial optimization performed using the Levenberg–Marquardt algorithm. The resulting estimates were used to initialize a generalized nonlinear least-squares model with a [power/exponential/constant-plus-power] residual variance function based on the fitted response.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#nonlinear-mixed-effects-model",
+    "href": "academic-reporting.html#nonlinear-mixed-effects-model",
+    "title": "17  Academic Reporting",
+    "section": "17.5 Nonlinear mixed-effects model",
+    "text": "17.5 Nonlinear mixed-effects model\nFor longitudinal data:\n\nGrowth trajectories were fitted using the PGM module for jamovi. Repeated growth measurements were analyzed using a nonlinear mixed-effects model. Population growth parameters were represented by fixed effects, and between-subject variation in the asymptotic parameter was represented by a random effect. Parameters were estimated by maximum likelihood after initialization using a Levenberg–Marquardt nonlinear fit.\n\n\n17.5.1 Residual autocorrelation\nWhen applicable:\n\nWithin-subject residual dependence was modeled using a first-order [AR(1)/CAR(1)] correlation structure.\n\nFor CAR(1), the report may clarify:\n\nCorrelation was modeled as a function of the actual temporal distance between observations.\n\n\n\n17.5.2 Heteroscedasticity\nWhen applicable:\n\nResidual variance was modeled as a [power/exponential/constant-plus-power] function of the absolute fitted response.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#model-comparison",
+    "href": "academic-reporting.html#model-comparison",
+    "title": "17  Academic Reporting",
+    "section": "17.6 Model comparison",
+    "text": "17.6 Model comparison\nA possible statement is:\n\nCandidate specifications were compared using [AIC/AICc] and BIC, together with residual diagnostics and biological plausibility of the estimated parameters. Information criteria were compared only across models fitted to the same response observations.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#derived-growth-descriptors",
+    "href": "academic-reporting.html#derived-growth-descriptors",
+    "title": "17  Academic Reporting",
+    "section": "17.7 Derived growth descriptors",
+    "text": "17.7 Derived growth descriptors\nWhen reporting derivative-based descriptors:\n\nDerived growth values and times were calculated from the fitted growth function and its derivatives, presented as point estimates. These quantities were treated as model-based geometric descriptors.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#tables",
+    "href": "academic-reporting.html#tables",
+    "title": "17  Academic Reporting",
+    "section": "17.8 Tables",
+    "text": "17.8 Tables\n\n17.8.1 Parameter tables\n\nestimate;\nstandard error;\nconfidence interval;\nparameter unit;\nmodel parametrization.\n\n\n\n17.8.2 Model-comparison tables\n\nmodel;\nvariance structure;\ncorrelation structure;\nrandom-effects structure;\nnumber of observations;\ninformation criteria;\nrelevant error metrics.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "academic-reporting.html#figures",
+    "href": "academic-reporting.html#figures",
+    "title": "17  Academic Reporting",
+    "section": "17.9 Figures",
+    "text": "17.9 Figures\n\n17.9.1 Growth-curve figures\n\nobserved data;\nfitted trajectory;\nresponse and time units;\ngroup or subject definition;\ncritical-point labels, when used.\n\n\n\n17.9.2 Residual figures\nResidual figures should be reported or summarized whenever model assumptions are important to the conclusions.\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nR Core Team. 2026. R: A Language and Environment for Statistical Computing. R Foundation for Statistical Computing. https://doi.org/10.32614/R.manuals.\n\n\nThe jamovi project. 2026. Jamovi. https://www.jamovi.org/.",
+    "crumbs": [
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Elzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben\nBolker. 2023. minpack.lm: R Interface to\nthe Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in\nMINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nGarcia-Neto, M., E. Kebreab, and M. J. A. Faria-Junior. 2020.\nPPFM: Practical Program for Forces Modeling.\nSoftware spreadsheet. https://sites.google.com/view/ppfm-spreadsheet/.\n\n\nGregorczyk, Andrzej. 1991. “The Logistic Function—Its Application\nto the Description and Prognosis of Plant Growth.” Acta\nSocietatis Botanicorum Poloniae 60 (1–2): 67–76. https://doi.org/10.5586/asbp.1991.004.\n\n\nKorkmaz, Mehmet, Volkan Oda, and Elif Ozkurt Basustaoglu. 2018. “A\nStudy over Determination of Asymptotic Deceleration and Absolute\nAcceleration Points in Logistic Growth Model.” Turkish\nJournal of Mathematics and Computer Science 10: 33–37. https://dergipark.org.tr/en/pub/tjmcs/article/448246.\n\n\nMischan, M. M., S. Z. Pinho, and L. R. Carvalho. 2011.\n“Determination of a Point Sufficiently Close to the Asymptote in\nNonlinear Growth Functions.” Scientia Agricola 68 (1):\n109–14. https://doi.org/10.1590/S0103-90162011000100016.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects\nModels. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nR Core Team. 2026. R: A Language and Environment for\nStatistical Computing. R Foundation for Statistical Computing. https://doi.org/10.32614/R.manuals.\n\n\nThe jamovi project. 2026. Jamovi. https://www.jamovi.org/.\n\n\nTjørve, Even, and Kathleen M. C. Tjørve. 2010. “A Unified Approach\nto the Richards-Model Family for Use in Growth Analyses:\nWhy We Need Only Two Model Forms.” Journal of Theoretical\nBiology 267 (3): 417–25. https://doi.org/10.1016/j.jtbi.2010.09.008.",
+    "crumbs": [
+      "References"
+    ]
+  }
+]
