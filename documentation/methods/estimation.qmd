@@ -5,48 +5,164 @@ format: html
 
 ## Initial nonlinear fit
 
-PGM first fits the selected growth equation using nonlinear least squares and the Levenberg--Marquardt algorithm [@nlsLM].
+PGM first fits the selected Unified growth equation using nonlinear least squares and the Levenberg--Marquardt algorithm [@nlsLM].
 
 The initial fit serves two purposes:
 
-1.  it provides estimates for an ordinary nonlinear analysis;
-2.  it supplies starting values for generalized nonlinear least-squares or nonlinear mixed-effects estimation.
+1. it provides the final estimates for an ordinary nonlinear model;
+2. it provides starting values for GNLS or NLME estimation when additional model structures are requested.
 
-Starting values are generated automatically from the observed data and the selected growth model.
+## Final estimation framework
+
+An ordinary NLS fit is retained when the model contains only the growth equation.
+
+GNLS is used when no random effects are specified but the model contains one or more of:
+
+- fixed-effect predictors;
+- a residual variance function;
+- an AR(1) or CAR(1) residual correlation structure.
+
+NLME is used whenever at least one growth parameter contains a random effect.
+
+NLME models are estimated by maximum likelihood using the `nlme` framework [@nlme].
+
+## Parameter-specific fixed effects
+
+Each estimated growth parameter has its own fixed-effects formula.
+
+For example,
+
+$$
+\log(A)
+=
+\beta_{A0}
++
+\beta_{A1}X
+$$
+
+and
+
+$$
+\log(K)
+=
+\beta_{K0}
++
+\beta_{K1}Z
++
+\beta_{K2}Q
++
+\beta_{K3}ZQ
+$$
+
+may be fitted simultaneously.
+
+A parameter with no assigned predictors is represented by an intercept-only formula.
 
 ## Parameter transformations
 
-Some models are fitted using transformed parameters to impose parameter constraints and improve numerical stability.
+Positive parameters are fitted on transformed scales.
 
-For example, a positive parameter $A$ may be represented internally as
+The principal internal transformations are:
 
-$$A = \exp(\alpha).$$
+$$
+A=\exp(\alpha),
+$$
 
-The reported estimate is returned to the natural parameter scale.
+$$
+K=\exp(\kappa),
+$$
+
+$$
+d=\exp(\lambda)
+$$
+
+for free Richards shape, and
+
+$$
+\eta_0=
+\operatorname{logit}\left(\frac{W_0}{A}\right)
+$$
+
+under the `W0` parameterization.
+
+$T_i$ is fitted directly on its natural time scale.
+
+When the asymptote is fixed, $A$ is removed from the estimated parameter vector.
+
+## Fixed-effect design validation
+
+Before GNLS or NLME estimation, PGM removes unused factor levels and checks the requested fixed-effects structure.
+
+Categorical predictors must retain at least two observed levels.
+
+The model matrix for each growth parameter must also have full column rank.
+
+Empty factor combinations, redundant interactions, or perfectly collinear predictors therefore produce an informative error rather than an unidentified fit.
+
+## Natural-scale parameter profiles
+
+The model is fitted on its estimation scale, but the parameter table reports values on the natural growth-parameter scale.
+
+For categorical predictors, the first observed factor level is used as the reference level.
+
+For continuous predictors, the reference profile is evaluated at zero.
+
+Rows corresponding to continuous effects represent the parameter profile at a predictor value of one relative to the zero reference profile.
+
+For interactions, the reported natural-scale parameter value includes the associated main-effect and interaction contributions required by that predictor profile.
 
 ## Standard errors
 
-The covariance matrix is initially obtained on the transformed estimation scale.
+The covariance matrix is obtained on the model estimation scale.
 
-For parameters reported after nonlinear back-transformation, uncertainty is propagated to the natural scale using a first-order delta method.
+For a reported natural-scale quantity
 
-If $\boldsymbol\theta$ denotes the transformed parameters and $g(\boldsymbol\theta)$ their natural-scale representation, then
+$$
+g(\boldsymbol\theta),
+$$
 
-$$\operatorname{Var}\!\left[g(\hat{\boldsymbol\theta})\right]
+PGM uses a first-order delta approximation:
+
+$$
+\operatorname{Var}
+\left[
+g(\hat{\boldsymbol\theta})
+\right]
 \approx
 J
-\operatorname{Var}(\hat{\boldsymbol\theta})
-J^\mathsf{T},$$
+\operatorname{Var}
+(\hat{\boldsymbol\theta})
+J^\mathsf{T},
+$$
 
-where $J$ is the Jacobian matrix of the back-transformation.
+where $J$ is the Jacobian of the transformation evaluated at the corresponding parameter profile.
+
+For $W_0$, uncertainty propagation includes its joint dependence on both the asymptote and the internal initial-value parameter when $A$ is estimated.
 
 ## Confidence intervals
 
-Approximate 95% confidence intervals are first constructed on the transformed scale and subsequently back-transformed.
+Approximate 95% confidence intervals are derived from the fitted covariance matrix and the corresponding transformed parameter profile.
 
-These intervals depend on asymptotic normal approximations and may be unreliable when:
+For positive transformed parameters, interval limits are returned to the natural parameter scale.
 
-- the sample size is small;
+For $W_0$, PGM uses a log-scale delta approximation for the positive natural-scale quantity.
+
+These intervals are asymptotic approximations and may be unreliable when:
+
+- sample size or effective replication is small;
 - parameters are weakly identified;
-- estimates are near parameter boundaries;
+- the observed trajectory poorly covers the relevant part of the curve;
+- the fixed-effects design is nearly singular;
 - the fitted model is numerically unstable.
+
+## Fixed-effect p-values
+
+When fixed effects are present, PGM reports coefficient-level p-values obtained from the fitted NLS/GNLS/NLME model on the model estimation scale.
+
+These are tests of individual model coefficients.
+
+They are not automatically omnibus tests of an entire multi-level factor or interaction term.
+
+For categorical predictors, coefficients are interpreted relative to the reference level.
+
+For interactions, the reported p-value corresponds to the relevant interaction coefficient on the estimation scale.

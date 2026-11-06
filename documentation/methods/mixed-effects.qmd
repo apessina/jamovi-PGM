@@ -5,38 +5,136 @@ format: html
 
 ## When mixed effects are used
 
-A nonlinear mixed-effects model is fitted when a subject identification variable is supplied [@nlme].
+PGM fits a nonlinear mixed-effects model whenever at least one random effect is assigned to a growth parameter [@nlme].
 
-The model separates:
+Random effects represent persistent variation in structural growth parameters among grouping units.
 
-- population-level growth parameters, represented by fixed effects;
-- individual deviations from the population trajectory, represented by random effects;
-- within-individual residual variation.
+They are distinct from residual variation and residual autocorrelation.
 
-## Current random-effects structure
+## Parameter-specific random effects
 
-In the current implementation, the asymptotic parameter $A$ contains an individual random effect.
+Random effects may be assigned independently to the estimated growth parameters.
 
-On the transformed scale, the subject-specific asymptote may be written as
+For example,
 
-$$\log(A_i) = \log(A) + b_{Ai},$$
+$$
+\log(A_i)
+=
+\log(A)+b_{Ai}
+$$
 
-where
+allows the asymptote to vary among subjects, whereas
 
-$$b_{Ai} \sim N(0,\sigma_A^2).$$
+$$
+\log(K_i)
+=
+\log(K)+b_{Ki}
+$$
 
-All remaining growth parameters are treated as fixed population parameters.
+allows the Unified growth-rate parameter to vary.
 
-## Interpretation
+Under the `Ti` parameterization, $T_i$ may also contain a random effect.
 
-The fixed asymptotic parameter represents the population-level central trajectory on the model scale.
+Under the `W0` parameterization, the corresponding internal initial-value parameter may contain a random effect.
 
-The random effect represents persistent between-individual variation in the asymptotic level.
+For Richards, the shape parameter $d$ may also vary randomly.
 
-Residual error represents observation-level variation remaining after accounting for the fixed effects, random effects, variance function, and residual correlation structure.
+## Different grouping structures by parameter
+
+Different growth parameters may be assigned to different grouping levels.
+
+For example, using grouping variables available in the Imperial Shag dataset of Svagelj et al. [@svagelj2021]:
+
+- $A$: `nestID`;
+- $K$: `chickID`;
+- $T_i$: `chickID`.
+
+The resulting model allows different sources of between-unit variation to act on different aspects of the growth trajectory.
+
+## Nested grouping structures
+
+PGM supports multiple grouping levels when they form a unique nested hierarchy.
+
+For example,
+
+`nestID`  
+`chickID`
+
+may be interpreted as chicks nested within nests when every chick belongs to exactly one nest.
+
+The hierarchy is evaluated from the observed grouping structure and, when residual Correlation Groups are supplied, from their explicit order.
+
+Grouping selections that form crossed or otherwise non-orderable structures are rejected.
+
+## Composite grouping terms
+
+The Random Effects interface also allows interaction terms between grouping variables.
+
+For random effects, a term such as
+
+`species:replicate`
+
+does **not** represent a fixed-effect interaction.
+
+It defines a new grouping factor whose levels are the unique combinations of `species` and `replicate`.
+
+For example,
+
+`species`  
+`species:replicate`
+
+may represent replicate units nested within species.
+
+## Random-effects covariance
+
+Within each grouping level, PGM currently uses a diagonal random-effects covariance structure.
+
+If more than one growth parameter varies at the same grouping level, their random deviations are therefore estimated with separate variances but without estimated covariance terms.
+
+This is equivalent to using a `pdDiag` structure in `nlme`.
+
+## Random-effects output
+
+The Random Effects table reports:
+
+- grouping level;
+- growth parameter;
+- estimated standard deviation.
+
+The reported SD is expressed on the natural growth-parameter scale.
+
+For log-transformed parameters, PGM converts the fitted transformed-scale variation to the induced natural-scale variation.
+
+For $W_0$, a first-order delta approximation is used at the reference profile.
+
+## Fixed and random effects together
+
+A growth parameter may contain both fixed and random effects.
+
+The fixed effects describe systematic population-level differences associated with predictors.
+
+The random effects describe remaining persistent variation among grouping units around those systematic patterns.
+
+## Residual error
+
+Residual variation remains at the observation level after accounting for:
+
+- the nonlinear mean function;
+- fixed effects;
+- random effects;
+- an optional variance function;
+- an optional AR(1) or CAR(1) correlation structure.
 
 ## Conditional fitted values
 
-Residual diagnostics for nonlinear mixed-effects models use conditional fitted values. These include the estimated individual random effects.
+Residual diagnostics for nonlinear mixed-effects models use conditional fitted values at the innermost random-effects grouping level.
 
-Consequently, the diagnostic residuals describe fit to individual trajectories rather than only to the population-average trajectory.
+Consequently, these diagnostics describe fit to the grouped trajectories after accounting for estimated random effects rather than only the population-average curve.
+
+## Current limitations
+
+The current interface assumes a uniquely nested grouping hierarchy.
+
+General crossed random-effects structures are not supported.
+
+Random-effect interaction terms define composite grouping units; they do not define random slopes for fixed-effect predictors.

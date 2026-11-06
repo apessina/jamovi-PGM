@@ -10,20 +10,21 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Option values into shorter variable names
         op <- self$options
         results <- self$results
+        
         deps  <- op$deps
         time <- op$time
-        iid <- op$iid
+        corrGroups <- op$corrGroups
+        fixedTerms <- op$fixedTerms
+        randomGroups <- op$randomGroups
         
-        ## Check if variables have any data and get the data
-        if (!is.null(deps) & !is.null(time)) {
-          if (!is.null(iid)) {
-            data <- self$data[, c(deps, time, iid), drop=FALSE]
-          } else {
-            data <- self$data[, c(deps, time), drop=FALSE]
-          }
-        } else {
+        ## Get required data
+        if (is.null(deps) || is.null(time))
           return()
-        }
+        
+        fixedTerms <- unique(unlist(fixedTerms, use.names = FALSE))
+        randomGroups <- unique(unlist(randomGroups, use.names = FALSE))
+        vars <- unique(c(deps, time, corrGroups, fixedTerms, randomGroups))
+        data <- self$data[, vars, drop = FALSE]
         
         ## Convert time to appropriate data type
         data[[time]] <- jmvcore::toNumeric(data[[time]])
@@ -35,14 +36,12 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         if (length(unique(na.omit(data[[time]]))) < 2)
           stop("At least two different time values are required")
         trawGlobal <- data[[time]]
-        tnewSize <- min(
-          3000, 
-          max(
-            500, 
-            round((max(trawGlobal) - min(trawGlobal)) * op$timeAxisFactor)
+        trangeGlobal <- range(trawGlobal, na.rm = TRUE)
+        tnewSize <- min(3000, max(
+            500, round(diff(trangeGlobal) * op$timeAxisFactor)
           )
         )
-        tnewGlobal <- seq(min(trawGlobal), max(trawGlobal), length.out=tnewSize)
+        tnewGlobal <- seq(trangeGlobal[1], trangeGlobal[2], length.out = tnewSize)
         
         
         ##### Model Setups Iteration -----
@@ -72,10 +71,8 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           ## Convert dep to appropriate data type
           data[[dep]] <- jmvcore::toNumeric(data[[dep]])  
           
-          ## Remove NAs
-          varsFit <- c(time, dep)
-          if (!is.null(iid))
-            varsFit <- c(varsFit, iid)
+          ## Remove NAs within variables required for this fit
+          varsFit <- unique(c(time, dep, corrGroups, fixedTerms, randomGroups))
           datacln <- na.omit(data[, varsFit, drop = FALSE])
           
           ## Clean data vectors
@@ -103,24 +100,38 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           ## Get model expression, parameters limits
           ## initial and transformed initial values
-          mspec <- get_model_spec(model, t, y)
+          mspec <- get_model_spec(
+            model = model,
+            t = t,
+            y = y,
+            parameterization = op$modelParam,
+            double = op$modelPhase == "double",
+            fixValue = setup$fixValue
+          )
           mexpr  <- mspec$mexpr
           
-          ## Store model name and equation
-          if (!mspec$mname %in% equations){
-            equations[[mspec$mname]] <- mspec$mhtml
-          }
+          ## Fit data -----
+          fitData <- data.frame(
+            t = as.numeric(xraw),
+            y = as.numeric(yraw)
+          )
           
-          ## Fit
+          ### Grouping variables
+          groupVars <- unique(c(corrGroups, randomGroups))
+          for (g in groupVars)
+            fitData[[g]] <- as.factor(datacln[[g]])
+          
+          ### Fixed-effect predictors
+          for (v in setdiff(fixedTerms, groupVars))
+            fitData[[v]] <- datacln[[v]]
+          
+          ## Fit -----
           fittedmodel <- pgm_fit(
             op       = op,
-            t        = xraw,
-            y        = yraw,
-            iid      = if (!is.null(iid)) datacln[[iid]] else NULL,
+            fitData  = fitData,
             mexpr    = mexpr,
             mformula = mspec$mformula,
-            parinit  = mspec$parinit,
-            tparinit  = mspec$tparinit,
+            tparinit = mspec$tparinit,
             evartype = evartype,
             ecortype = ecortype
           )
@@ -129,19 +140,28 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           ##### Parameters and evaluation -----
           
           fittedpar <- fitted_parameters(
-            fit  = fittedmodel$fit, 
-            mspec = mspec
+            fit = fittedmodel$fit,
+            mspec = mspec,
+            fixedTerms = fittedmodel$fixedTerms,
+            data = fittedmodel$fitData
           )
+          betaHat <- fittedpar$beta
           
-          betaHat <- setNames(
-            fittedpar$pardf[["parvalue"]], rownames(fittedpar$pardf)
-          )
+          fittedrandom <- NULL
+          if (inherits(fittedmodel$fit, "nlme")) {
+            fittedrandom <- fitted_random_effects(
+              fit = fittedmodel$fit,
+              randomGroups = fittedmodel$randomGroups,
+              randomGroupLabels = fittedmodel$randomGroupLabels,
+              mspec = mspec,
+              betaTrans = fittedpar$betaTrans
+            )
+          }
           
           fittedeval <- fittedmodel_evaluation(
-            op   = op,
-            y    = yraw,
-            fit  = fittedmodel$fit,
-            npar = nrow(fittedpar$pardf)
+            op = op,
+            fit = fittedmodel$fit,
+            npar = fittedpar$nfixed
           )
           
           ##### dep Resolution -----
@@ -154,16 +174,13 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           ##### Growth Function -----
           
-          ## Model equation with fitted parameters
-          Wexpr <- do.call("substitute", list(
-            mexpr[[1]], as.list(betaHat)
-          ))
-          
-          ## Get growth function and its derivatives functions
-          Wderivs <- get_W_derivatives(op, Wexpr, t)
-          
-          ## Apply growth function to tnew
-          Wpred <- Wderivs$W(tnew)
+          ## Get growth function and its derivatives
+          Wderivs <- ur_derivative_functions(
+            beta = betaHat,
+            family = model,
+            parameterization = op$modelParam,
+            fixValue = setup$fixValue
+          )
 
           
           ##### Critical Points by depSetupLabel -----
@@ -191,21 +208,41 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
               table = results$estTable,
               setup = setupId,
               label = depSetupLabel,
-              est   = fittedmodel$estInfo,
-              opt   = fittedmodel$optInfo,
-              randomEff = fittedmodel$randomEff,
-              weq   = fittedmodel$evarEq,
-              ceq   = fittedmodel$ecorEq
+              est = fittedmodel$estInfo,
+              opt = fittedmodel$optInfo,
+              fixedInfo = fittedmodel$fixedInfo,
+              asymptote = setup$fixValue,
+              randomInfo = fittedmodel$randomInfo,
+              weq = fittedmodel$evarEq,
+              ceq = fittedmodel$ecorEq
             )
           }
           
           # Parameters info
           if (op$parTables) {
+            note <- NULL
+            if (any(lengths(fittedmodel$fixedTerms) > 0L))
+              note <- paste0(
+                "p-values are obtained on model estimation scale; ",
+                "factor levels test contrast against reference level."
+              )
+            
             populate_ptable(
               table = results$parTable,
               setup = setupId,
               label = depSetupLabel,
-              pardf = fittedpar$pardf
+              pardf = fittedpar$pardf,
+              note = note
+            )
+          }
+          
+          if (op$parTables && !is.null(fittedrandom) && nrow(fittedrandom) > 0L) {
+            results$randomTable$setVisible(TRUE)
+            populate_rtable(
+              table = results$randomTable,
+              setup = setupId,
+              label = depSetupLabel,
+              randomdf = fittedrandom
             )
           }
           
@@ -294,7 +331,14 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
                 diagnostics = residual_diagnostics(
                   fit = fittedmodel$fit,
                   time = xraw,
-                  id = if (!is.null(iid)) datacln[[iid]] else NULL
+                  id = prepare_diagnostic_id(
+                    op = op,
+                    groups = corrGroups,
+                    data = datacln,
+                    nlmegroups = if (inherits(fittedmodel$fit, "nlme")) {
+                      fittedmodel$fit$groups
+                    } else {NULL}
+                  )
                 )
               )
             )
@@ -325,11 +369,6 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             table = results$aucTable,
             aucs = aucs
           )
-        }
-        
-        ## Print used models equations
-        if (op$eqHtmls) {
-          populate_eqhtml(results, equations)
         }
         
         ## Multiple models plot
@@ -422,20 +461,24 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           
           if (!is.null(acfData)) {
             
-            plot(acfData$lag, acfData$acf, type = "h", lwd = 2,
-              xlab = "Within-subject lag", ylab = "Mean residual ACF",
-              main = "Within-subject residual ACF", ylim = c(-1, 1)
+            plot(
+              acfData$lag, acfData$acf, type = "h", lwd = 2,
+              xlab = "Within-group lag", ylab = "Mean residual ACF",
+              main = "Within-group residual ACF", ylim = c(-1, 1)
             )
-            
             abline(h = 0)
+            
+          } else {
+            
+            plot.new()
+            text(0.5, 0.5,
+              "Insufficient repeated observations\nfor within-group ACF"
+            )
           }
           
         } else {
           
-          stats::acf(
-            residualNorm,
-            main = "Residual ACF"
-          )
+          stats::acf(residualNorm, main = "Residual ACF")
         }
         
         

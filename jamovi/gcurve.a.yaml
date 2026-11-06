@@ -3,7 +3,7 @@ name:  gcurve
 title: Growth Curve Modeling
 menuGroup: Growth
 menuTitle: Curve Modeling
-version: '0.9.0'
+version: '0.10.0'
 jas: '1.2'
 
 description:
@@ -63,9 +63,9 @@ options:
           R: >
             the explanatory variable in `data`, must be numeric
 
-    - name: iid
-      title: Individual Identifier
-      type: Variable
+    - name: corrGroups
+      title: Correlation Groups
+      type: Variables
       required: false
       rejectUnusedLevels: true
       suggested:
@@ -75,20 +75,12 @@ options:
       default: null
       description:
           ui: >
-            the categorical individual identifier. Optionally used in mixed 
-            effects and residuals autocorrelation.
+            the categorical grouping variables defining the hierarchy within 
+            which AR(1) or CAR(1) residual correlation is modeled. When multiple
+            variables are supplied, their order represents outer to inner levels.
           R: >
-            the individual identifier variable in `data`, must be categorical  
-
-    - name: eqHtmls
-      title: Equation
-      type: Bool
-      default: false
-      description:
-          ui: >
-            provide the equation of Richards model parametrization.
-          R: >
-            `TRUE` (default) or `FALSE`, provide Richards model equation
+            the categorical grouping variables used by the residual correlation
+            structure
       
     - name: parTables
       title: Parameters
@@ -113,6 +105,35 @@ options:
             `TRUE` or `FALSE` (default), provide estimated parameters values 
             tables
 
+    - name: modelParam
+      title: Parametrization
+      type: List
+      options:
+        - name: Ti
+          title: Ti
+        - name: W0
+          title: W0
+      default: Ti
+      description:
+          ui: >
+            define whether the Unified growth-model family is expressed using
+            inflection time (Ti) or initial value (W0).
+          R: >
+            one of `'Ti'`, or `'W0'`
+
+    - name: modelPhase
+      title: Phases
+      type: List
+      options:
+        - name: single
+          title: Single
+      default: single
+      description:
+          ui: >
+            define the number of phases for the delected model family.
+          R: >
+            one of `'single'`
+
     - name: modeling
       title: Models Setup
       type: Array
@@ -131,6 +152,12 @@ options:
               options:
                 - name: richards
                   title: Richards
+                - name: gompertz
+                  title: Gompertz
+                - name: logistic
+                  title: Logistic
+                - name: bertalanffy
+                  title: Bertalanffy
               default: richards
             - name: errorVarType
               type: List
@@ -140,9 +167,9 @@ options:
                 - name: power
                   title: Power
                 - name: exp
-                  title: Exponential
+                  title: Exp.
                 - name: cpower
-                  title: ConstPower
+                  title: C.Pow.
               default: none
             - name: errorCorType
               type: List
@@ -154,13 +181,15 @@ options:
                 - name: car1
                   title: CAR(1)
               default: none
+            - name: fixValue
+              type: Number
       description:
           ui: >
-            the specifications for each model setup. Provide dependent variable, 
-            predefined terms equation, error variance function and error 
-            autocorrelation function.
+            specifications for each model setup, including dependent variable,
+            Unified growth model, residual variance structure, residual
+            correlation structure and optional fixed asymptote.
           R: >
-            an array describing the specifications for each model.
+            an array describing the specifications for each model setup
 
     - name: duplicateSetup
       title: Duplicate
@@ -180,6 +209,34 @@ options:
             remove the selected model setup.
           R: >
             an action to remove the selected model setup in UI.
+
+    - name: fixedTerms
+      title: Parameters
+      type: Array
+      default: [[], [], [], []]
+      template:
+          type: Terms
+      description:
+          ui: >
+            define the fixed-effect terms assigned to each estimated growth
+            parameter. Main effects and interaction terms are supported.
+          R: >
+            fixed-effect terms assigned to A, K, Ti/W0 and d, respectively
+
+    - name: randomGroups
+      title: Parameters
+      type: Array
+      default: [[], [], [], []]
+      template:
+          type: Terms
+      description:
+          ui: >
+            define the random-effects grouping terms assigned to each estimated
+            growth parameter. Multiple nested levels and composite grouping 
+            terms are supported.
+          R: >
+            random-effects grouping terms assigned to A, K, Ti/W0 and d, 
+            respectively
 
     - name: gofMetrics
       title: Goodness of Fit

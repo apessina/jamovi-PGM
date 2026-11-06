@@ -9,7 +9,7 @@ $$\operatorname{Var}(\varepsilon_i)=\sigma^2.$$
 
 This assumption is often unrealistic for biological growth data because larger responses may exhibit greater absolute variability.
 
-PGM provides alternative residual variance functions based on the fitted response $\hat y_i$.
+PGM provides alternative residual variance functions based on the fitted response $\hat y_i$, implemented through the variance-function structures available in `nlme` [@nlme].
 
 ## Power variance function
 

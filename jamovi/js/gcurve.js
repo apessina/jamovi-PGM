@@ -17,6 +17,14 @@ module.exports = {
             .on('click.gcurve', () => {
                 this.removeSetup(ui);
             });
+            
+        setTimeout(() => updateParameterLabels(ui), 0);
+    },
+    
+    
+    view_updated: function(ui, event) {
+      
+        setTimeout(() => updateParameterLabels(ui), 0);
     },
 
 
@@ -48,6 +56,10 @@ module.exports = {
             ui.modeling.setValue(next);
     },
 
+    modelParam_changed: function(ui, event) {
+    
+        setTimeout(() => updateParameterLabels(ui), 0);
+    },
 
     duplicateSetup: function(ui) {
 
@@ -156,6 +168,7 @@ function createDefaultSetup(varName, current) {
         ),
         var: varName,
         model: 'richards',
+        fixValue: '',
         errorVarType: 'none',
         errorCorType: 'none'
     };
@@ -210,7 +223,8 @@ function sameModeling(a, b) {
             left.var === right.var &&
             left.model === right.model &&
             left.errorVarType === right.errorVarType &&
-            left.errorCorType === right.errorCorType
+            left.errorCorType === right.errorCorType && 
+            left.fixValue === right.fixValue
         );
     });
 }
@@ -245,6 +259,38 @@ function makeButtonCompact(control) {
         fontSize: '12px',
         lineHeight: '18px',
         flexGrow: '0'
+    });
+}
+
+
+function updateParameterLabels(ui) {
+
+    const param = ui.modelParam.value();
+    const names = ['A', 'K', param === 'W0' ? 'W0' : 'Ti', 'd'];
+
+    updateLabels(ui.fixedTerms, names);
+    updateLabels(ui.randomGroups, names);
+}
+
+
+function updateLabels(control, names) {
+
+    if (!control || !control.$el)
+        return;
+
+    const validNames = ['Parameter', 'A', 'K', 'Ti', 'W0', 'd'];
+
+    const labels = control.$el.find('*').filter(function() {
+
+        return this.children.length === 0 &&
+            validNames.includes(this.textContent.trim());
+    });
+
+    if (labels.length !== names.length)
+        return;
+
+    labels.each(function(index) {
+        this.textContent = names[index];
     });
 }
 

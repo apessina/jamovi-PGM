@@ -1,106 +1,109 @@
 
 # functions for model evaluation in gccurve.b.R
 
-## dataframe with estimated parameters and error in original scale
-fitted_parameters <- function (
-  fit,
-  mspec
+
+## Natural-scale parameter estimates and fixed-effect contrasts
+fitted_parameters <- function(
+    fit,
+    mspec,
+    fixedTerms,
+    data
 ) {
   
+  ## Fixed coefficients in estimation scale
+  betaTrans <- get_fixed_coef(fit)
   
-  ## Fixed effects parameters in transformed scale
-  beta_trans <- get_fixed_coef(fit)
+  ## Covariance matrix in estimation scale
+  covmTrans <- get_fixed_vcov(fit = fit, betaTrans = betaTrans)
   
-  ## Fixed effects parameters in natural scale
-  beta_hat <- mspec$backtransform(beta_trans)
+  ## Fixed-effects inference
+  infer <- get_fixed_inference(fit)
   
+  ## Structural parameters present in this model
+  transPars <- names(fixedTerms)
   
-  ## Covariance matrix in transformed scale
-  covm_trans <- get_fixed_vcov(
-    fit = fit,
-    beta_trans = beta_trans
+  ## Natural names
+  naturalNames <- c(logA="A", logK="K", Ti="Ti", eta0="W0", lambda="d")
+  
+  ## Find intercept coefficient for each structural parameter
+  interceptNames <- setNames(
+    vapply(
+      transPars,
+      function(p) {
+        
+        if (p %in% names(betaTrans))
+          return(p)
+        
+        intercept <- paste0(p, ".(Intercept)")
+        
+        if (!intercept %in% names(betaTrans)) {
+          stop(
+            "Could not identify the intercept for parameter ",
+            p,
+            ".",
+            call. = FALSE
+          )
+        }
+        
+        intercept
+      },
+      character(1)
+    ),
+    transPars
   )
   
+  ## Reference-profile structural parameters
+  betaBase <- setNames(betaTrans[interceptNames], transPars)
   
-  ## Critical value
-  crit <- stats::qnorm(
-    1 - 0.05 / 2
+  ## Natural-scale reference parameters
+  betaHat <- mspec$backtransform(betaBase)
+  
+  ## 95% CI
+  crit <- stats::qnorm(0.975)
+  
+  ## Evaluation context for parameter-table helpers
+  evalContext <- list(
+    betaTrans = betaTrans,
+    covmTrans = covmTrans,
+    infer = infer,
+    mspec = mspec,
+    transPars = transPars,
+    interceptNames = interceptNames,
+    naturalNames = naturalNames,
+    fixedTerms = fixedTerms,
+    data = data,
+    crit = crit
   )
   
-  ## Standard Error for parameters
-  if (is.null(covm_trans)) {
+  ## Build parameter table
+  rows <- list()
+  
+  for (p in transPars) {
     
-    se_trans <- rep(
-      NA_real_,
-      length(beta_trans)
-    )
-    names(se_trans) <- names(beta_trans)
+    ## Reference parameter
+    rows[[length(rows) + 1L]] <- make_row(p = p, context = evalContext)
     
-    se_vals <- rep(
-      NA_real_,
-      length(beta_hat)
-    )
-    names(se_vals) <- names(beta_hat)
+    ## Fixed-effect contrasts
+    prefix <- paste0(p, ".")
     
-    lower_ci <- rep(
-      NA_real_,
-      length(beta_hat)
-    )
-    names(lower_ci) <- names(beta_hat)
+    effects <- names(betaTrans)[startsWith(names(betaTrans), prefix)]
     
-    upper_ci <- lower_ci
+    effects <- setdiff(effects, interceptNames[[p]])
     
-  } else {
-    
-    ### Jacobian of the back-transformation
-    J <- mspec$jacobian(beta_trans)
-    
-    J <- J[
-      names(beta_hat),
-      names(beta_trans),
-      drop = FALSE
-    ]
-    
-    ### Natural-scale covariance matrix
-    covm <- J %*%
-      covm_trans %*%
-      t(J)
-    
-    ### Standard errors
-    se_trans <- sqrt(
-      pmax(
-        diag(covm_trans),
-        0
-      )
-    )
-    
-    se_vals <- sqrt(
-      pmax(
-        diag(covm),
-        0
-      )
-    )
-    
-    
-    ### Confidence limits in transformed scale
-    lower_trans <- beta_trans - crit * se_trans
-    upper_trans <- beta_trans + crit * se_trans
-    
-    ### Back-transformed confidence limits
-    lower_ci <- mspec$backtransform(lower_trans)
-    upper_ci <- mspec$backtransform(upper_trans)
-    
+    for (effect in effects) {
+      rows[[length(rows) + 1L]] <- make_row(p, effect, context = evalContext)
+    }
   }
   
+  pardf <- do.call(rbind, rows)
+  rownames(pardf) <- make.unique(pardf$Parameter)
+  pardf$Parameter <- NULL
   
   list(
-    pardf   = data.frame(
-      row.names = names(beta_hat),
-      parvalue  = as.numeric(beta_hat),
-      parerror  = as.numeric(se_vals),
-      parlower  = as.numeric(lower_ci),
-      parupper  = as.numeric(upper_ci)
-    )
+    pardf = pardf,
+    beta = betaHat,
+    betaTrans = betaBase,
+    nfixed = length(betaTrans)
   )
 }
 
@@ -108,7 +111,6 @@ fitted_parameters <- function (
 # calculate requested GoF and Error metrics for a model
 fittedmodel_evaluation <- function (
   op,
-  y,
   fit,
   npar
 ) {
@@ -120,6 +122,9 @@ fittedmodel_evaluation <- function (
   ## Original-scale fitted residuals
   res <- get_response_residuals(fit)
   resnorm <- get_normalized_residuals(fit)
+  
+  ## Observed response aligned with fitted/residual vectors
+  yobs <- yhat + res
   
   ## Number of observations
   n <- stats::nobs(fit)
@@ -138,15 +143,8 @@ fittedmodel_evaluation <- function (
     df2 <- n - npar
     
     ## Sum of squares
-    SSt <- sum(
-      (y - mean(y))^2,
-      na.rm = TRUE
-    )
-    
-    SSe <- sum(
-      res^2,
-      na.rm = TRUE
-    )
+    SSt <- sum((yobs - mean(yobs))^2, na.rm = TRUE)
+    SSe <- sum(res^2, na.rm = TRUE)
     
     ## Descriptive goodness-of-fit
     R2 <- 1 - SSe / SSt
@@ -220,7 +218,7 @@ fittedmodel_evaluation <- function (
     
     if ("rrmse" %in% op$errorMetrics) {
       RRMSE <- RMSE /
-        mean(y, na.rm = TRUE)
+        mean(yobs, na.rm = TRUE)
     }
     
   }
@@ -243,7 +241,7 @@ fittedmodel_evaluation <- function (
     sMAPE <- mean(
       2 * abs(res) /
         pmax(
-          abs(y) + abs(yhat),
+          abs(yobs) + abs(yhat),
           1e-8
         ),
       na.rm = TRUE
@@ -283,24 +281,17 @@ residual_diagnostics <- function(
   ## NLME: conditional diagnostics
   if (inherits(fit, "nlme")) {
     
-    fittedValues <- as.numeric(
-      fitted(fit, level = 1)
-    )
+    ## Innermost grouping level
+    diagLevel <- fit$dims$Q
+    
+    fittedValues <- as.numeric(fitted(fit, level = diagLevel))
     
     residualRaw <- as.numeric(
-      residuals(
-        fit,
-        type = "response",
-        level = 1
-      )
+      residuals(fit, type = "response", level = diagLevel)
     )
     
     residualNorm <- as.numeric(
-      residuals(
-        fit,
-        type = "normalized",
-        level = 1
-      )
+      residuals(fit, type = "normalized", level = diagLevel)
     )
     
     fitType <- "nlme"
@@ -344,8 +335,9 @@ residual_diagnostics <- function(
     
   } else {
     stop(
-      ERROR: "Unsupported fitted model class: ",
-      paste(class(fit), collapse = ", ")
+      "ERROR: Unsupported fitted model class: ",
+      paste(class(fit), collapse = ", "),
+      call. = FALSE
     )
   }
   
@@ -368,5 +360,164 @@ residual_diagnostics <- function(
   }
   
   output
+}
+
+
+## Random-effects variance components
+fitted_random_effects <- function(
+    fit,
+    randomGroups,
+    randomGroupLabels,
+    mspec,
+    betaTrans
+) {
+  
+  if (!inherits(fit, "nlme"))
+    return(NULL)
+  
+  reStruct <-
+    fit$modelStruct$reStruct
+  
+  if (
+    is.null(reStruct) ||
+    length(reStruct) == 0L
+  ) {
+    return(NULL)
+  }
+  
+  
+  naturalNames <- c(
+    logA = "A",
+    logK = "K",
+    Ti = "Ti",
+    eta0 = "W0",
+    lambda = "d"
+  )
+  
+  logPars <- c(
+    "logA",
+    "logK",
+    "lambda"
+  )
+  
+  
+  ## Natural-scale reference profile
+  naturalBase <-
+    mspec$backtransform(
+      betaTrans
+    )
+  
+  ## Jacobian at reference profile
+  Jbase <-
+    mspec$jacobian(
+      betaTrans
+    )
+  
+  
+  rows <- list()
+  
+  
+  for (g in names(reStruct)) {
+    
+    groupLabel <- pgm_group_label(group = g, labels = randomGroupLabels)
+    
+    pars <- names(randomGroups)[
+      vapply(
+        randomGroups,
+        function(x)
+          g %in% x,
+        logical(1)
+      )
+    ]
+    
+    if (!length(pars))
+      next
+    
+    
+    vc <- as.matrix(
+      nlme::VarCorr(
+        reStruct[[g]],
+        sigma = fit$sigma
+      )
+    )
+    
+    n <- min(
+      length(pars),
+      nrow(vc)
+    )
+    
+    
+    for (i in seq_len(n)) {
+      
+      p <- pars[i]
+      
+      tau <- as.numeric(
+        vc[i, "StdDev"]
+      )
+      
+      natural <-
+        naturalNames[[p]]
+      
+      
+      ## log(A), log(K), lambda:
+      ## exact induced lognormal SD
+      if (p %in% logPars) {
+        
+        baseEstimate <-
+          naturalBase[[natural]]
+        
+        sdNatural <-
+          baseEstimate *
+          exp(
+            0.5 * tau^2
+          ) *
+          sqrt(
+            expm1(
+              tau^2
+            )
+          )
+        
+        
+        ## eta0 = logit(W0/A):
+        ## delta-method SD on W0 scale
+      } else if (p == "eta0") {
+        
+        derivative <- as.numeric(
+          Jbase[
+            "W0",
+            "eta0"
+          ]
+        )
+        
+        sdNatural <-
+          abs(derivative) *
+          tau
+        
+        
+        ## Ti is already on natural scale
+      } else {
+        
+        sdNatural <- tau
+      }
+      
+      
+      rows[[length(rows) + 1L]] <-
+        data.frame(
+          group = groupLabel,
+          parameter = natural,
+          sd = sdNatural,
+          stringsAsFactors = FALSE
+        )
+    }
+  }
+  
+  
+  if (!length(rows))
+    return(NULL)
+  
+  do.call(
+    rbind,
+    rows
+  )
 }
 

@@ -7,10 +7,11 @@ format: html
 
 Pessina ALR, Garcia-Neto M (2026). PGM: Practical Growth Modeling for jamovi \[Version x.x.x\]. doi: [10.5281/zenodo.15764773](https://doi.org/10.5281/zenodo.15764773)
 
-***The jamovi project [@jamovi]*** **and *The R project*[@R] should also be cited.** We also encourage authors to cite the packages and references used in the module’s analyses:
+***The jamovi project [@jamovi]*** **and *The R project*[@R] should also be cited.** We also encourage authors to cite the methodological references and R packages relevant to the analyses performed:
 
-- minpack.lm [@nlsLM]
-- nlme [@nlme]
+- Unified growth-model family: Tjørve and Tjørve [@tjorve2010; @tjorve2017]
+- nonlinear least-squares estimation: minpack.lm [@nlsLM]
+- generalized and nonlinear mixed-effects models: nlme [@nlme]
 
 ## Recommended information
 
@@ -18,16 +19,17 @@ An academic report should identify:
 
 - the PGM version;
 - the jamovi version;
-- the selected growth equation;
-- the equation parametrization;
+- the selected Unified growth equation;
+- the `Ti` or `W0` parameterization;
+- whether the asymptote was estimated or fixed;
 - the response and time units;
 - the number of observations;
-- the number of subjects, when longitudinal;
-- the estimation framework;
-- the random-effects structure;
+- the fixed-effects structure for each growth parameter;
+- relevant interaction terms;
+- the random-effects structure and grouping hierarchy;
 - the residual variance structure;
-- the residual correlation structure;
-- the estimation method;
+- the residual correlation structure and Correlation Groups;
+- the estimation framework;
 - the model-comparison criteria;
 - the residual diagnostics examined.
 
@@ -45,19 +47,27 @@ When a variance function is included:
 
 ## Nonlinear mixed-effects model
 
-For longitudinal data:
+For models containing random growth parameters, a possible methods statement is:
 
-> Growth trajectories were fitted using the PGM module for jamovi. Repeated growth measurements were analyzed using a nonlinear mixed-effects model. Population growth parameters were represented by fixed effects, and between-subject variation in the asymptotic parameter was represented by a random effect. Parameters were estimated by maximum likelihood after initialization using a Levenberg--Marquardt nonlinear fit.
+> Growth trajectories were fitted using the PGM module for jamovi. The [Unified Richards/Gompertz/Logistic/von Bertalanffy] model was expressed using the [Ti/W0] parameterization. Fixed effects of [predictors] were assigned to [growth parameters], including the interaction between [predictors] where specified. Between-[subject/group] variation in [parameters] was represented using parameter-specific random effects, with [grouping hierarchy]. Models were estimated by maximum likelihood after initialization from a Levenberg--Marquardt nonlinear fit.
+
+### Fixed effects and interactions
+
+When parameter-specific predictors are fitted:
+
+> Systematic variation in the growth parameters was modeled using fixed effects. The parameter [A/K/Ti/W0/d] included effects of [predictors]. The interaction between [X] and [Z] was included to allow the effect of one predictor on the growth parameter to depend on the level of the other.
+
+PGM reports coefficient-level p-values on the model estimation scale. For factors or interactions represented by several coefficients, these should not be described as omnibus tests unless an appropriate joint test has been performed separately.
 
 ### Residual autocorrelation
 
 When applicable:
 
-> Within-subject residual dependence was modeled using a first-order [\[AR(1)/CAR(1)\]]{.underline} correlation structure.
+> Residual dependence within [Correlation Groups] was modeled using a first-order [AR(1)/CAR(1)] correlation structure.
 
-For CAR(1), the report may clarify:
+For CAR(1):
 
-> Correlation was modeled as a function of the actual temporal distance between observations.
+> Residual correlation was modeled as a function of the actual temporal distance between observations.
 
 ### Heteroscedasticity
 

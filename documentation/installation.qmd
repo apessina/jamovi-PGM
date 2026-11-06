@@ -23,7 +23,7 @@ PGM is available in the official jamovi library:
 
 5.  Select Install.
 
-After installation, PGM will appear in the main analysis ribbon.
+After installation, "Growth" option will appear in the main analysis ribbon.
 
 ## Installing a development version
 

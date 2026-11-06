@@ -32,16 +32,16 @@ make_plot_ypred <- function(
     
   } else if (curve == "squaredRate") {
     ypred <- functions$W1s(t)
-    axisLabel <- paste0("y'(t)² (", dep, "² / ", time, "⁴)")
+    axisLabel <- paste0("y'(t)² (", dep, "² / ", time, "²)")
     legend <- "Squared growth rate"
     
   } else if (curve == "gfSquaredRate") {
     ypred <- functions$W_W1s(t)
-    axisLabel <- paste0("y(t) * y'(t)² (", dep, "³ / ", time, "⁵)")
+    axisLabel <- paste0("y(t) * y'(t)² (", dep, "³ / ", time, "²)")
     legend <- "y(t) * y'(t)²"
     
   } else {
-    stop("ERROR: Invalid curvetion nmxion in make_plot_ypred()")
+    stop("ERROR: Invalid curve option in make_plot_ypred()")
   }
   
   
@@ -158,9 +158,10 @@ draw_new_curve <- function(
   plot(x, y, type = "l", col = linecolor, axes = FALSE,
        xlab = "", ylab = "", lty = linetype, ylim = better_lim(y))
   
-  if (!is.null(axisLabel))
+  if (!is.null(axisLabel)) {
     axis(side = 4) # add new y-axis on the right side of the plot
     mtext(axisLabel, side = 4, line = 2) # y-axis label
-    
+  }
+  
 }
 

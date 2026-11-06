@@ -7,78 +7,164 @@ format: html
 
 The module includes example datasets derived from published studies for testing and learning purposes. References for the original data sources are provided with each dataset.
 
-They are available from the jamovi menu in the upper-left corner: **Open → Data Library → PGM**.
+They are available from the jamovi menu in the upper-left corner:
+
+**Open → Data Library → PGM**
 
 ## Basic structure
 
 Data should be provided in long format, with one row per observation.
 
-At minimum, the dataset must contain:
+At minimum, an analysis requires:
 
 - one numeric response variable;
 - one numeric time or age variable.
 
-For longitudinal analyses, the dataset must also contain:
+Additional variables may be supplied as:
 
-- one identification variable indicating the experimental unit or subject.
+- fixed-effect predictors;
+- random-effects grouping variables;
+- residual-correlation grouping variables.
 
-## Cross-sectional structure
+## Simple structure
 
-A dataset without an identification variable is interpreted as containing independent observations.
+For an ordinary nonlinear model:
 
 | time | response |
 |-----:|---------:|
-|    1 |     12.4 |
-|    2 |     18.9 |
-|    3 |     27.5 |
+| 1 | 12.4 |
+| 2 | 18.9 |
+| 3 | 27.5 |
 
-## Longitudinal structure
+## Repeated-measures structure
 
-For repeated measurements, each subject must have a stable identifier.
+For repeated measurements, each experimental unit should have a stable grouping identifier.
 
-| subject | time | response |
-|:--------|-----:|---------:|
-| A01     |    1 |     12.4 |
-| A01     |    2 |     18.9 |
-| A01     |    3 |     27.5 |
-| A02     |    1 |     11.8 |
-| A02     |    2 |     19.7 |
-| A02     |    3 |     29.1 |
+| subject | treatment | time | response |
+|:--------|:----------|-----:|---------:|
+| A01 | Control | 1 | 12.4 |
+| A01 | Control | 2 | 18.9 |
+| A01 | Control | 3 | 27.5 |
+| A02 | Treated | 1 | 11.8 |
+| A02 | Treated | 2 | 19.7 |
+| A02 | Treated | 3 | 29.1 |
+
+Here, `treatment` may be used as a fixed-effect predictor and `subject` as a random-effects or residual-correlation grouping variable.
 
 ## Variable requirements
 
 ### Response
 
-The response must be numeric and should represent a cumulative or monotonic biological growth process when a sigmoidal growth model is used.
+The response must be numeric and should represent a process compatible with the selected growth equation.
+
+Examples include body mass, length, concentration, plant height, biomass, or cumulative production.
 
 ### Time
 
-Time must be numeric. Examples include:
+Time must be numeric.
+
+Examples include:
 
 - age in days;
 - age in weeks;
 - hours after inoculation;
 - days after planting.
 
-The unit of time determines the unit of rate parameters and derivative quantities.
+The unit of time determines the numerical scale of time-dependent model parameters and derivative quantities.
 
-### Subject identifier
+### Fixed-effect predictors
 
-The subject identifier may be numeric or categorical. It is used to associate repeated observations with the same experimental unit.
+Fixed effects represent systematic changes in one or more growth parameters.
 
-Selecting an identifier changes the statistical model from an *ordinary or generalized nonlinear model* to a *nonlinear mixed-effects model*.
+Predictors may be categorical or continuous.
+
+Categorical predictors must contain at least two observed levels in the data actually used for the fit. Interaction terms also require sufficient observations in the relevant combinations of predictor levels.
+
+For each growth parameter, the selected fixed-effect terms define a separate parameter model.
+
+For example,
+
+$$
+\log(K)
+=
+\beta_0+
+\beta_1 X+
+\beta_2 Z+
+\beta_3 XZ
+$$
+
+represents main effects of $X$ and $Z$ and their interaction on the internally estimated $K$ parameter.
+
+### Random-effects grouping variables
+
+Random-effects grouping variables identify units among which one or more growth parameters are allowed to vary.
+
+Examples include:
+
+- subject;
+- animal;
+- nest;
+- batch;
+- experimental unit.
+
+Several grouping levels may be used when they form a nested hierarchy.
+
+For example, using the Imperial Shag dataset included with PGM [@svagelj2021]:
+
+`nestID`  
+`chickID`
+
+may represent chicks nested within nests when each chick belongs to one nest.
+
+Composite grouping terms may also be created explicitly. A term such as
+
+`species:replicate`
+
+represents the unique combinations of species and replicate.
+
+The current implementation requires a unique nested hierarchy. Crossed random-effects structures that cannot be represented as a unique nesting order are not supported.
+
+### Correlation Groups
+
+Correlation Groups define the units within which an AR(1) or CAR(1) residual correlation structure is applied.
+
+When more than one variable is selected, they define an ordered grouping hierarchy from outer to inner level.
+
+For example:
+
+`nestID / chickID`
+
+models residual correlation within chicks nested in nests.
+
+Correlation Groups are conceptually distinct from random effects. They may coincide with random-effects groups, but they serve a different statistical purpose.
 
 ## Missing observations
 
-Rows containing missing values in variables required by a given analysis are excluded from that analysis.
+For each model setup, PGM uses complete observations for:
 
-Different response variables may therefore be fitted using different numbers of observations.
+- the selected response;
+- time;
+- all selected fixed-effect predictors;
+- all selected random-effects grouping variables;
+- all selected Correlation Groups.
+
+Rows containing missing values in any required variable are excluded from that fit.
+
+This can be particularly important when predictors have structurally missing values. After complete-case filtering, a categorical predictor may be left with only one observed level, in which case its effect cannot be estimated.
+
+## Factor levels and estimability
+
+Unused factor levels are removed before GNLS or NLME estimation.
+
+PGM checks whether categorical fixed-effect predictors retain at least two observed levels and whether the resulting fixed-effects design matrix has full column rank.
+
+Empty combinations of factor levels, redundant terms, or perfect collinearity may make a requested effect or interaction non-estimable.
 
 ## Measurement schedule
 
-For models using discrete AR(1) residual correlation, equally spaced observations are generally expected.
+Discrete AR(1) correlation is most naturally used when observations follow an approximately equally spaced measurement schedule.
 
-For irregularly spaced measurements, continuous-time CAR(1) correlation is usually more appropriate.
+For irregularly spaced measurements, continuous-time CAR(1) is generally more appropriate because correlation is modeled using the actual temporal distance.
 
 ## Data coverage
 
@@ -92,6 +178,8 @@ Early or truncated datasets may produce:
 - strong parameter correlations;
 - wide confidence intervals;
 - implausible extrapolation;
-- **convergence failures**.
+- convergence failures.
 
-Predictions beyond the observed time range should be treated cautiously, especially when the asymptotic phase is not well represented in the data.
+When the asymptote is scientifically known or deliberately constrained, PGM allows a positive fixed asymptotic value to be supplied in the Model Setup.
+
+Predictions beyond the observed time range should nevertheless be interpreted cautiously.

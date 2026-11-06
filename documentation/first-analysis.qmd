@@ -7,128 +7,193 @@ format: html
 
 To begin:
 
-1.  Open the dataset in jamovi.
+1. Open the dataset in jamovi.
+2. Select **PGM** from the analysis ribbon.
+3. Open **Growth Curve Modeling**.
+4. Assign one or more **Dependent Variables**.
+5. Assign the numeric **Time Variable**.
+6. Configure one or more rows in **Model Setup**.
 
-2.  Select PGM from the analysis ribbon.
+A model setup defines the response variable, growth model, residual variance structure, residual correlation structure, and optional fixed asymptote.
 
-3.  Open the growth-curve analysis.
+## Model parameterization
 
-4.  Assign the time variable.
+PGM provides two location parameterizations for the Unified growth-model family.
 
-5.  Assign one or more response variables.
+### Ti
 
-6.  Add a modeling setup for each response-model combination.
+The `Ti` parameterization reports the time of the inflection point.
 
-Each modeling setup defines the response variable, growth model, residual variance structure, and residual correlation structure to be used in that analysis.
+This form is useful when the timing of maximum growth rate has a direct biological interpretation.
 
-## Selecting the response
+### W0
 
-The response should be numeric and should represent a process compatible with the selected growth equation.
+The `W0` parameterization reports the fitted response at $t=0$.
 
-Examples include: body weight; organism size; microbial concentration; plant height; cumulative production; other continuous responses measured over time.
+This form may be useful when the initial value has a direct biological interpretation or when comparison at a common temporal origin is important.
 
-A sigmoidal growth model should not be selected solely because the observations increase over time. The observed trajectory should also exhibit a biologically and statistically plausible sigmoidal form.
+The parameterization is selected globally for the analysis and the corresponding parameter label is updated in the Fixed Effects and Random Effects sections.
 
-## Selecting time
+## Selecting a growth model
 
-The time variable must be numeric.
+Each setup may use one of the following Unified models:
 
-**Its measurement unit determines the units of:**
+- Richards;
+- Gompertz;
+- Logistic;
+- von Bertalanffy.
 
-- rate parameters;
+The three-parameter models are special cases of the Unified-Richards family and retain the same interpretation of the common parameters.
 
-- inflection time;
+Richards additionally estimates the shape parameter $d$.
 
-- critical-point locations;
+Different equations should be compared using model adequacy, biological plausibility, convergence, and residual diagnostics rather than fit statistics alone.
 
-- derivative-based descriptors;
+## Fixed asymptote
 
-- autocorrelation distances.
+A positive value may be entered in the **Asymptote** column of a Model Setup.
 
-Changing time from days to weeks changes the numerical values of time-dependent parameters.
+When supplied, $A$ is treated as fixed rather than estimated for that setup.
 
-## Subject identifier
+This may be useful when the upper asymptote is externally known or when incomplete late-stage data make free asymptote estimation scientifically inappropriate.
 
-For repeated measurements, assign a subject or experimental-unit identifier.
+Because $A$ is then not an estimated parameter, fixed or random effects assigned to $A$ are not fitted for that setup.
 
-**When no identifier is supplied, observations are treated as independent.**
+## Residual variance
 
-When an identifier is supplied, PGM fits a *nonlinear mixed-effects model* in which repeated observations are grouped within subjects.
+The **Variance** column controls the residual variance function.
 
-The identifier should represent the unit that generates the repeated trajectory, such as: animal; plant; patient; experimental vessel; microbial batch; plot.
+Available options are:
 
-Treatment group, sex, breed, or experimental condition should not be used as the subject identifier unless each category genuinely represents one repeated observational unit.
-
-## Selecting a model
-
-Choose the growth equation according to: the expected trajectory shape; parameter interpretability; biological context; data coverage; convergence; residual diagnostics; comparative model performance.
-
-Different equations may fit similarly while producing parameters with different meanings.
-
-***The current version fits only the 4-parameter Richards, that should cover the shapes of both Gompertz and Logistic models.***
-
-## Selecting a residual variance structure
+- None;
+- Power;
+- Exponential;
+- Constant-plus-power.
 
 Use a variance function when residual spread changes systematically with the fitted response.
 
-Available structures may include:
+## Residual correlation
 
-- constant variance;
+The **Correlation** column controls residual serial dependence.
 
-- power variance;
+Available options are:
 
-- exponential variance;
+- None;
+- AR(1);
+- CAR(1).
 
-- constant-plus-power variance.
+When AR(1) or CAR(1) is selected, one or more variables must be assigned under **Correlation Groups**.
 
-The selection should be supported by residual diagnostics and comparative model evaluation.
+AR(1) is most appropriate for approximately equally spaced repeated observations.
 
-Selecting residual correlation
+CAR(1) uses the actual temporal distance and is generally preferable for irregularly spaced observations.
 
-Residual correlation structures are available for longitudinal analyses.
+## Fixed Effects
 
-Use:
+The Fixed Effects section assigns predictors to individual growth parameters.
 
-AR(1) when measurements are approximately equally spaced and correlation is interpreted by measurement lag; CAR(1) when measurement intervals are irregular and correlation depends on the actual temporal distance.
+For example, the terms
 
-Random effects and residual autocorrelation represent different dependence mechanisms and may be included simultaneously.
+`sex`  
+`treatment`  
+`sex:treatment`
+
+assigned to $A$ specify:
+
+$$
+\log(A)
+=
+\beta_0+
+\beta_1\,sex+
+\beta_2\,treatment+
+\beta_3\,sex\times treatment.
+$$
+
+The exact internal parameter scale depends on the selected growth parameter.
+
+Main effects and interaction terms are specified explicitly. An interaction does not replace its component main effects unless that is the intended model.
+
+The same fixed-effect specification is applied to each model setup in which the corresponding structural parameter is estimated.
+
+## Random Effects
+
+The Random Effects section assigns grouping terms to individual growth parameters.
+
+For example, the Imperial Shag dataset distributed with PGM contains chick and nest identifiers [@svagelj2021]:
+
+`A: chickID`
+
+allows the asymptotic parameter to vary among chicks.
+
+Different growth parameters may receive different random grouping structures.
+
+Multiple nested levels are also supported. For example:
+
+`nestID`  
+`chickID`
+
+may represent chicks nested within nests when the data support that hierarchy.
+
+A composite term such as
+
+`species:replicate`
+
+creates a grouping factor from the unique combinations of its components.
+
+Random-effect interaction terms therefore describe combined grouping units; they are not fixed-effect interactions and are not random slopes for predictor variables.
+
+Within each grouping level, PGM currently uses a diagonal covariance structure for multiple random growth parameters.
+
+## Correlation Groups
+
+Correlation Groups define the grouping hierarchy for residual autocorrelation.
+
+For example:
+
+`nestID`  
+`chickID`
+
+corresponds to an outer-to-inner hierarchy equivalent to `nestID/chickID`.
+
+When random effects are also present, PGM reconciles their hierarchy with the selected correlation groups and stops with an informative error if the structures are incompatible.
+
+## Estimation pathway
+
+PGM always starts from a Levenberg--Marquardt nonlinear fit.
+
+The final estimator then depends on the requested model:
+
+- ordinary NLS when no fixed effects, random effects, variance function, or residual correlation are requested;
+- GNLS when fixed effects and/or residual variance/correlation structures are requested without random effects;
+- NLME when at least one random effect is requested.
 
 ## Recommended workflow
 
 A defensible analysis commonly follows this sequence:
 
-1.  inspect the raw trajectories;
-
-2.  fit a biologically plausible mean curve;
-
-3.  assess parameter estimates and convergence;
-
-4.  inspect residuals versus fitted values and time;
-
-5.  evaluate heteroscedasticity;
-
-6.  account for repeated measurements using a subject identifier;
-
-7.  investigate residual autocorrelation;
-
-8.  compare candidate specifications;
-
-9.  verify parameter plausibility;
-
-10. interpret derived growth descriptors only after accepting the underlying fitted model.
+1. inspect the observed trajectories;
+2. select a biologically plausible Unified growth model;
+3. assess the basic parameter estimates and convergence;
+4. add scientifically justified fixed effects;
+5. add random effects when repeated or hierarchical units require them;
+6. inspect residual spread and consider a variance function;
+7. inspect serial dependence and consider AR(1) or CAR(1);
+8. evaluate parameter plausibility and model diagnostics;
+9. compare candidate specifications using compatible data and likelihoods;
+10. interpret derivative-based descriptors only after accepting the underlying fitted model.
 
 ## Multiple modeling setups
 
-PGM allows multiple response-model configurations in the same analysis.
+PGM allows several response-model setups in the same analysis.
 
-This can be used to:
+This can be used to compare:
 
-- compare candidate growth models;
+- different Unified growth models;
+- residual variance structures;
+- residual correlation structures;
+- fixed versus estimated asymptotes;
+- different response variables.
 
-- compare variance structures;
+Fixed Effects, Random Effects, Correlation Groups, and the selected `Ti`/`W0` parameterization are analysis-level specifications and apply to all compatible setups.
 
-- compare response variables;
-
-- inspect alternative residual-correlation structures.
-
-Comparisons should only be interpreted formally when the models use the same response observations and compatible likelihoods.
+Formal comparisons require the same response observations and compatible likelihood definitions.

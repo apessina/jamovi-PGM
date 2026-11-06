@@ -8,13 +8,24 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
         initialize = function(
             deps = NULL,
             time = NULL,
-            iid = NULL,
-            eqHtmls = FALSE,
+            corrGroups = NULL,
             parTables = TRUE,
             estTables = FALSE,
+            modelParam = "Ti",
+            modelPhase = "single",
             modeling = list(),
             duplicateSetup = FALSE,
             removeSetup = FALSE,
+            fixedTerms = list(
+                list(),
+                list(),
+                list(),
+                list()),
+            randomGroups = list(
+                list(),
+                list(),
+                list(),
+                list()),
             gofMetrics = NULL,
             errorMetrics = NULL,
             iPoints = FALSE,
@@ -65,9 +76,9 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     "continuous"),
                 permitted=list(
                     "numeric"))
-            private$..iid <- jmvcore::OptionVariable$new(
-                "iid",
-                iid,
+            private$..corrGroups <- jmvcore::OptionVariables$new(
+                "corrGroups",
+                corrGroups,
                 required=FALSE,
                 rejectUnusedLevels=TRUE,
                 suggested=list(
@@ -75,10 +86,6 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 permitted=list(
                     "factor"),
                 default=NULL)
-            private$..eqHtmls <- jmvcore::OptionBool$new(
-                "eqHtmls",
-                eqHtmls,
-                default=FALSE)
             private$..parTables <- jmvcore::OptionBool$new(
                 "parTables",
                 parTables,
@@ -87,6 +94,19 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "estTables",
                 estTables,
                 default=FALSE)
+            private$..modelParam <- jmvcore::OptionList$new(
+                "modelParam",
+                modelParam,
+                options=list(
+                    "Ti",
+                    "W0"),
+                default="Ti")
+            private$..modelPhase <- jmvcore::OptionList$new(
+                "modelPhase",
+                modelPhase,
+                options=list(
+                    "single"),
+                default="single")
             private$..modeling <- jmvcore::OptionArray$new(
                 "modeling",
                 modeling,
@@ -108,7 +128,10 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                             "model",
                             NULL,
                             options=list(
-                                "richards"),
+                                "richards",
+                                "gompertz",
+                                "logistic",
+                                "bertalanffy"),
                             default="richards"),
                         jmvcore::OptionList$new(
                             "errorVarType",
@@ -126,13 +149,38 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                                 "none",
                                 "ar1",
                                 "car1"),
-                            default="none"))))
+                            default="none"),
+                        jmvcore::OptionNumber$new(
+                            "fixValue",
+                            NULL))))
             private$..duplicateSetup <- jmvcore::OptionAction$new(
                 "duplicateSetup",
                 duplicateSetup)
             private$..removeSetup <- jmvcore::OptionAction$new(
                 "removeSetup",
                 removeSetup)
+            private$..fixedTerms <- jmvcore::OptionArray$new(
+                "fixedTerms",
+                fixedTerms,
+                default=list(
+                    list(),
+                    list(),
+                    list(),
+                    list()),
+                template=jmvcore::OptionTerms$new(
+                    "fixedTerms",
+                    NULL))
+            private$..randomGroups <- jmvcore::OptionArray$new(
+                "randomGroups",
+                randomGroups,
+                default=list(
+                    list(),
+                    list(),
+                    list(),
+                    list()),
+                template=jmvcore::OptionTerms$new(
+                    "randomGroups",
+                    NULL))
             private$..gofMetrics <- jmvcore::OptionNMXList$new(
                 "gofMetrics",
                 gofMetrics,
@@ -323,13 +371,16 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 
             self$.addOption(private$..deps)
             self$.addOption(private$..time)
-            self$.addOption(private$..iid)
-            self$.addOption(private$..eqHtmls)
+            self$.addOption(private$..corrGroups)
             self$.addOption(private$..parTables)
             self$.addOption(private$..estTables)
+            self$.addOption(private$..modelParam)
+            self$.addOption(private$..modelPhase)
             self$.addOption(private$..modeling)
             self$.addOption(private$..duplicateSetup)
             self$.addOption(private$..removeSetup)
+            self$.addOption(private$..fixedTerms)
+            self$.addOption(private$..randomGroups)
             self$.addOption(private$..gofMetrics)
             self$.addOption(private$..errorMetrics)
             self$.addOption(private$..iPoints)
@@ -361,13 +412,16 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     active = list(
         deps = function() private$..deps$value,
         time = function() private$..time$value,
-        iid = function() private$..iid$value,
-        eqHtmls = function() private$..eqHtmls$value,
+        corrGroups = function() private$..corrGroups$value,
         parTables = function() private$..parTables$value,
         estTables = function() private$..estTables$value,
+        modelParam = function() private$..modelParam$value,
+        modelPhase = function() private$..modelPhase$value,
         modeling = function() private$..modeling$value,
         duplicateSetup = function() private$..duplicateSetup$value,
         removeSetup = function() private$..removeSetup$value,
+        fixedTerms = function() private$..fixedTerms$value,
+        randomGroups = function() private$..randomGroups$value,
         gofMetrics = function() private$..gofMetrics$value,
         errorMetrics = function() private$..errorMetrics$value,
         iPoints = function() private$..iPoints$value,
@@ -398,13 +452,16 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     private = list(
         ..deps = NA,
         ..time = NA,
-        ..iid = NA,
-        ..eqHtmls = NA,
+        ..corrGroups = NA,
         ..parTables = NA,
         ..estTables = NA,
+        ..modelParam = NA,
+        ..modelPhase = NA,
         ..modeling = NA,
         ..duplicateSetup = NA,
         ..removeSetup = NA,
+        ..fixedTerms = NA,
+        ..randomGroups = NA,
         ..gofMetrics = NA,
         ..errorMetrics = NA,
         ..iPoints = NA,
@@ -438,8 +495,9 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "gcurveResults",
     inherit = jmvcore::Group,
     active = list(
-        eqHtml = function() private$.items[["eqHtml"]],
+        documentation = function() private$.items[["documentation"]],
         parTable = function() private$.items[["parTable"]],
+        randomTable = function() private$.items[["randomTable"]],
         estTable = function() private$.items[["estTable"]],
         modelEval = function() private$.items[["modelEval"]],
         aucTable = function() private$.items[["aucTable"]],
@@ -456,19 +514,13 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 title="Growth Curve Modeling")
             self$add(jmvcore::Html$new(
                 options=options,
-                name="eqHtml",
-                visible="(eqHtmls)",
-                refs=list(
-                    "richards")))
+                name="documentation",
+                content="<p style=\"margin: 0; font-size: 0.9em;\">\n  See the <a href=\"https://apessina.github.io/jamovi-PGM/\">PGM documentation</a>\n  for detailed methods, instructions, and citation information.\n</p>\n"))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="parTable",
                 title="Model Parameters",
                 visible="(parTables)",
-                clearWith=list(
-                    "deps",
-                    "time",
-                    "model"),
                 columns=list(
                     list(
                         `name`="var", 
@@ -490,7 +542,36 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     list(
                         `name`="Upper", 
                         `type`="number", 
-                        `superTitle`="95% Confidence Interval")),
+                        `superTitle`="95% Confidence Interval"),
+                    list(
+                        `name`="p", 
+                        `title`="p-value", 
+                        `type`="number", 
+                        `format`="zto,pvalue")),
+                refs=list(
+                    "pgm")))
+            self$add(jmvcore::Table$new(
+                options=options,
+                name="randomTable",
+                title="Random Effects",
+                visible=FALSE,
+                columns=list(
+                    list(
+                        `name`="var", 
+                        `title`="", 
+                        `type`="text"),
+                    list(
+                        `name`="Group", 
+                        `title`="Group", 
+                        `type`="text"),
+                    list(
+                        `name`="Parameter", 
+                        `title`="Parameter", 
+                        `type`="text"),
+                    list(
+                        `name`="SD", 
+                        `title`="SD", 
+                        `type`="number")),
                 refs=list(
                     "pgm")))
             self$add(jmvcore::Table$new(
@@ -532,10 +613,6 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                             name="gofTable",
                             title="Goodness of Fit",
                             visible=FALSE,
-                            clearWith=list(
-                                "deps",
-                                "time",
-                                "model"),
                             columns=list(
                                 list(
                                     `name`="var", 
@@ -570,10 +647,6 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                             name="emTable",
                             title="Error Metrics",
                             visible=FALSE,
-                            clearWith=list(
-                                "deps",
-                                "time",
-                                "model"),
                             columns=list(
                                 list(
                                     `name`="var", 
@@ -770,7 +843,7 @@ gcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "gcurve",
-                version = c(0,9,0),
+                version = c(0,10,0),
                 options = options,
                 results = gcurveResults$new(options=options),
                 data = data,
@@ -807,18 +880,22 @@ gcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @param deps the dependent variables from \code{data}, variables must be
 #'   numeric
 #' @param time the explanatory variable in \code{data}, must be numeric
-#' @param iid the individual identifier variable in \code{data}, must be
-#'   categorical
-#' @param eqHtmls \code{TRUE} (default) or \code{FALSE}, provide Richards
-#'   model equation
+#' @param corrGroups the categorical grouping variables used by the residual
+#'   correlation structure
 #' @param parTables \code{TRUE} (default) or \code{FALSE}, provide estimated
 #'   parameters values tables
 #' @param estTables \code{TRUE} or \code{FALSE} (default), provide estimated
 #'   parameters values  tables
-#' @param modeling an array describing the specifications for each model.
+#' @param modelParam one of \code{'Ti'}, or \code{'W0'}
+#' @param modelPhase one of \code{'single'}
+#' @param modeling an array describing the specifications for each model setup
 #' @param duplicateSetup an action to duplicate the selected model setup with
 #'   the same  variable in UI.
 #' @param removeSetup an action to remove the selected model setup in UI.
+#' @param fixedTerms fixed-effect terms assigned to A, K, Ti/W0 and d,
+#'   respectively
+#' @param randomGroups random-effects grouping terms assigned to A, K, Ti/W0
+#'   and d,  respectively
 #' @param gofMetrics one or more of \code{'aic'}, \code{'aicc'}, \code{'bic'},
 #'   \code{'r2'}, or \code{'r2adj'}
 #' @param errorMetrics one or more of \code{'rmse'}, \code{'mae'},
@@ -877,8 +954,9 @@ gcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'   points
 #' @return A results object containing:
 #' \tabular{llllll}{
-#'   \code{results$eqHtml} \tab \tab \tab \tab \tab a HTML block for models equations \cr
+#'   \code{results$documentation} \tab \tab \tab \tab \tab a html \cr
 #'   \code{results$parTable} \tab \tab \tab \tab \tab a table containing models parameters estimation \cr
+#'   \code{results$randomTable} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$estTable} \tab \tab \tab \tab \tab a table containing information about estimation methods \cr
 #'   \code{results$modelEval$gofTable} \tab \tab \tab \tab \tab a table containing GoF metrics \cr
 #'   \code{results$modelEval$emTable} \tab \tab \tab \tab \tab a table containing error metrics \cr
@@ -900,13 +978,24 @@ gcurve <- function(
     data,
     deps,
     time,
-    iid = NULL,
-    eqHtmls = FALSE,
+    corrGroups = NULL,
     parTables = TRUE,
     estTables = FALSE,
+    modelParam = "Ti",
+    modelPhase = "single",
     modeling = list(),
     duplicateSetup = FALSE,
     removeSetup = FALSE,
+    fixedTerms = list(
+                list(),
+                list(),
+                list(),
+                list()),
+    randomGroups = list(
+                list(),
+                list(),
+                list(),
+                list()),
     gofMetrics = NULL,
     errorMetrics = NULL,
     iPoints = FALSE,
@@ -940,26 +1029,29 @@ gcurve <- function(
 
     if ( ! missing(deps)) deps <- jmvcore::resolveQuo(jmvcore::enquo(deps))
     if ( ! missing(time)) time <- jmvcore::resolveQuo(jmvcore::enquo(time))
-    if ( ! missing(iid)) iid <- jmvcore::resolveQuo(jmvcore::enquo(iid))
+    if ( ! missing(corrGroups)) corrGroups <- jmvcore::resolveQuo(jmvcore::enquo(corrGroups))
     if (missing(data))
         data <- jmvcore::marshalData(
             parent.frame(),
             `if`( ! missing(deps), deps, NULL),
             `if`( ! missing(time), time, NULL),
-            `if`( ! missing(iid), iid, NULL))
+            `if`( ! missing(corrGroups), corrGroups, NULL))
 
-    for (v in iid) if (v %in% names(data)) data[[v]] <- as.factor(data[[v]])
+    for (v in corrGroups) if (v %in% names(data)) data[[v]] <- as.factor(data[[v]])
 
     options <- gcurveOptions$new(
         deps = deps,
         time = time,
-        iid = iid,
-        eqHtmls = eqHtmls,
+        corrGroups = corrGroups,
         parTables = parTables,
         estTables = estTables,
+        modelParam = modelParam,
+        modelPhase = modelPhase,
         modeling = modeling,
         duplicateSetup = duplicateSetup,
         removeSetup = removeSetup,
+        fixedTerms = fixedTerms,
+        randomGroups = randomGroups,
         gofMetrics = gofMetrics,
         errorMetrics = errorMetrics,
         iPoints = iPoints,

@@ -149,3 +149,34 @@ prepare_comparison_data <- function(
     )
 }
 
+
+## Grouping unit for residual ACF
+prepare_diagnostic_id <- function(
+    op,
+    groups,
+    data,
+    nlmegroups = NULL
+) {
+  diagnosticId <- NULL
+  
+  corrDiag <- unique(as.character(unlist(groups, use.names = FALSE)))
+  
+  ## residual-correlation grouping, when explicitly specified
+  if (length(corrDiag) == 1L) {
+    diagnosticId <- data[[corrDiag]]
+    
+  } else if (length(corrDiag) > 1L) {
+    diagnosticId <- interaction(
+      data[, corrDiag, drop = FALSE],
+      drop = TRUE,
+      sep = "/"
+    )
+    
+    ## Otherwise use the innermost NLME grouping level
+  } else if (!is.null(nlmegroups) && ncol(nlmegroups) > 0L) {
+    diagnosticId <- nlmegroups[[ncol(nlmegroups)]]
+  }
+  
+  diagnosticId
+}
+  

@@ -3,78 +3,141 @@ title: "Growth Models"
 format: html
 ---
 
-## General formulation
+## Unified growth-model family
 
-A parametric growth model represents the expected response at time $t$ as
+PGM implements the Unified family of sigmoidal growth models described by Tjørve and Tjørve [@tjorve2010; @tjorve2017].
 
-$$y_i = W(t_i;\boldsymbol\theta) + \varepsilon_i,$$
+The implemented family contains:
 
-where:
+- Unified Richards;
+- Unified Gompertz;
+- Unified Logistic;
+- Unified von Bertalanffy.
 
-$W(t_i;\boldsymbol\theta)$ is the selected growth function; $\boldsymbol\theta$ is the vector of model parameters; $\varepsilon_i$ is the residual error.
+The common parameters retain the same interpretation across family members.
 
-The interpretation of $\boldsymbol\theta$ depends on the exact equation and parametrization.
+## Regularized Unified-Richards representation
 
-Models with similar names may be expressed using different parameter definitions in different authors and software implementations.
+PGM uses
 
-## Parameter units
-
-The units of each parameter should be determined from the model equation.
-
-Common interpretations include:
-
-- $A$: response unit;
-- $T_i$: time unit;
-- rate parameters: inverse time or a parametrization-specific rate unit;
-- shape parameters: dimensionless.
-
-Parameters should not be compared directly across equations unless their mathematical definitions are equivalent.
-
-## Richards model
-
-PGM implements the Richards parametrization described by @tjorve2010.
-
-The growth function is
-
-$$A
-\left[
-1+
-(d-1)
-\exp\left(
--\frac{K(t-T_i)}
-{d^{d/(1-d)}}
-\right)
-\right]^{1/(1-d)}.$$
-
-The parameters are:
-
-- $A$: asymptotic response;
-- $K$: growth-rate parameter under this parametrization;
-- $T_i$: time at the inflection point;
-- $d$: shape parameter controlling curve asymmetry.
-
-The meaning of $K$ is specific to this parametrization and should not be assumed to equal the rate parameter of another Richards equation.
-
-## Parameter constraints
-
-PGM fits the Richards model using transformed parameters:
-
-$$A=\exp(\alpha),$$
-
-$$K=\exp(\kappa),$$
-
-and
-
-$$d=1.05+\exp(\delta).$$
-
-Consequently:
 $$
-(A>0); (K>0); (d>1.05).
+\lambda = \log(d),
 $$
-The $d>1.05$ restriction is part of the current computational implementation and restricts the range of Richards shapes that can be fitted.
+
+and defines
+
+$$
+a = e^\lambda - 1.
+$$
+
+For $a\neq0$, define
+
+$$
+R(\lambda,x)
+=
+\exp\left[
+-\frac{\log(1+ax)}{a}
+\right].
+$$
+
+At the Gompertz limit, $\lambda=0$ and $a=0$, the continuous limit is
+
+$$
+R(0,x)=e^{-x}.
+$$
+
+The implementation evaluates this expression using numerically stable `expm1()` and `log1p()` formulations.
+
+This avoids a singularity at $d=1$ and allows the Richards surface to remain continuous through the Gompertz limit.
+
+## Shape parameter
+
+For Unified Richards,
+
+$$
+d=e^\lambda>0
+$$
+
+is estimated freely.
+
+The three-parameter family members correspond to fixed values of $\lambda$:
+
+| Model | $d$ | $\lambda$ |
+|:---|---:|---:|
+| Gompertz | $1$ | $0$ |
+| Logistic | $2$ | $\log 2$ |
+| von Bertalanffy | $2/3$ | $\log(2/3)$ |
+
+Only Richards estimates $d$ from the data.
+
+## Ti parameterization
+
+The `Ti` form uses:
+
+- $A$: upper asymptote;
+- $K$: Unified growth-rate parameter;
+- $T_i$: time of inflection;
+- $d$: Richards shape parameter, when free.
+
+For the three-parameter models, $d$ is fixed by the selected family.
+
+## W0 parameterization
+
+The alternative `W0` form replaces $T_i$ with the fitted response at the time origin:
+
+$$
+W_0=W(0).
+$$
+
+The `Ti` and `W0` forms describe the same family of curve shapes; they differ only in the location parameter used to describe the trajectory.
+
+## Fixed asymptote
+
+The asymptote may optionally be supplied as a fixed positive value.
+
+When $A$ is fixed, it is removed from the estimated parameter vector.
+
+This can be useful when:
+
+- the asymptote is externally known;
+- biological constraints justify a predetermined value;
+- late-stage data are incomplete and unrestricted asymptote estimation is not desired.
+
+Fixing the asymptote changes the statistical model and should therefore be scientifically justified.
+
+## Parameter transformations
+
+For estimated parameters, PGM uses:
+
+$$
+A=\exp(\alpha),
+$$
+
+$$
+K=\exp(\kappa),
+$$
+
+and, for Richards,
+
+$$
+d=\exp(\lambda).
+$$
+
+Under the `W0` parameterization,
+
+$$
+\eta_0=
+\operatorname{logit}\left(\frac{W_0}{A}\right).
+$$
+
+These transformations enforce the required parameter domains while allowing unconstrained numerical optimization on the transformed scales.
 
 ## Starting values
 
 Starting values are generated automatically from the observed trajectory.
 
-The initial asymptote is based on a value above the observed maximum response. The initial inflection time is informed by the largest numerical growth rate, and the initial rate parameter is derived from that rate relative to the initial asymptote.
+PGM uses a smooth spline to obtain an initial approximation to the growth rate.
+
+The initial asymptote is based on a value above the observed maximum unless a fixed asymptote is supplied. The initial location and growth-rate parameters are then derived from the smoothed trajectory and the selected Unified model.
+
+Starting values are computational aids and should not be interpreted as model estimates.

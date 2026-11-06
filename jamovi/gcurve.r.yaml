@@ -4,23 +4,20 @@ title: Growth Curve Modeling
 jrs:   '1.1'
 
 items:
-    
-    - name: eqHtml
+
+    - name: documentation
       type: Html
-      description: a HTML block for models equations
-      visible: (eqHtmls)
-      refs:
-        - richards
+      content: |
+        <p style="margin: 0; font-size: 0.9em;">
+          See the <a href="https://apessina.github.io/jamovi-PGM/">PGM documentation</a>
+          for detailed methods, instructions, and citation information.
+        </p>
 
     - name: parTable
       title: Model Parameters
       type: Table
       description: a table containing models parameters estimation
       visible: (parTables)
-      clearWith:
-        - deps
-        - time
-        - model
       columns:
         - name: var
           title: ''
@@ -42,6 +39,34 @@ items:
         - name: Upper
           type: number
           superTitle: 95% Confidence Interval
+          
+        - name: p
+          title: p-value
+          type: number
+          format: zto,pvalue
+      refs:
+        - pgm
+        
+    - name: randomTable
+      title: Random Effects
+      type: Table
+      visible: false
+      columns:
+        - name: var
+          title: ''
+          type: text
+    
+        - name: Group
+          title: Group
+          type: text
+    
+        - name: Parameter
+          title: Parameter
+          type: text
+    
+        - name: SD
+          title: SD
+          type: number
       refs:
         - pgm
     
@@ -76,10 +101,6 @@ items:
           type: Table
           description: a table containing GoF metrics
           visible: false
-          clearWith:
-            - deps
-            - time
-            - model
           columns:
             - name: var
               title: ''
@@ -114,10 +135,6 @@ items:
           type: Table
           description: a table containing error metrics
           visible: false
-          clearWith:
-            - deps
-            - time
-            - model
           columns:
             - name: var
               title: ''

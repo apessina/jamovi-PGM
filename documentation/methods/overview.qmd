@@ -3,34 +3,85 @@ title: "Overview"
 format: html
 ---
 
-PGM selects the estimation framework according to the structure of the data and the analysis options.
+PGM selects the final estimation framework according to the requested fixed effects, random effects, residual variance function, and residual correlation structure.
 
 ## Estimation pathways
 
-| Subject identifier | Residual variance | Estimation framework |
+| Random effects | Fixed effects / variance / correlation | Final framework |
 |:--:|:--:|:---|
-| No | Constant | Nonlinear least squares |
-| No | Modeled | Generalized nonlinear least squares |
-| Yes | Any available option | Nonlinear mixed-effects model |
+| No | None | Nonlinear least squares (NLS) |
+| No | Any selected | Generalized nonlinear least squares (GNLS) |
+| Yes | Any | Nonlinear mixed-effects model (NLME) |
 
-All estimation pathways begin with an initial nonlinear fit using the Levenberg--Marquardt algorithm [@nlsLM].
+All pathways begin with an initial nonlinear fit using the Levenberg--Marquardt algorithm [@nlsLM].
 
-When a residual variance function is selected without a subject identifier, the initial estimates are used to initialize a generalized nonlinear least-squares model [@nlme].
+The initial fit provides starting values for the more general GNLS or NLME specification when these are required.
 
-When a subject identifier is selected, the initial estimates are used to initialize a nonlinear mixed-effects model [@nlme].
+## Mean structure
 
-## Mean, variance, and dependence
+The mean structure consists of:
 
-The complete statistical specification may contain three components:
+1. the selected Unified growth equation;
+2. the selected `Ti` or `W0` parameterization;
+3. the optional fixed asymptote;
+4. the fixed-effects formula assigned to each estimated growth parameter.
 
-1.  **Mean structure:** the selected parametric growth equation;
-2.  **Variance structure:** the relationship between residual variance and fitted response;
-3.  **Dependence structure:** random effects and, optionally, residual autocorrelation.
+For example, different predictor structures may be specified for $A$, $K$, $T_i$ or $W_0$, and $d$.
 
-These components address different features of the data and should not be treated as interchangeable.
+## Fixed effects
+
+Fixed effects represent systematic changes in growth parameters.
+
+Each estimated structural parameter has its own fixed-effects formula.
+
+Categorical predictors, continuous predictors, and interaction terms are supported.
+
+When no fixed effects are assigned to a parameter, that parameter is represented by an intercept-only model.
+
+## Random effects
+
+Random effects represent persistent differences in growth parameters among grouping units.
+
+Random grouping terms are assigned separately to the structural parameters.
+
+When at least one random effect is specified, PGM fits the model using `nlme` with maximum likelihood [@nlme].
+
+The current implementation uses diagonal covariance matrices within each random grouping level.
+
+## Residual variance
+
+Residual heteroscedasticity may be represented using:
+
+- power;
+- exponential;
+- constant-plus-power
+
+variance functions.
+
+## Residual correlation
+
+Residual serial dependence may be represented using:
+
+- discrete AR(1);
+- continuous-time CAR(1).
+
+Correlation Groups define the hierarchy within which residual correlation is evaluated.
+
+Residual correlation may be used with GNLS or NLME models.
+
+## Mean, random, variance, and correlation components
+
+These structures address different features of the data:
+
+- **fixed effects** represent systematic changes in the expected growth parameters;
+- **random effects** represent persistent variation among grouping units;
+- **variance functions** represent changes in residual dispersion;
+- **correlation structures** represent dependence among residual deviations.
+
+They are complementary and should not be treated as interchangeable.
 
 ## Maximum likelihood
 
 Nonlinear mixed-effects models in PGM are estimated using maximum likelihood.
 
-This facilitates comparisons between nested models with different fixed effects, provided that the models use the same response, observations, and likelihood framework.
+Likelihood-based comparisons should only be made between models fitted to the same response observations and under compatible likelihood definitions.

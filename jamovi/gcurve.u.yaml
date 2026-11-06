@@ -22,11 +22,10 @@ children:
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: Individual Identifier
+        label: Correlation Groups
         children:
           - type: VariablesListBox
-            name: iid
-            maxItemCount: 1
+            name: corrGroups
             isTarget: true
   - type: CollapseBox
     label: Modeling
@@ -34,18 +33,39 @@ children:
     stretchFactor: 1
     children:
       - type: LayoutBox
+        margin: large
         stretchFactor: 1
         children:
-          - type: Label
-            label: Show
-            style: inline
+          - type: LayoutBox
+            cell:
+                column: 0
+                row: 0
+            margin: large
+            stretchFactor: 1
             children:
-              - type: CheckBox
-                name: eqHtmls
-              - type: CheckBox
-                name: parTables
-              - type: CheckBox
-                name: estTables
+              - type: Label
+                label: Model Setup
+                style: list
+                children:
+                  - type: ComboBox
+                    name: modelParam
+                  - type: ComboBox
+                    name: modelPhase
+          - type: LayoutBox
+            cell:
+                column: 1
+                row: 0
+            margin: large
+            stretchFactor: 1
+            children:
+              - type: Label
+                label: Show
+                style: list
+                children:
+                  - type: CheckBox
+                    name: parTables
+                  - type: CheckBox
+                    name: estTables                    
       - type: ListBox
         name: modeling
         stretchFactor: 1
@@ -54,13 +74,11 @@ children:
           - name: setupLabel
             label: Setup
             stretchFactor: 0.5
-            maxWidth: 100
             template:
               type: Label
           - name: var
             label: Variable
             stretchFactor: 1
-            maxWidth: 300
             template:
               type: VariableLabel
           - name: model
@@ -69,15 +87,21 @@ children:
             template:
               type: ComboBox
           - name: errorVarType
-            label: Weight
+            label: Variance
             stretchFactor: 1
             template:
               type: ComboBox
           - name: errorCorType
-            label: AR
+            label: Correlation
             stretchFactor: 1
             template:
               type: ComboBox
+          - name: fixValue
+            label: Asymptote
+            stretchFactor: 1
+            maxWidth: 80
+            template:
+              type: TextBox
       - type: LayoutBox
         style: inline
         children:
@@ -85,6 +109,94 @@ children:
             name: duplicateSetup
           - type: ActionButton
             name: removeSetup
+  - type: CollapseBox
+    label: Fixed Effects
+    collapsed: true
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: VariableSupplier
+            name: fixedSupplier
+            label: Terms
+            stretchFactor: 1
+            persistentItems: false
+            suggested:
+              - nominal
+            children:
+              - type: TargetLayoutBox
+                label: Parameters
+                transferAction: interactions
+                children:
+                  - type: ListBox
+                    name: fixedTerms
+                    height: large
+                    selectable: true
+                    template:
+                      type: LayoutBox
+                      margin: normal
+                      targetArea: true
+                      children:
+                        - type: Label
+                          name: fixedBlockName
+                          label: Parameter
+                          stretchFactor: 1
+                          margin: normal
+                        - type: ListBox
+                          name: fixedBlockList
+                          isTarget: true
+                          valueFilter: unique
+                          height: auto
+                          ghostText: drag variables here
+                          template:
+                            type: TermLabel
+  - type: CollapseBox
+    label: Random Effects
+    collapsed: true
+    stretchFactor: 1
+    children:
+      - type: LayoutBox
+        margin: large
+        stretchFactor: 1
+        children:
+          - type: VariableSupplier
+            name: randomSupplier
+            label: Groups
+            stretchFactor: 1
+            persistentItems: false
+            suggested:
+              - nominal
+            permitted:
+              - factor
+            children:
+              - type: TargetLayoutBox
+                label: Parameters
+                transferAction: interactions
+                children:
+                  - type: ListBox
+                    name: randomGroups
+                    height: large
+                    selectable: true
+                    template:
+                      type: LayoutBox
+                      margin: normal
+                      targetArea: true
+                      children:
+                        - type: Label
+                          name: randomBlockName
+                          label: Parameter
+                          stretchFactor: 1
+                          margin: normal
+                        - type: ListBox
+                          name: randomBlockList
+                          isTarget: true
+                          valueFilter: unique
+                          height: auto
+                          ghostText: drag variables here
+                          template:
+                            type: TermLabel
   - type: CollapseBox
     label: Model Evaluation
     collapsed: true
@@ -173,7 +285,7 @@ children:
                 label: Inflection Point
                 children:
                   - type: CheckBox
-                    name: iPoints            
+                    name: iPoints
               - type: Label
                 label: Acceleration
                 children:
@@ -199,7 +311,7 @@ children:
                     optionName: ogfPoints
                     optionPart: ogfMin
                 name: ogfPoints
-                style: list                
+                style: list
           - type: LayoutBox
             cell:
               column: 1
@@ -230,7 +342,7 @@ children:
                         name: thValue
                         format: number
                         enable: (effGrowth_threshold)
-                name: lagPoints            
+                name: lagPoints
               - type: Label
                 label: Asymptotic Deceleration
                 children:

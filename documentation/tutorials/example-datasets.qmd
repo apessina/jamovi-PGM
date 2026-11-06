@@ -3,4 +3,52 @@ title: "Example Datasets"
 format: html
 ---
 
-# Example Datasets
+PGM includes example datasets derived from published studies for testing, teaching, and methodological demonstration.
+
+They are available from:
+
+**Open → Data Library → PGM**
+
+## Chicken Growth — Aggrey (2002)
+
+Mean body-weight measurements from an unselected Athens-Canadian randombred chicken population at different ages, derived from the data reported by Aggrey [@aggrey2002].
+
+DOI: <https://doi.org/10.1093/ps/81.12.1782>
+
+## Fruit Weight — Gerhard & Moltchanova (2022)
+
+Measurements of grape bunch weight over a growing period of 103 days, derived from the data reported by Gerhard and Moltchanova [@gerhard2022].
+
+DOI: <https://doi.org/10.1111/anzs.12380>
+
+## Plant Growth — Gregorczyk (1998)
+
+Experimental observations of dry-matter accumulation in buckwheat plants during vegetation, derived from the data reported by Gregorczyk [@gregorczyk1998].
+
+DOI: <https://doi.org/10.1111/j.1439-037X.1998.tb00424.x>
+
+## Leaf Growth — Peng et al. (2023)
+
+Repeated measurements of leaf length and width in *Camptotheca acuminata* during leaf expansion, derived from the data reported by Peng et al. [@peng2023].
+
+DOI: <https://doi.org/10.1016/j.ecolmodel.2023.110531>
+
+## Avian Growth — Svagelj et al. (2019)
+
+Measurements of body mass and morphometric traits in female Imperial Shag chicks from hatching to approximately 40 days, derived from the data reported by Svagelj et al. [@svagelj2019].
+
+DOI: <https://doi.org/10.1111/jav.01864>
+
+## Avian Growth — Svagelj et al. (2021)
+
+Repeated body-mass measurements of Imperial Shag chicks from hatching to approximately 52 days, including sex, hatching order, brood size, sibling sex, nest, individual identity, and year, derived from the supporting data of Svagelj et al. [@svagelj2021].
+
+This dataset is particularly useful for demonstrating:
+
+- parameter-specific fixed effects;
+- factorial interactions;
+- nested random effects;
+- AR/CAR residual structures;
+- nonlinear mixed-effects modeling.
+
+DOI: <https://doi.org/10.1111/ibi.12920>

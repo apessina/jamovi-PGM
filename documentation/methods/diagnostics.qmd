@@ -37,9 +37,11 @@ Minor departures should not be interpreted mechanically, particularly with large
 
 The autocorrelation plot assesses whether residuals remain associated across neighboring measurement occasions.
 
-For longitudinal models, residual autocorrelation is evaluated within subjects.
+When Correlation Groups are supplied, the residual ACF is calculated within the grouping units defined by those variables.
 
-Persistent residual autocorrelation may indicate that the selected random effects or residual correlation structure is insufficient.
+When no explicit Correlation Groups are supplied for an NLME model, PGM uses the innermost random-effects grouping level for the diagnostic grouping.
+
+Persistent residual autocorrelation may indicate that the selected mean structure, random effects, or residual correlation structure is insufficient.
 
 ## Residual scale
 

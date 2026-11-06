@@ -3,15 +3,19 @@ title: "Index"
 format: html
 ---
 
-**PGM — Practical Growth Models** is a jamovi module for fitting, evaluating, and interpreting nonlinear growth curves.
+**PGM — Practical Growth Modeling** is a jamovi module for fitting, evaluating, and interpreting nonlinear biological growth curves.
 
-The module provides tools for:
+The module implements the Unified family of sigmoidal growth models and provides tools for:
 
-- fitting parametric growth models;
+- fitting Unified Richards, Gompertz, Logistic, and von Bertalanffy growth models;
+- using either inflection-time ($T_i$) or initial-value ($W_0$) parameterizations;
+- estimating or fixing the upper asymptote;
+- assigning fixed effects and interactions to individual growth parameters;
+- fitting nonlinear mixed-effects models with parameter-specific random effects;
+- representing nested and composite grouping structures;
 - modeling heteroscedastic residual variance;
-- fitting nonlinear mixed-effects models for longitudinal data;
-- modeling residual autocorrelation;
-- evaluating model fit and prediction error;
+- modeling discrete AR(1) and continuous-time CAR(1) residual correlation;
+- evaluating goodness of fit and prediction error;
 - estimating biologically and geometrically relevant growth points;
 - visualizing fitted curves, derivatives, and residual diagnostics.
 
@@ -21,13 +25,18 @@ PGM is intended for researchers analyzing longitudinal or cross-sectional growth
 
 The documentation is divided into four main parts:
 
-1.  **Getting started**, covering installation, data organization, and a first analysis;
-2.  **Methods**, describing the models, estimation procedures and analysis implemented in PGM;
-3.  **Academic**, providing reporting guidance and references.
+1. **Getting started**, covering installation, data organization, and a first analysis;
+2. **Methods**, describing the models, estimation procedures, effects structures, and diagnostics implemented in PGM;
+3. **Tutorials**, providing examples and supporting resources;
+4. **Academic reporting**, providing guidance for reporting PGM analyses and citing the software.
 
 ## Important considerations
 
-PGM assists with model estimation and interpretation but does not replace statistical judgment. Model selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, residual variance, dependence structure, parameter plausibility, and residual diagnostics should be considered jointly.
+PGM assists with model specification, estimation, and interpretation but does not replace statistical judgment.
+
+Model selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, fixed-effects structure, random-effects structure, residual variance, residual dependence, parameter plausibility, data coverage, and residual diagnostics should be considered jointly.
+
+Complex fixed-effect interactions and random-effects structures also require adequate replication. PGM checks several basic estimability conditions, but a model that converges is not necessarily scientifically appropriate.
 
 ## Acknowledgments and Contact
 
@@ -37,6 +46,6 @@ We extend our special thanks to the jamovi development team, particularly Jonath
 
 Comments and feedback are welcome. Please contact us if you identify any errors, have suggestions or questions, or require methodological support for academic research.
 
-The development team can be reached at andre.pessina\@unesp.br
+The development team can be reached at andre.pessina@unesp.br.
 
 ***Citation instructions are provided in the chapter on academic reporting.***

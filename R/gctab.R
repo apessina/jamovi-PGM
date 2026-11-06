@@ -24,7 +24,9 @@ populate_etable <- function(
   label,
   est,
   opt,
-  randomEff = NULL,
+  fixedInfo = NULL,
+  asymptote = NULL,
+  randomInfo = NULL,
   weq,
   ceq,
   note = NULL
@@ -41,7 +43,6 @@ populate_etable <- function(
       category = "Estimator",
       method = est
     )
-    
   )
   
   Li <- Li + 1
@@ -52,19 +53,43 @@ populate_etable <- function(
       category = "Optimization",
       method = opt
     )
-    
   )
   
-  if (!is.null(randomEff)) {
+  if (!is.null(fixedInfo)) {
+    Li <- Li + 1
+    table$addRow(
+      rowKey = paste0(setup, "L", Li),
+      
+      values = list(
+        category = "Fixed Effects",
+        method = fixedInfo
+      )
+    )
+  }
+  
+  asymptote <- trimws(if (is.null(asymptote)) "" else asymptote)
+  fixA <- nzchar(asymptote)
+  if (fixA) {
+    Li <- Li + 1
+    table$addRow(
+      rowKey = paste0(setup, "L", Li),
+      
+      values = list(
+        category = "Asymptote",
+        method = paste0("Fixed in ", asymptote)
+      )
+    )
+  }
+  
+  if (!is.null(randomInfo)) {
     Li <- Li + 1
     table$addRow(
       rowKey  = paste0(setup, "L", Li),
       
       values  = list(
-        category = "Random Effect",
-        method = randomEff
+        category = "Random Effects",
+        method = randomInfo
       )
-      
     )
   }
   
@@ -76,7 +101,6 @@ populate_etable <- function(
       category = "Weight Function",
       method = weq
     )
-    
   )
   
   Li <- Li + 1
@@ -87,7 +111,6 @@ populate_etable <- function(
       category = "Residual Correlation",
       method = ceq
     )
-    
   )
   
   add_note(key = setup, ref = label, note, table)
@@ -114,12 +137,13 @@ populate_ptable <- function(
       rowKey = paste0(setup, "L", i),
       
       values = list(
-        var        = if (i==1) label,
+        var        = if (i == 1) label,
         Parameter  = rownames(pardf)[i],
         Estimate   = pardf$parvalue[i],
         SE         = pardf$parerror[i],
         Lower      = pardf$parlower[i],
-        Upper      = pardf$parupper[i]
+        Upper      = pardf$parupper[i],
+        p          = pardf$parp[i]
       )
       
     )
@@ -127,6 +151,35 @@ populate_ptable <- function(
   }
   
   add_note(key = setup, ref = label, note, table)
+}
+
+
+## Random-effects variance components
+populate_rtable <- function(
+    table,
+    setup,
+    label,
+    randomdf,
+    note = NULL
+) {
+  
+  if (!is.data.frame(randomdf)) {
+    stop("ERROR: randomdf must be a dataframe in populate_rtable()")
+  }
+  
+  for (i in seq_len(nrow(randomdf))) {
+    table$addRow(
+      rowKey = paste0(setup, "R", i),
+      values = list(
+        var = if (i == 1) label,
+        Group = randomdf$group[i],
+        Parameter = randomdf$parameter[i],
+        SD = randomdf$sd[i]
+      )
+    )
+  }
+  
+  add_note(key = setup, ref = label, note = note, table = table)
 }
 
 

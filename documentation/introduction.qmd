@@ -31,12 +31,16 @@ These interpretations depend on the equation and parametrization used. Parameter
 Biological growth data frequently present characteristics that are not adequately represented by ordinary nonlinear least squares, including:
 
 - increasing or decreasing residual variability;
+- systematic differences in growth parameters among treatments, sexes, populations, or other predictors;
 - repeated observations from the same experimental unit;
-- between-individual variation in growth parameters;
+- between-unit variation in individual growth parameters;
+- hierarchical sampling structures;
 - serial correlation between observations;
 - incomplete or irregular measurement schedules.
 
-PGM therefore includes variance functions, nonlinear mixed-effects models, and residual correlation structures.
+PGM therefore combines Unified growth equations with parameter-specific fixed effects, nonlinear mixed effects, residual variance functions, and residual correlation structures.
+
+These components have distinct interpretations. Fixed effects describe systematic changes in growth parameters, random effects describe persistent variation among grouping units, and residual correlation describes dependence remaining between observation-level deviations.
 
 ## Documentation conventions
 

@@ -5,35 +5,67 @@ format: html
 
 ## Estimation information
 
-The estimation-information table describes the computational and statistical framework used for each modeling setup.
+The Estimation Methods table summarizes the statistical and computational specification used for each model setup.
 
 Depending on the selected options, it may report:
 
-- nonlinear least squares (NLS);
-- generalized nonlinear least squares (GNLS);
-- nonlinear mixed-effects estimation (NLME);
-- Levenberg--Marquardt initialization (LM);
-- Gauss--Newton estimation;
-- residual variance structure;
-- residual correlation structure;
-- random-effects structure.
+- NLS, GNLS, or NLME estimation;
+- Levenberg--Marquardt initialization;
+- the parameter-specific fixed-effects formulas;
+- a fixed asymptotic value, when supplied;
+- the parameter-specific random-effects structure;
+- the residual variance function and its fitted coefficients;
+- the AR(1) or CAR(1) structure, its grouping hierarchy, and estimated correlation coefficient.
 
-This table should be consulted before reporting the model because **the same mean equation may be fitted under different residual and dependence assumptions**.
+This table should be consulted before reporting a model because the same growth equation may be fitted under substantially different fixed, random, variance, and correlation assumptions.
 
 ## Parameter estimates
 
-The parameter table reports estimates on the natural parameter scale.
+The Model Parameters table reports growth parameters on their natural interpretation scale.
 
-Available columns may include:
+When no fixed predictors are assigned to a parameter, the table contains its reference estimate.
 
-- parameter estimate;
+When fixed effects are present, additional rows represent natural-scale parameter profiles associated with the fitted model coefficients.
+
+For categorical predictors, the first observed level is used as the reference.
+
+For continuous predictors, the reference value is zero.
+
+For interaction coefficients, the displayed parameter profile incorporates the required main-effect and interaction contributions.
+
+Available columns include:
+
+- estimate;
 - standard error;
-- lower confidence limit;
-- upper confidence limit.
+- lower 95% confidence limit;
+- upper 95% confidence limit;
+- p-value for fixed-effect coefficient rows.
 
-Some parameters are estimated internally on a transformed scale and subsequently returned to their natural scale.
+## Interpretation of p-values
 
-Approximate uncertainty is propagated through the back-transformation using a first-order delta method.
+The p-values reported in the parameter table are coefficient-level tests obtained on the model estimation scale.
+
+They should not be interpreted as tests of the natural-scale parameter estimate itself.
+
+Reference-profile rows do not receive a p-value.
+
+For a categorical predictor, a coefficient tests the corresponding contrast against its reference level.
+
+For an interaction, the p-value tests the associated interaction coefficient.
+
+For factors or interactions represented by several coefficients, these values are not equivalent to an omnibus test of the entire term.
+
+## Random Effects table
+
+When an NLME model is fitted, PGM may display a separate Random Effects table.
+
+The table reports:
+
+- grouping structure;
+- growth parameter;
+- estimated random-effect standard deviation on the natural parameter scale.
+
+Within each grouping level, the current model uses a diagonal covariance structure; covariance or correlation among random growth parameters is therefore not reported.
 
 ## Interpreting confidence intervals
 
@@ -41,11 +73,11 @@ Confidence intervals quantify uncertainty under the fitted model and its asympto
 
 Wide intervals may indicate:
 
-- insufficient sample size;
+- insufficient effective replication;
 - inadequate coverage of the growth trajectory;
-- strong correlation among model parameters;
+- strong dependence among model parameters;
 - weak identification;
-- excessive model flexibility;
+- excessive model complexity;
 - numerical instability.
 
 ## Goodness-of-fit measures

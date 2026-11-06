@@ -1,8 +1,19 @@
 
 # build models equations. provide specs and complementary functions
 
-## Richards - Tjørve and Tjørve, 2010 (Eq. 9)
-spec_richards <- function(t, y) {
+## Ti U-Richards - Tjørve and Tjørve, 2010 (Eq. 9)
+spec_urichards <- function(
+    t,
+    y,
+    family = "richards",
+    parameterization = "Ti",
+    phases = 1L,
+    fixValue = NULL
+) {
+  fam <- ur_family(family)
+  
+  lambdaFixed <- fam$lambda
+  dFree <- is.null(lambdaFixed)
   
   ### Order observations
   ord <- order(t)
@@ -10,158 +21,308 @@ spec_richards <- function(t, y) {
   y <- y[ord]
   
   
-  ### Numerical growth rate
-  dt <- diff(t)
-  dy <- diff(y)
-  
-  validDiff <- (
-    is.finite(dt) &
-      is.finite(dy) &
-      dt > 0
-  )
-  
-  growthRate <- dy[validDiff] / dt[validDiff]
-  growthTime <- (
-    t[-1] + t[-length(t)]
-  ) / 2
-  growthTime <- growthTime[validDiff]
-  
-  
   ### Initial asymptote
-  A0 <- max(y, na.rm = TRUE) * 1.10
+  fixValue <- trimws(if (is.null(fixValue)) "" else fixValue)
+  fixA <- nzchar(fixValue)
+  
+  if (fixA) {
+    fixValue <- suppressWarnings(as.numeric(fixValue))
+    if (!is.finite(fixValue) || fixValue <= 0)
+      stop("The fixed asymptote must be a positive number")
+    
+    A0 <- fixValue
+    
+  } else {
+    
+    A0 <- max(y, na.rm = TRUE) * 1.10
+  }
   
   
   ### Initial inflection time
-  if (
-    length(growthRate) > 0 &&
-    any(is.finite(growthRate))
-  ) {
-    
-    Ti0 <- growthTime[
-      which.max(growthRate)
-    ]
-    
-  } else {
-    
-    Ti0 <- median(t, na.rm = TRUE)
-  }
+  ss <- smooth.spline(t, y)
+  
+  dy <- predict(
+    ss,
+    x = t,
+    deriv = 1
+  )$y
+  
+  iMax <- which.max(dy)
+  
+  Ti0 <- t[iMax]
   
   
   ### Initial relative growth rate
-  if (
-    length(growthRate) > 0 &&
-    any(is.finite(growthRate))
-  ) {
-    
-    K0 <- max(
-      growthRate,
-      na.rm = TRUE
-    ) / A0
-    
-  } else {
-    
-    K0 <- 1 / diff(range(t, na.rm = TRUE))
-  }
-  
   K0 <- max(
-    K0,
+    max(dy, na.rm = TRUE) / A0,
     1e-4
   )
   
   
   ### Initial shape parameter
-  d0 <- 1.5
+  lambda0 <- if (is.null(lambdaFixed)) {
+    0
+  } else {
+    lambdaFixed
+  }
+  d0 <- exp(lambda0)
   
+  
+  ### 
+  p0 <- pgm_R(lambda0, 1)
+  c0 <- K0 * exp(lambda0) / p0
+  
+  rhoFirst <- y[1] / A0
+  rhoFirst <- min(
+    max(rhoFirst, 1e-8),
+    1 - 1e-8
+  )
+  
+  hFirst <- ur_h(
+    lambda0,
+    rhoFirst
+  )
+  
+  h00 <- hFirst * exp(
+    c0 * t[1]
+  )
+  
+  a0 <- expm1(lambda0)
+  
+  if (a0 < 0) {
+    hmax <- -1 / a0
+    
+    h00 <- min(
+      h00,
+      hmax * (1 - 1e-8)
+    )
+  }
+  
+  rho0 <- pgm_R(
+    lambda0,
+    h00
+  )
+  
+  rho0 <- min(
+    max(rho0, 1e-8),
+    1 - 1e-8
+  )
+  
+  W00 <- A0 * rho0
+  eta00 <- qlogis(rho0)
   
   ### Model expression in natural parameterization
-  mexpr <- expression(
-    A * (1 + (d - 1) * exp(
-      -K * (t - Ti) / d^(d / (1 - d))
-    ))^(1 / (1 - d))
-  )
+  ANat <- if (fixA) fixValue else quote(A)
+  lambdaNat <- if (dFree) quote(log(d)) else lambdaFixed
   
-  ### Initial values in natural parameterization
-  parinit <- list(
-    A  = A0,
-    K  = K0,
-    Ti = Ti0,
-    d  = d0
-  )
-  
-  ### Natural parameters restrictions
-  parlower <- c(
-    A = max(y, na.rm = TRUE),
-    K = 1e-8,
-    Ti = min(t, na.rm = TRUE),
-    d = 1.05
-  )
-  
-  parupper <- c(
-    A = max(y, na.rm = TRUE) * 10,
-    K = Inf,
-    Ti = max(t, na.rm = TRUE),
-    d = 20
-  )
-  
+  if (parameterization == "Ti") {
+    rhsNat <- bquote(
+      ur_value(
+        t,
+        .(ANat),
+        K,
+        .(lambdaNat),
+        "Ti",
+        Ti = Ti
+      )
+    )
+  } else {
+    rhsNat <- bquote(
+      ur_value(
+        t,
+        .(ANat),
+        K,
+        .(lambdaNat),
+        "W0",
+        rho = W0 / .(ANat)
+      )
+    )
+  }
+  mexpr <- as.expression(rhsNat)
   
   ### Initial values for transformed fit
-  tparinit <- list(
-    logA = log(A0),
-    logK = log(K0),
-    Ti = Ti0,
-    logdm105 = log(d0 - 1.05)
-  )
+  if (parameterization == "Ti") {
+    tparinit <- list(logA = log(A0), logK = log(K0), Ti = Ti0)
+  } else {
+    tparinit <- list(logA = log(A0), logK = log(K0), eta0 = eta00)
+  }
+  if (is.null(lambdaFixed)) {
+    tparinit$lambda <- lambda0
+  }
   
   ### Transformed parameters restrictions
-  tparlower <- c(
-    logA = log(max(y, na.rm = TRUE)),
-    logK = log(1e-8),
-    Ti = min(t, na.rm = TRUE),
-    logdm105 = -Inf
-  )
+  tparlower <- setNames(rep(-Inf, length(tparinit)), names(tparinit))
+  tparupper <- setNames(rep(Inf, length(tparinit)), names(tparinit))
   
-  tparupper <- c(
-    logA = log(max(y, na.rm = TRUE) * 10),
-    logK = Inf,
-    Ti = max(t, na.rm = TRUE),
-    logdm105 = log(20 - 1.05)
-  )
+  if ("logA" %in% names(tparinit)) {
+    tparlower["logA"] <- log(max(y, na.rm = TRUE))
+    tparupper["logA"] <- log(max(y, na.rm = TRUE) * 10)
+  }
+  tparlower["logK"] <- log(1e-8)
+  
+  if ("Ti" %in% names(tparinit)) {
+    tparlower["Ti"] <- min(t, na.rm = TRUE)
+    tparupper["Ti"] <- max(t, na.rm = TRUE)
+  }
+  
+  if (fixA) {
+    tparinit$logA <- NULL
+    tparlower <- tparlower[names(tparlower) != "logA"]
+    tparupper <- tparupper[names(tparupper) != "logA"]
+  }
   
   ### Transformed formula
-  mformula <- y ~
-    exp(logA) *
-    (
-      1 +
-        (0.05 + exp(logdm105)) *
-        exp(
-          -exp(logK) *
-            (t - Ti) /
-            (
-              (1.05 + exp(logdm105)) ^
-                (
-                  (1.05 + exp(logdm105)) /
-                    (1 - (1.05 + exp(logdm105)))
-                )
+  AFit <- if (fixA) fixValue else quote(exp(logA))
+  
+  ## Richards: lambda is estimated
+  if (dFree) {
+    if (parameterization == "Ti") {
+      rhsFit <- bquote(
+        .(AFit) *
+          ifelse(
+            (lambda + 0 * t) == 0,
+            ## Gompertz limit
+            exp(
+              -exp(
+                -exp(logK + 1) *
+                  (t - Ti)
+              )
+            ),
+            ## Richards, lambda != 0
+            exp(
+              -log1p(
+                exp(
+                  -exp(logK) *
+                    (t - Ti) *
+                    exp(
+                      lambda +
+                        lambda / expm1(lambda)
+                    )
+                ) *
+                  expm1(lambda)
+              ) /
+                expm1(lambda)
             )
-        )
-    ) ^
-    (
-      1 /
-        (1 - (1.05 + exp(logdm105)))
-    )
+          )
+      )
+    } else {
+      rhsFit <- bquote(
+        .(AFit) *
+          ifelse(
+            (lambda + 0 * t) == 0,
+            ## Gompertz W0 limit
+            exp(
+              -log1p(exp(-eta0)) *
+                exp(
+                  -exp(logK + 1) * t
+                )
+            ),
+            ## Richards W0, lambda != 0
+            exp(
+              -log1p(
+                expm1(
+                  expm1(lambda) *
+                    log1p(exp(-eta0))
+                ) *
+                  exp(
+                    -exp(logK) *
+                      t *
+                      exp(
+                        lambda +
+                          lambda / expm1(lambda)
+                      )
+                  )
+              ) /
+                expm1(lambda)
+            )
+          )
+      )
+    }
+  ## Gompertz: lambda = 0 fixed
+  } else if (lambdaFixed == 0) {
+    if (parameterization == "Ti") {
+      rhsFit <- bquote(
+        .(AFit) *
+          exp(
+            -exp(
+              -exp(logK + 1) *
+                (t - Ti)
+            )
+          )
+      )
+    } else {
+      rhsFit <- bquote(
+        .(AFit) *
+          exp(
+            -log1p(exp(-eta0)) *
+              exp(
+                -exp(logK + 1) * t
+              )
+          )
+      )
+    }
+  ## Logistic / von Bertalanffy: lambda fixed and nonzero
+  } else {
+    aFixed <- expm1(lambdaFixed)
+    cFactorFixed <- exp(lambdaFixed + lambdaFixed / aFixed)
+    if (parameterization == "Ti") {
+      rhsFit <- bquote(
+        .(AFit) *
+          exp(
+            -log1p(
+              .(aFixed) *
+                exp(
+                  -exp(logK) *
+                    (t - Ti) *
+                    .(cFactorFixed)
+                )
+            ) /
+              .(aFixed)
+          )
+      )
+    } else {
+      rhsFit <- bquote(
+        .(AFit) *
+          exp(
+            -log1p(
+              expm1(
+                .(aFixed) *
+                  log1p(exp(-eta0))
+              ) *
+                exp(
+                  -exp(logK) *
+                    t *
+                    .(cFactorFixed)
+                )
+            ) /
+              .(aFixed)
+          )
+      )
+    }
+  }
+  mformula <- as.formula(call("~", quote(y), rhsFit), env = environment())
   
   
   ### Back-transformation of transformed coef.s
   backtransform <- function(coef) {
     
-    c(
-      A = exp(unname(coef["logA"])),
-      K = exp(unname(coef["logK"])),
-      Ti = unname(coef["Ti"]),
-      d = 1.05 + exp(
-        unname(coef["logdm105"])
-      )
-    )
+    A <- if (fixA) fixValue else exp(unname(coef["logA"]))
+    K <- exp(unname(coef["logK"]))
+    
+    out <- numeric()
+    if (!fixA) out["A"] <- A
+    out["K"] <- K
+    
+    if (parameterization == "Ti") {
+      out["Ti"] <- unname(coef["Ti"])
+    } else {
+      rho <- plogis(unname(coef["eta0"]))
+      out["W0"] <- A * rho
+    }
+    
+    if (dFree) out["d"] <- exp(unname(coef["lambda"]))
+    
+    out
   }
   
   jacobian <- function(coef) {
@@ -170,44 +331,37 @@ spec_richards <- function(t, y) {
     
     J <- matrix(
       0,
-      nrow = 4,
-      ncol = 4,
+      nrow = length(betaOriginal),
+      ncol = length(coef),
       dimnames = list(
-        c("A", "K", "Ti", "d"),
-        c(
-          "logA",
-          "logK",
-          "Ti",
-          "logdm105"
-        )
+        names(betaOriginal),
+        names(coef)
       )
     )
     
-    J["A", "logA"] <- betaOriginal["A"]
-    J["K", "logK"] <- betaOriginal["K"]
-    J["Ti", "Ti"] <- 1
-    J["d", "logdm105"] <- betaOriginal["d"] - 1.05
+    if (!fixA) J["A", "logA"] <- betaOriginal["A"]
     
-    return(J)
+    J["K", "logK"] <- betaOriginal["K"]
+    
+    if (parameterization == "Ti") {
+      J["Ti", "Ti"] <- 1
+    } else {
+      A <- if (fixA) fixValue else betaOriginal["A"]
+      rho <- plogis(unname(coef["eta0"]))
+      if (!fixA)  J["W0", "logA"] <- betaOriginal["W0"]
+      J["W0", "eta0"] <- A * rho * (1 - rho)
+    }
+    
+    if (dFree) J["d", "lambda"] <- betaOriginal["d"]
+    
+    J
   }
-  
-  
-  mhtml <- paste0(
-    '<i>A</i>(1 + (<i>d</i> − 1) exp(',
-    '−<i>K</i>(<i>t</i> − <i>Ti</i>)/',
-    '<i>d</i><sup><i>d</i>/(1 − <i>d</i>)</sup>))',
-    '<sup>1/(1 − <i>d</i>)</sup>'
-  )
   
   
   return(list(
     mname = "Richards",
-    mhtml = mhtml,
     mexpr = mexpr,
     mformula = mformula,
-    parinit = parinit,
-    parlower = parlower,
-    parupper = parupper,
     tparinit = tparinit,
     tparlower = tparlower,
     tparupper = tparupper,
