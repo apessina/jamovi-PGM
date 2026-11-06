@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -77,6 +96,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -426,13 +474,21 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#opening-the-analysis" id="toc-opening-the-analysis" class="nav-link active" data-scroll-target="#opening-the-analysis"><span class="header-section-number">5.1</span> Opening the analysis</a></li>
-  <li><a href="#selecting-the-response" id="toc-selecting-the-response" class="nav-link" data-scroll-target="#selecting-the-response"><span class="header-section-number">5.2</span> Selecting the response</a></li>
-  <li><a href="#selecting-time" id="toc-selecting-time" class="nav-link" data-scroll-target="#selecting-time"><span class="header-section-number">5.3</span> Selecting time</a></li>
-  <li><a href="#subject-identifier" id="toc-subject-identifier" class="nav-link" data-scroll-target="#subject-identifier"><span class="header-section-number">5.4</span> Subject identifier</a></li>
-  <li><a href="#selecting-a-model" id="toc-selecting-a-model" class="nav-link" data-scroll-target="#selecting-a-model"><span class="header-section-number">5.5</span> Selecting a model</a></li>
-  <li><a href="#selecting-a-residual-variance-structure" id="toc-selecting-a-residual-variance-structure" class="nav-link" data-scroll-target="#selecting-a-residual-variance-structure"><span class="header-section-number">5.6</span> Selecting a residual variance structure</a></li>
-  <li><a href="#recommended-workflow" id="toc-recommended-workflow" class="nav-link" data-scroll-target="#recommended-workflow"><span class="header-section-number">5.7</span> Recommended workflow</a></li>
-  <li><a href="#multiple-modeling-setups" id="toc-multiple-modeling-setups" class="nav-link" data-scroll-target="#multiple-modeling-setups"><span class="header-section-number">5.8</span> Multiple modeling setups</a></li>
+  <li><a href="#model-parameterization" id="toc-model-parameterization" class="nav-link" data-scroll-target="#model-parameterization"><span class="header-section-number">5.2</span> Model parameterization</a>
+  <ul class="collapse">
+  <li><a href="#ti" id="toc-ti" class="nav-link" data-scroll-target="#ti"><span class="header-section-number">5.2.1</span> Ti</a></li>
+  <li><a href="#w0" id="toc-w0" class="nav-link" data-scroll-target="#w0"><span class="header-section-number">5.2.2</span> W0</a></li>
+  </ul></li>
+  <li><a href="#selecting-a-growth-model" id="toc-selecting-a-growth-model" class="nav-link" data-scroll-target="#selecting-a-growth-model"><span class="header-section-number">5.3</span> Selecting a growth model</a></li>
+  <li><a href="#fixed-asymptote" id="toc-fixed-asymptote" class="nav-link" data-scroll-target="#fixed-asymptote"><span class="header-section-number">5.4</span> Fixed asymptote</a></li>
+  <li><a href="#residual-variance" id="toc-residual-variance" class="nav-link" data-scroll-target="#residual-variance"><span class="header-section-number">5.5</span> Residual variance</a></li>
+  <li><a href="#residual-correlation" id="toc-residual-correlation" class="nav-link" data-scroll-target="#residual-correlation"><span class="header-section-number">5.6</span> Residual correlation</a></li>
+  <li><a href="#fixed-effects" id="toc-fixed-effects" class="nav-link" data-scroll-target="#fixed-effects"><span class="header-section-number">5.7</span> Fixed Effects</a></li>
+  <li><a href="#random-effects" id="toc-random-effects" class="nav-link" data-scroll-target="#random-effects"><span class="header-section-number">5.8</span> Random Effects</a></li>
+  <li><a href="#correlation-groups" id="toc-correlation-groups" class="nav-link" data-scroll-target="#correlation-groups"><span class="header-section-number">5.9</span> Correlation Groups</a></li>
+  <li><a href="#estimation-pathway" id="toc-estimation-pathway" class="nav-link" data-scroll-target="#estimation-pathway"><span class="header-section-number">5.10</span> Estimation pathway</a></li>
+  <li><a href="#recommended-workflow" id="toc-recommended-workflow" class="nav-link" data-scroll-target="#recommended-workflow"><span class="header-section-number">5.11</span> Recommended workflow</a></li>
+  <li><a href="#multiple-modeling-setups" id="toc-multiple-modeling-setups" class="nav-link" data-scroll-target="#multiple-modeling-setups"><span class="header-section-number">5.12</span> Multiple modeling setups</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/apessina/jamovi-PGM/edit/main/first-analysis.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/apessina/jamovi-PGM/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -463,94 +519,167 @@ ul.task-list li input[type="checkbox"] {
 <h2 data-number="5.1" class="anchored" data-anchor-id="opening-the-analysis"><span class="header-section-number">5.1</span> Opening the analysis</h2>
 <p>To begin:</p>
 <ol type="1">
-<li><p>Open the dataset in jamovi.</p></li>
-<li><p>Select PGM from the analysis ribbon.</p></li>
-<li><p>Open the growth-curve analysis.</p></li>
-<li><p>Assign the time variable.</p></li>
-<li><p>Assign one or more response variables.</p></li>
-<li><p>Add a modeling setup for each response-model combination.</p></li>
+<li>Open the dataset in jamovi.</li>
+<li>Select <strong>PGM</strong> from the analysis ribbon.</li>
+<li>Open <strong>Growth Curve Modeling</strong>.</li>
+<li>Assign one or more <strong>Dependent Variables</strong>.</li>
+<li>Assign the numeric <strong>Time Variable</strong>.</li>
+<li>Configure one or more rows in <strong>Model Setup</strong>.</li>
 </ol>
-<p>Each modeling setup defines the response variable, growth model, residual variance structure, and residual correlation structure to be used in that analysis.</p>
+<p>A model setup defines the response variable, growth model, residual variance structure, residual correlation structure, and optional fixed asymptote.</p>
 </section>
-<section id="selecting-the-response" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="selecting-the-response"><span class="header-section-number">5.2</span> Selecting the response</h2>
-<p>The response should be numeric and should represent a process compatible with the selected growth equation.</p>
-<p>Examples include: body weight; organism size; microbial concentration; plant height; cumulative production; other continuous responses measured over time.</p>
-<p>A sigmoidal growth model should not be selected solely because the observations increase over time. The observed trajectory should also exhibit a biologically and statistically plausible sigmoidal form.</p>
+<section id="model-parameterization" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="model-parameterization"><span class="header-section-number">5.2</span> Model parameterization</h2>
+<p>PGM provides two location parameterizations for the Unified growth-model family.</p>
+<section id="ti" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="ti"><span class="header-section-number">5.2.1</span> Ti</h3>
+<p>The <code>Ti</code> parameterization reports the time of the inflection point.</p>
+<p>This form is useful when the timing of maximum growth rate has a direct biological interpretation.</p>
 </section>
-<section id="selecting-time" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="selecting-time"><span class="header-section-number">5.3</span> Selecting time</h2>
-<p>The time variable must be numeric.</p>
-<p><strong>Its measurement unit determines the units of:</strong></p>
+<section id="w0" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="w0"><span class="header-section-number">5.2.2</span> W0</h3>
+<p>The <code>W0</code> parameterization reports the fitted response at <span class="math inline">\(t=0\)</span>.</p>
+<p>This form may be useful when the initial value has a direct biological interpretation or when comparison at a common temporal origin is important.</p>
+<p>The parameterization is selected globally for the analysis and the corresponding parameter label is updated in the Fixed Effects and Random Effects sections.</p>
+</section>
+</section>
+<section id="selecting-a-growth-model" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="selecting-a-growth-model"><span class="header-section-number">5.3</span> Selecting a growth model</h2>
+<p>Each setup may use one of the following Unified models:</p>
 <ul>
-<li><p>rate parameters;</p></li>
-<li><p>inflection time;</p></li>
-<li><p>critical-point locations;</p></li>
-<li><p>derivative-based descriptors;</p></li>
-<li><p>autocorrelation distances.</p></li>
+<li>Richards;</li>
+<li>Gompertz;</li>
+<li>Logistic;</li>
+<li>von Bertalanffy.</li>
 </ul>
-<p>Changing time from days to weeks changes the numerical values of time-dependent parameters.</p>
+<p>The three-parameter models are special cases of the Unified-Richards family and retain the same interpretation of the common parameters.</p>
+<p>Richards additionally estimates the shape parameter <span class="math inline">\(d\)</span>.</p>
+<p>Different equations should be compared using model adequacy, biological plausibility, convergence, and residual diagnostics rather than fit statistics alone.</p>
 </section>
-<section id="subject-identifier" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="subject-identifier"><span class="header-section-number">5.4</span> Subject identifier</h2>
-<p>For repeated measurements, assign a subject or experimental-unit identifier.</p>
-<p><strong>When no identifier is supplied, observations are treated as independent.</strong></p>
-<p>When an identifier is supplied, PGM fits a <em>nonlinear mixed-effects model</em> in which repeated observations are grouped within subjects.</p>
-<p>The identifier should represent the unit that generates the repeated trajectory, such as: animal; plant; patient; experimental vessel; microbial batch; plot.</p>
-<p>Treatment group, sex, breed, or experimental condition should not be used as the subject identifier unless each category genuinely represents one repeated observational unit.</p>
+<section id="fixed-asymptote" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="fixed-asymptote"><span class="header-section-number">5.4</span> Fixed asymptote</h2>
+<p>A positive value may be entered in the <strong>Asymptote</strong> column of a Model Setup.</p>
+<p>When supplied, <span class="math inline">\(A\)</span> is treated as fixed rather than estimated for that setup.</p>
+<p>This may be useful when the upper asymptote is externally known or when incomplete late-stage data make free asymptote estimation scientifically inappropriate.</p>
+<p>Because <span class="math inline">\(A\)</span> is then not an estimated parameter, fixed or random effects assigned to <span class="math inline">\(A\)</span> are not fitted for that setup.</p>
 </section>
-<section id="selecting-a-model" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="selecting-a-model"><span class="header-section-number">5.5</span> Selecting a model</h2>
-<p>Choose the growth equation according to: the expected trajectory shape; parameter interpretability; biological context; data coverage; convergence; residual diagnostics; comparative model performance.</p>
-<p>Different equations may fit similarly while producing parameters with different meanings.</p>
-<p><strong><em>The current version fits only the 4-parameter Richards, that should cover the shapes of both Gompertz and Logistic models.</em></strong></p>
-</section>
-<section id="selecting-a-residual-variance-structure" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="selecting-a-residual-variance-structure"><span class="header-section-number">5.6</span> Selecting a residual variance structure</h2>
+<section id="residual-variance" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="residual-variance"><span class="header-section-number">5.5</span> Residual variance</h2>
+<p>The <strong>Variance</strong> column controls the residual variance function.</p>
+<p>Available options are:</p>
+<ul>
+<li>None;</li>
+<li>Power;</li>
+<li>Exponential;</li>
+<li>Constant-plus-power.</li>
+</ul>
 <p>Use a variance function when residual spread changes systematically with the fitted response.</p>
-<p>Available structures may include:</p>
-<ul>
-<li><p>constant variance;</p></li>
-<li><p>power variance;</p></li>
-<li><p>exponential variance;</p></li>
-<li><p>constant-plus-power variance.</p></li>
-</ul>
-<p>The selection should be supported by residual diagnostics and comparative model evaluation.</p>
-<p>Selecting residual correlation</p>
-<p>Residual correlation structures are available for longitudinal analyses.</p>
-<p>Use:</p>
-<p>AR(1) when measurements are approximately equally spaced and correlation is interpreted by measurement lag; CAR(1) when measurement intervals are irregular and correlation depends on the actual temporal distance.</p>
-<p>Random effects and residual autocorrelation represent different dependence mechanisms and may be included simultaneously.</p>
 </section>
-<section id="recommended-workflow" class="level2" data-number="5.7">
-<h2 data-number="5.7" class="anchored" data-anchor-id="recommended-workflow"><span class="header-section-number">5.7</span> Recommended workflow</h2>
+<section id="residual-correlation" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="residual-correlation"><span class="header-section-number">5.6</span> Residual correlation</h2>
+<p>The <strong>Correlation</strong> column controls residual serial dependence.</p>
+<p>Available options are:</p>
+<ul>
+<li>None;</li>
+<li>AR(1);</li>
+<li>CAR(1).</li>
+</ul>
+<p>When AR(1) or CAR(1) is selected, one or more variables must be assigned under <strong>Correlation Groups</strong>.</p>
+<p>AR(1) is most appropriate for approximately equally spaced repeated observations.</p>
+<p>CAR(1) uses the actual temporal distance and is generally preferable for irregularly spaced observations.</p>
+</section>
+<section id="fixed-effects" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="fixed-effects"><span class="header-section-number">5.7</span> Fixed Effects</h2>
+<p>The Fixed Effects section assigns predictors to individual growth parameters.</p>
+<p>For example, the terms</p>
+<p><code>sex</code><br>
+<code>treatment</code><br>
+<code>sex:treatment</code></p>
+<p>assigned to <span class="math inline">\(A\)</span> specify:</p>
+<p><span class="math display">\[
+\log(A)
+=
+\beta_0+
+\beta_1\,sex+
+\beta_2\,treatment+
+\beta_3\,sex\times treatment.
+\]</span></p>
+<p>The exact internal parameter scale depends on the selected growth parameter.</p>
+<p>Main effects and interaction terms are specified explicitly. An interaction does not replace its component main effects unless that is the intended model.</p>
+<p>The same fixed-effect specification is applied to each model setup in which the corresponding structural parameter is estimated.</p>
+</section>
+<section id="random-effects" class="level2" data-number="5.8">
+<h2 data-number="5.8" class="anchored" data-anchor-id="random-effects"><span class="header-section-number">5.8</span> Random Effects</h2>
+<p>The Random Effects section assigns grouping terms to individual growth parameters.</p>
+<p>For example, the Imperial Shag dataset distributed with PGM contains chick and nest identifiers <span class="citation" data-cites="svagelj2021">(<a href="references.html#ref-svagelj2021" role="doc-biblioref">Svagelj et al. 2021</a>)</span>:</p>
+<p><code>A: chickID</code></p>
+<p>allows the asymptotic parameter to vary among chicks.</p>
+<p>Different growth parameters may receive different random grouping structures.</p>
+<p>Multiple nested levels are also supported. For example:</p>
+<p><code>nestID</code><br>
+<code>chickID</code></p>
+<p>may represent chicks nested within nests when the data support that hierarchy.</p>
+<p>A composite term such as</p>
+<p><code>species:replicate</code></p>
+<p>creates a grouping factor from the unique combinations of its components.</p>
+<p>Random-effect interaction terms therefore describe combined grouping units; they are not fixed-effect interactions and are not random slopes for predictor variables.</p>
+<p>Within each grouping level, PGM currently uses a diagonal covariance structure for multiple random growth parameters.</p>
+</section>
+<section id="correlation-groups" class="level2" data-number="5.9">
+<h2 data-number="5.9" class="anchored" data-anchor-id="correlation-groups"><span class="header-section-number">5.9</span> Correlation Groups</h2>
+<p>Correlation Groups define the grouping hierarchy for residual autocorrelation.</p>
+<p>For example:</p>
+<p><code>nestID</code><br>
+<code>chickID</code></p>
+<p>corresponds to an outer-to-inner hierarchy equivalent to <code>nestID/chickID</code>.</p>
+<p>When random effects are also present, PGM reconciles their hierarchy with the selected correlation groups and stops with an informative error if the structures are incompatible.</p>
+</section>
+<section id="estimation-pathway" class="level2" data-number="5.10">
+<h2 data-number="5.10" class="anchored" data-anchor-id="estimation-pathway"><span class="header-section-number">5.10</span> Estimation pathway</h2>
+<p>PGM always starts from a Levenberg–Marquardt nonlinear fit.</p>
+<p>The final estimator then depends on the requested model:</p>
+<ul>
+<li>ordinary NLS when no fixed effects, random effects, variance function, or residual correlation are requested;</li>
+<li>GNLS when fixed effects and/or residual variance/correlation structures are requested without random effects;</li>
+<li>NLME when at least one random effect is requested.</li>
+</ul>
+</section>
+<section id="recommended-workflow" class="level2" data-number="5.11">
+<h2 data-number="5.11" class="anchored" data-anchor-id="recommended-workflow"><span class="header-section-number">5.11</span> Recommended workflow</h2>
 <p>A defensible analysis commonly follows this sequence:</p>
 <ol type="1">
-<li><p>inspect the raw trajectories;</p></li>
-<li><p>fit a biologically plausible mean curve;</p></li>
-<li><p>assess parameter estimates and convergence;</p></li>
-<li><p>inspect residuals versus fitted values and time;</p></li>
-<li><p>evaluate heteroscedasticity;</p></li>
-<li><p>account for repeated measurements using a subject identifier;</p></li>
-<li><p>investigate residual autocorrelation;</p></li>
-<li><p>compare candidate specifications;</p></li>
-<li><p>verify parameter plausibility;</p></li>
-<li><p>interpret derived growth descriptors only after accepting the underlying fitted model.</p></li>
+<li>inspect the observed trajectories;</li>
+<li>select a biologically plausible Unified growth model;</li>
+<li>assess the basic parameter estimates and convergence;</li>
+<li>add scientifically justified fixed effects;</li>
+<li>add random effects when repeated or hierarchical units require them;</li>
+<li>inspect residual spread and consider a variance function;</li>
+<li>inspect serial dependence and consider AR(1) or CAR(1);</li>
+<li>evaluate parameter plausibility and model diagnostics;</li>
+<li>compare candidate specifications using compatible data and likelihoods;</li>
+<li>interpret derivative-based descriptors only after accepting the underlying fitted model.</li>
 </ol>
 </section>
-<section id="multiple-modeling-setups" class="level2" data-number="5.8">
-<h2 data-number="5.8" class="anchored" data-anchor-id="multiple-modeling-setups"><span class="header-section-number">5.8</span> Multiple modeling setups</h2>
-<p>PGM allows multiple response-model configurations in the same analysis.</p>
-<p>This can be used to:</p>
+<section id="multiple-modeling-setups" class="level2" data-number="5.12">
+<h2 data-number="5.12" class="anchored" data-anchor-id="multiple-modeling-setups"><span class="header-section-number">5.12</span> Multiple modeling setups</h2>
+<p>PGM allows several response-model setups in the same analysis.</p>
+<p>This can be used to compare:</p>
 <ul>
-<li><p>compare candidate growth models;</p></li>
-<li><p>compare variance structures;</p></li>
-<li><p>compare response variables;</p></li>
-<li><p>inspect alternative residual-correlation structures.</p></li>
+<li>different Unified growth models;</li>
+<li>residual variance structures;</li>
+<li>residual correlation structures;</li>
+<li>fixed versus estimated asymptotes;</li>
+<li>different response variables.</li>
 </ul>
-<p>Comparisons should only be interpreted formally when the models use the same response observations and compatible likelihoods.</p>
+<p>Fixed Effects, Random Effects, Correlation Groups, and the selected <code>Ti</code>/<code>W0</code> parameterization are analysis-level specifications and apply to all compatible setups.</p>
+<p>Formal comparisons require the same response observations and compatible likelihood definitions.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-svagelj2021" class="csl-entry" role="listitem">
+Svagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. <span>“Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.”</span> <em>Ibis</em> 163 (3): 1032–44. <a href="https://doi.org/10.1111/ibi.12920">https://doi.org/10.1111/ibi.12920</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->

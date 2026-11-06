@@ -509,12 +509,15 @@ window.Quarto = {
 <p>Biological growth data frequently present characteristics that are not adequately represented by ordinary nonlinear least squares, including:</p>
 <ul>
 <li>increasing or decreasing residual variability;</li>
+<li>systematic differences in growth parameters among treatments, sexes, populations, or other predictors;</li>
 <li>repeated observations from the same experimental unit;</li>
-<li>between-individual variation in growth parameters;</li>
+<li>between-unit variation in individual growth parameters;</li>
+<li>hierarchical sampling structures;</li>
 <li>serial correlation between observations;</li>
 <li>incomplete or irregular measurement schedules.</li>
 </ul>
-<p>PGM therefore includes variance functions, nonlinear mixed-effects models, and residual correlation structures.</p>
+<p>PGM therefore combines Unified growth equations with parameter-specific fixed effects, nonlinear mixed effects, residual variance functions, and residual correlation structures.</p>
+<p>These components have distinct interpretations. Fixed effects describe systematic changes in growth parameters, random effects describe persistent variation among grouping units, and residual correlation describes dependence remaining between observation-level deviations.</p>
 </section>
 <section id="documentation-conventions" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="documentation-conventions"><span class="header-section-number">2.3</span> Documentation conventions</h2>

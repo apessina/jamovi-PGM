@@ -474,9 +474,16 @@ window.Quarto = {
    
   <ul>
   <li><a href="#when-mixed-effects-are-used" id="toc-when-mixed-effects-are-used" class="nav-link active" data-scroll-target="#when-mixed-effects-are-used"><span class="header-section-number">9.1</span> When mixed effects are used</a></li>
-  <li><a href="#current-random-effects-structure" id="toc-current-random-effects-structure" class="nav-link" data-scroll-target="#current-random-effects-structure"><span class="header-section-number">9.2</span> Current random-effects structure</a></li>
-  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">9.3</span> Interpretation</a></li>
-  <li><a href="#conditional-fitted-values" id="toc-conditional-fitted-values" class="nav-link" data-scroll-target="#conditional-fitted-values"><span class="header-section-number">9.4</span> Conditional fitted values</a></li>
+  <li><a href="#parameter-specific-random-effects" id="toc-parameter-specific-random-effects" class="nav-link" data-scroll-target="#parameter-specific-random-effects"><span class="header-section-number">9.2</span> Parameter-specific random effects</a></li>
+  <li><a href="#different-grouping-structures-by-parameter" id="toc-different-grouping-structures-by-parameter" class="nav-link" data-scroll-target="#different-grouping-structures-by-parameter"><span class="header-section-number">9.3</span> Different grouping structures by parameter</a></li>
+  <li><a href="#nested-grouping-structures" id="toc-nested-grouping-structures" class="nav-link" data-scroll-target="#nested-grouping-structures"><span class="header-section-number">9.4</span> Nested grouping structures</a></li>
+  <li><a href="#composite-grouping-terms" id="toc-composite-grouping-terms" class="nav-link" data-scroll-target="#composite-grouping-terms"><span class="header-section-number">9.5</span> Composite grouping terms</a></li>
+  <li><a href="#random-effects-covariance" id="toc-random-effects-covariance" class="nav-link" data-scroll-target="#random-effects-covariance"><span class="header-section-number">9.6</span> Random-effects covariance</a></li>
+  <li><a href="#random-effects-output" id="toc-random-effects-output" class="nav-link" data-scroll-target="#random-effects-output"><span class="header-section-number">9.7</span> Random-effects output</a></li>
+  <li><a href="#fixed-and-random-effects-together" id="toc-fixed-and-random-effects-together" class="nav-link" data-scroll-target="#fixed-and-random-effects-together"><span class="header-section-number">9.8</span> Fixed and random effects together</a></li>
+  <li><a href="#residual-error" id="toc-residual-error" class="nav-link" data-scroll-target="#residual-error"><span class="header-section-number">9.9</span> Residual error</a></li>
+  <li><a href="#conditional-fitted-values" id="toc-conditional-fitted-values" class="nav-link" data-scroll-target="#conditional-fitted-values"><span class="header-section-number">9.10</span> Conditional fitted values</a></li>
+  <li><a href="#current-limitations" id="toc-current-limitations" class="nav-link" data-scroll-target="#current-limitations"><span class="header-section-number">9.11</span> Current limitations</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/apessina/jamovi-PGM/edit/main/methods/mixed-effects.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/apessina/jamovi-PGM/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -505,38 +512,116 @@ window.Quarto = {
 
 <section id="when-mixed-effects-are-used" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="when-mixed-effects-are-used"><span class="header-section-number">9.1</span> When mixed effects are used</h2>
-<p>A nonlinear mixed-effects model is fitted when a subject identification variable is supplied <span class="citation" data-cites="nlme">(<a href="../references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span>.</p>
-<p>The model separates:</p>
+<p>PGM fits a nonlinear mixed-effects model whenever at least one random effect is assigned to a growth parameter <span class="citation" data-cites="nlme">(<a href="../references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span>.</p>
+<p>Random effects represent persistent variation in structural growth parameters among grouping units.</p>
+<p>They are distinct from residual variation and residual autocorrelation.</p>
+</section>
+<section id="parameter-specific-random-effects" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="parameter-specific-random-effects"><span class="header-section-number">9.2</span> Parameter-specific random effects</h2>
+<p>Random effects may be assigned independently to the estimated growth parameters.</p>
+<p>For example,</p>
+<p><span class="math display">\[
+\log(A_i)
+=
+\log(A)+b_{Ai}
+\]</span></p>
+<p>allows the asymptote to vary among subjects, whereas</p>
+<p><span class="math display">\[
+\log(K_i)
+=
+\log(K)+b_{Ki}
+\]</span></p>
+<p>allows the Unified growth-rate parameter to vary.</p>
+<p>Under the <code>Ti</code> parameterization, <span class="math inline">\(T_i\)</span> may also contain a random effect.</p>
+<p>Under the <code>W0</code> parameterization, the corresponding internal initial-value parameter may contain a random effect.</p>
+<p>For Richards, the shape parameter <span class="math inline">\(d\)</span> may also vary randomly.</p>
+</section>
+<section id="different-grouping-structures-by-parameter" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="different-grouping-structures-by-parameter"><span class="header-section-number">9.3</span> Different grouping structures by parameter</h2>
+<p>Different growth parameters may be assigned to different grouping levels.</p>
+<p>For example, using grouping variables available in the Imperial Shag dataset of Svagelj et al. <span class="citation" data-cites="svagelj2021">(<a href="../references.html#ref-svagelj2021" role="doc-biblioref">Svagelj et al. 2021</a>)</span>:</p>
 <ul>
-<li>population-level growth parameters, represented by fixed effects;</li>
-<li>individual deviations from the population trajectory, represented by random effects;</li>
-<li>within-individual residual variation.</li>
+<li><span class="math inline">\(A\)</span>: <code>nestID</code>;</li>
+<li><span class="math inline">\(K\)</span>: <code>chickID</code>;</li>
+<li><span class="math inline">\(T_i\)</span>: <code>chickID</code>.</li>
+</ul>
+<p>The resulting model allows different sources of between-unit variation to act on different aspects of the growth trajectory.</p>
+</section>
+<section id="nested-grouping-structures" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="nested-grouping-structures"><span class="header-section-number">9.4</span> Nested grouping structures</h2>
+<p>PGM supports multiple grouping levels when they form a unique nested hierarchy.</p>
+<p>For example,</p>
+<p><code>nestID</code><br>
+<code>chickID</code></p>
+<p>may be interpreted as chicks nested within nests when every chick belongs to exactly one nest.</p>
+<p>The hierarchy is evaluated from the observed grouping structure and, when residual Correlation Groups are supplied, from their explicit order.</p>
+<p>Grouping selections that form crossed or otherwise non-orderable structures are rejected.</p>
+</section>
+<section id="composite-grouping-terms" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="composite-grouping-terms"><span class="header-section-number">9.5</span> Composite grouping terms</h2>
+<p>The Random Effects interface also allows interaction terms between grouping variables.</p>
+<p>For random effects, a term such as</p>
+<p><code>species:replicate</code></p>
+<p>does <strong>not</strong> represent a fixed-effect interaction.</p>
+<p>It defines a new grouping factor whose levels are the unique combinations of <code>species</code> and <code>replicate</code>.</p>
+<p>For example,</p>
+<p><code>species</code><br>
+<code>species:replicate</code></p>
+<p>may represent replicate units nested within species.</p>
+</section>
+<section id="random-effects-covariance" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="random-effects-covariance"><span class="header-section-number">9.6</span> Random-effects covariance</h2>
+<p>Within each grouping level, PGM currently uses a diagonal random-effects covariance structure.</p>
+<p>If more than one growth parameter varies at the same grouping level, their random deviations are therefore estimated with separate variances but without estimated covariance terms.</p>
+<p>This is equivalent to using a <code>pdDiag</code> structure in <code>nlme</code>.</p>
+</section>
+<section id="random-effects-output" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="random-effects-output"><span class="header-section-number">9.7</span> Random-effects output</h2>
+<p>The Random Effects table reports:</p>
+<ul>
+<li>grouping level;</li>
+<li>growth parameter;</li>
+<li>estimated standard deviation.</li>
+</ul>
+<p>The reported SD is expressed on the natural growth-parameter scale.</p>
+<p>For log-transformed parameters, PGM converts the fitted transformed-scale variation to the induced natural-scale variation.</p>
+<p>For <span class="math inline">\(W_0\)</span>, a first-order delta approximation is used at the reference profile.</p>
+</section>
+<section id="fixed-and-random-effects-together" class="level2" data-number="9.8">
+<h2 data-number="9.8" class="anchored" data-anchor-id="fixed-and-random-effects-together"><span class="header-section-number">9.8</span> Fixed and random effects together</h2>
+<p>A growth parameter may contain both fixed and random effects.</p>
+<p>The fixed effects describe systematic population-level differences associated with predictors.</p>
+<p>The random effects describe remaining persistent variation among grouping units around those systematic patterns.</p>
+</section>
+<section id="residual-error" class="level2" data-number="9.9">
+<h2 data-number="9.9" class="anchored" data-anchor-id="residual-error"><span class="header-section-number">9.9</span> Residual error</h2>
+<p>Residual variation remains at the observation level after accounting for:</p>
+<ul>
+<li>the nonlinear mean function;</li>
+<li>fixed effects;</li>
+<li>random effects;</li>
+<li>an optional variance function;</li>
+<li>an optional AR(1) or CAR(1) correlation structure.</li>
 </ul>
 </section>
-<section id="current-random-effects-structure" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="current-random-effects-structure"><span class="header-section-number">9.2</span> Current random-effects structure</h2>
-<p>In the current implementation, the asymptotic parameter <span class="math inline">\(A\)</span> contains an individual random effect.</p>
-<p>On the transformed scale, the subject-specific asymptote may be written as</p>
-<p><span class="math display">\[\log(A_i) = \log(A) + b_{Ai},\]</span></p>
-<p>where</p>
-<p><span class="math display">\[b_{Ai} \sim N(0,\sigma_A^2).\]</span></p>
-<p>All remaining growth parameters are treated as fixed population parameters.</p>
+<section id="conditional-fitted-values" class="level2" data-number="9.10">
+<h2 data-number="9.10" class="anchored" data-anchor-id="conditional-fitted-values"><span class="header-section-number">9.10</span> Conditional fitted values</h2>
+<p>Residual diagnostics for nonlinear mixed-effects models use conditional fitted values at the innermost random-effects grouping level.</p>
+<p>Consequently, these diagnostics describe fit to the grouped trajectories after accounting for estimated random effects rather than only the population-average curve.</p>
 </section>
-<section id="interpretation" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">9.3</span> Interpretation</h2>
-<p>The fixed asymptotic parameter represents the population-level central trajectory on the model scale.</p>
-<p>The random effect represents persistent between-individual variation in the asymptotic level.</p>
-<p>Residual error represents observation-level variation remaining after accounting for the fixed effects, random effects, variance function, and residual correlation structure.</p>
-</section>
-<section id="conditional-fitted-values" class="level2" data-number="9.4">
-<h2 data-number="9.4" class="anchored" data-anchor-id="conditional-fitted-values"><span class="header-section-number">9.4</span> Conditional fitted values</h2>
-<p>Residual diagnostics for nonlinear mixed-effects models use conditional fitted values. These include the estimated individual random effects.</p>
-<p>Consequently, the diagnostic residuals describe fit to individual trajectories rather than only to the population-average trajectory.</p>
+<section id="current-limitations" class="level2" data-number="9.11">
+<h2 data-number="9.11" class="anchored" data-anchor-id="current-limitations"><span class="header-section-number">9.11</span> Current limitations</h2>
+<p>The current interface assumes a uniquely nested grouping hierarchy.</p>
+<p>General crossed random-effects structures are not supported.</p>
+<p>Random-effect interaction terms define composite grouping units; they do not define random slopes for fixed-effect predictors.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-nlme" class="csl-entry" role="listitem">
 Pinheiro, José, Douglas Bates, and R Core Team. 2026. <em><span class="nocase">nlme</span>: Linear and Nonlinear Mixed Effects Models</em>. <a href="https://doi.org/10.32614/CRAN.package.nlme">https://doi.org/10.32614/CRAN.package.nlme</a>.
+</div>
+<div id="ref-svagelj2021" class="csl-entry" role="listitem">
+Svagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. <span>“Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.”</span> <em>Ibis</em> 163 (3): 1032–44. <a href="https://doi.org/10.1111/ibi.12920">https://doi.org/10.1111/ibi.12920</a>.
 </div>
 </div>
 </section>

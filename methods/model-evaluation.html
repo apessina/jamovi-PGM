@@ -456,10 +456,12 @@ window.Quarto = {
   <ul>
   <li><a href="#estimation-information" id="toc-estimation-information" class="nav-link active" data-scroll-target="#estimation-information"><span class="header-section-number">13.1</span> Estimation information</a></li>
   <li><a href="#parameter-estimates" id="toc-parameter-estimates" class="nav-link" data-scroll-target="#parameter-estimates"><span class="header-section-number">13.2</span> Parameter estimates</a></li>
-  <li><a href="#interpreting-confidence-intervals" id="toc-interpreting-confidence-intervals" class="nav-link" data-scroll-target="#interpreting-confidence-intervals"><span class="header-section-number">13.3</span> Interpreting confidence intervals</a></li>
-  <li><a href="#goodness-of-fit-measures" id="toc-goodness-of-fit-measures" class="nav-link" data-scroll-target="#goodness-of-fit-measures"><span class="header-section-number">13.4</span> Goodness-of-fit measures</a>
+  <li><a href="#interpretation-of-p-values" id="toc-interpretation-of-p-values" class="nav-link" data-scroll-target="#interpretation-of-p-values"><span class="header-section-number">13.3</span> Interpretation of p-values</a></li>
+  <li><a href="#random-effects-table" id="toc-random-effects-table" class="nav-link" data-scroll-target="#random-effects-table"><span class="header-section-number">13.4</span> Random Effects table</a></li>
+  <li><a href="#interpreting-confidence-intervals" id="toc-interpreting-confidence-intervals" class="nav-link" data-scroll-target="#interpreting-confidence-intervals"><span class="header-section-number">13.5</span> Interpreting confidence intervals</a></li>
+  <li><a href="#goodness-of-fit-measures" id="toc-goodness-of-fit-measures" class="nav-link" data-scroll-target="#goodness-of-fit-measures"><span class="header-section-number">13.6</span> Goodness-of-fit measures</a>
   <ul class="collapse">
-  <li><a href="#akaike-information-criterion" id="toc-akaike-information-criterion" class="nav-link" data-scroll-target="#akaike-information-criterion"><span class="header-section-number">13.4.1</span> Akaike information criterion</a></li>
+  <li><a href="#akaike-information-criterion" id="toc-akaike-information-criterion" class="nav-link" data-scroll-target="#akaike-information-criterion"><span class="header-section-number">13.6.1</span> Akaike information criterion</a></li>
   </ul></li>
   <li><a href="#corrected-akaike-information-criterion" id="toc-corrected-akaike-information-criterion" class="nav-link" data-scroll-target="#corrected-akaike-information-criterion"><span class="header-section-number">14</span> Corrected Akaike information criterion</a>
   <ul class="collapse">
@@ -504,50 +506,73 @@ window.Quarto = {
 
 <section id="estimation-information" class="level2" data-number="13.1">
 <h2 data-number="13.1" class="anchored" data-anchor-id="estimation-information"><span class="header-section-number">13.1</span> Estimation information</h2>
-<p>The estimation-information table describes the computational and statistical framework used for each modeling setup.</p>
+<p>The Estimation Methods table summarizes the statistical and computational specification used for each model setup.</p>
 <p>Depending on the selected options, it may report:</p>
 <ul>
-<li>nonlinear least squares (NLS);</li>
-<li>generalized nonlinear least squares (GNLS);</li>
-<li>nonlinear mixed-effects estimation (NLME);</li>
-<li>Levenberg–Marquardt initialization (LM);</li>
-<li>Gauss–Newton estimation;</li>
-<li>residual variance structure;</li>
-<li>residual correlation structure;</li>
-<li>random-effects structure.</li>
+<li>NLS, GNLS, or NLME estimation;</li>
+<li>Levenberg–Marquardt initialization;</li>
+<li>the parameter-specific fixed-effects formulas;</li>
+<li>a fixed asymptotic value, when supplied;</li>
+<li>the parameter-specific random-effects structure;</li>
+<li>the residual variance function and its fitted coefficients;</li>
+<li>the AR(1) or CAR(1) structure, its grouping hierarchy, and estimated correlation coefficient.</li>
 </ul>
-<p>This table should be consulted before reporting the model because <strong>the same mean equation may be fitted under different residual and dependence assumptions</strong>.</p>
+<p>This table should be consulted before reporting a model because the same growth equation may be fitted under substantially different fixed, random, variance, and correlation assumptions.</p>
 </section>
 <section id="parameter-estimates" class="level2" data-number="13.2">
 <h2 data-number="13.2" class="anchored" data-anchor-id="parameter-estimates"><span class="header-section-number">13.2</span> Parameter estimates</h2>
-<p>The parameter table reports estimates on the natural parameter scale.</p>
-<p>Available columns may include:</p>
+<p>The Model Parameters table reports growth parameters on their natural interpretation scale.</p>
+<p>When no fixed predictors are assigned to a parameter, the table contains its reference estimate.</p>
+<p>When fixed effects are present, additional rows represent natural-scale parameter profiles associated with the fitted model coefficients.</p>
+<p>For categorical predictors, the first observed level is used as the reference.</p>
+<p>For continuous predictors, the reference value is zero.</p>
+<p>For interaction coefficients, the displayed parameter profile incorporates the required main-effect and interaction contributions.</p>
+<p>Available columns include:</p>
 <ul>
-<li>parameter estimate;</li>
+<li>estimate;</li>
 <li>standard error;</li>
-<li>lower confidence limit;</li>
-<li>upper confidence limit.</li>
+<li>lower 95% confidence limit;</li>
+<li>upper 95% confidence limit;</li>
+<li>p-value for fixed-effect coefficient rows.</li>
 </ul>
-<p>Some parameters are estimated internally on a transformed scale and subsequently returned to their natural scale.</p>
-<p>Approximate uncertainty is propagated through the back-transformation using a first-order delta method.</p>
 </section>
-<section id="interpreting-confidence-intervals" class="level2" data-number="13.3">
-<h2 data-number="13.3" class="anchored" data-anchor-id="interpreting-confidence-intervals"><span class="header-section-number">13.3</span> Interpreting confidence intervals</h2>
+<section id="interpretation-of-p-values" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="interpretation-of-p-values"><span class="header-section-number">13.3</span> Interpretation of p-values</h2>
+<p>The p-values reported in the parameter table are coefficient-level tests obtained on the model estimation scale.</p>
+<p>They should not be interpreted as tests of the natural-scale parameter estimate itself.</p>
+<p>Reference-profile rows do not receive a p-value.</p>
+<p>For a categorical predictor, a coefficient tests the corresponding contrast against its reference level.</p>
+<p>For an interaction, the p-value tests the associated interaction coefficient.</p>
+<p>For factors or interactions represented by several coefficients, these values are not equivalent to an omnibus test of the entire term.</p>
+</section>
+<section id="random-effects-table" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="random-effects-table"><span class="header-section-number">13.4</span> Random Effects table</h2>
+<p>When an NLME model is fitted, PGM may display a separate Random Effects table.</p>
+<p>The table reports:</p>
+<ul>
+<li>grouping structure;</li>
+<li>growth parameter;</li>
+<li>estimated random-effect standard deviation on the natural parameter scale.</li>
+</ul>
+<p>Within each grouping level, the current model uses a diagonal covariance structure; covariance or correlation among random growth parameters is therefore not reported.</p>
+</section>
+<section id="interpreting-confidence-intervals" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="interpreting-confidence-intervals"><span class="header-section-number">13.5</span> Interpreting confidence intervals</h2>
 <p>Confidence intervals quantify uncertainty under the fitted model and its asymptotic approximation.</p>
 <p>Wide intervals may indicate:</p>
 <ul>
-<li>insufficient sample size;</li>
+<li>insufficient effective replication;</li>
 <li>inadequate coverage of the growth trajectory;</li>
-<li>strong correlation among model parameters;</li>
+<li>strong dependence among model parameters;</li>
 <li>weak identification;</li>
-<li>excessive model flexibility;</li>
+<li>excessive model complexity;</li>
 <li>numerical instability.</li>
 </ul>
 </section>
-<section id="goodness-of-fit-measures" class="level2" data-number="13.4">
-<h2 data-number="13.4" class="anchored" data-anchor-id="goodness-of-fit-measures"><span class="header-section-number">13.4</span> Goodness-of-fit measures</h2>
-<section id="akaike-information-criterion" class="level3" data-number="13.4.1">
-<h3 data-number="13.4.1" class="anchored" data-anchor-id="akaike-information-criterion"><span class="header-section-number">13.4.1</span> Akaike information criterion</h3>
+<section id="goodness-of-fit-measures" class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="goodness-of-fit-measures"><span class="header-section-number">13.6</span> Goodness-of-fit measures</h2>
+<section id="akaike-information-criterion" class="level3" data-number="13.6.1">
+<h3 data-number="13.6.1" class="anchored" data-anchor-id="akaike-information-criterion"><span class="header-section-number">13.6.1</span> Akaike information criterion</h3>
 <p>The Akaike information criterion is <span class="math display">\[-2\ell + 2k,\]</span></p>
 <p>where <span class="math inline">\(\ell\)</span> is the maximized log-likelihood and <span class="math inline">\(k\)</span> is the number of estimated parameters counted by the fitted likelihood.</p>
 <p>Lower AIC values indicate better expected predictive information performance among comparable models.</p>

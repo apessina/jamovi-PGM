@@ -474,9 +474,14 @@ window.Quarto = {
    
   <ul>
   <li><a href="#initial-nonlinear-fit" id="toc-initial-nonlinear-fit" class="nav-link active" data-scroll-target="#initial-nonlinear-fit"><span class="header-section-number">8.1</span> Initial nonlinear fit</a></li>
-  <li><a href="#parameter-transformations" id="toc-parameter-transformations" class="nav-link" data-scroll-target="#parameter-transformations"><span class="header-section-number">8.2</span> Parameter transformations</a></li>
-  <li><a href="#standard-errors" id="toc-standard-errors" class="nav-link" data-scroll-target="#standard-errors"><span class="header-section-number">8.3</span> Standard errors</a></li>
-  <li><a href="#confidence-intervals" id="toc-confidence-intervals" class="nav-link" data-scroll-target="#confidence-intervals"><span class="header-section-number">8.4</span> Confidence intervals</a></li>
+  <li><a href="#final-estimation-framework" id="toc-final-estimation-framework" class="nav-link" data-scroll-target="#final-estimation-framework"><span class="header-section-number">8.2</span> Final estimation framework</a></li>
+  <li><a href="#parameter-specific-fixed-effects" id="toc-parameter-specific-fixed-effects" class="nav-link" data-scroll-target="#parameter-specific-fixed-effects"><span class="header-section-number">8.3</span> Parameter-specific fixed effects</a></li>
+  <li><a href="#parameter-transformations" id="toc-parameter-transformations" class="nav-link" data-scroll-target="#parameter-transformations"><span class="header-section-number">8.4</span> Parameter transformations</a></li>
+  <li><a href="#fixed-effect-design-validation" id="toc-fixed-effect-design-validation" class="nav-link" data-scroll-target="#fixed-effect-design-validation"><span class="header-section-number">8.5</span> Fixed-effect design validation</a></li>
+  <li><a href="#natural-scale-parameter-profiles" id="toc-natural-scale-parameter-profiles" class="nav-link" data-scroll-target="#natural-scale-parameter-profiles"><span class="header-section-number">8.6</span> Natural-scale parameter profiles</a></li>
+  <li><a href="#standard-errors" id="toc-standard-errors" class="nav-link" data-scroll-target="#standard-errors"><span class="header-section-number">8.7</span> Standard errors</a></li>
+  <li><a href="#confidence-intervals" id="toc-confidence-intervals" class="nav-link" data-scroll-target="#confidence-intervals"><span class="header-section-number">8.8</span> Confidence intervals</a></li>
+  <li><a href="#fixed-effect-p-values" id="toc-fixed-effect-p-values" class="nav-link" data-scroll-target="#fixed-effect-p-values"><span class="header-section-number">8.9</span> Fixed-effect p-values</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/apessina/jamovi-PGM/edit/main/methods/estimation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/apessina/jamovi-PGM/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -505,48 +510,139 @@ window.Quarto = {
 
 <section id="initial-nonlinear-fit" class="level2" data-number="8.1">
 <h2 data-number="8.1" class="anchored" data-anchor-id="initial-nonlinear-fit"><span class="header-section-number">8.1</span> Initial nonlinear fit</h2>
-<p>PGM first fits the selected growth equation using nonlinear least squares and the Levenberg–Marquardt algorithm <span class="citation" data-cites="nlsLM">(<a href="../references.html#ref-nlsLM" role="doc-biblioref">Elzhov et al. 2023</a>)</span>.</p>
+<p>PGM first fits the selected Unified growth equation using nonlinear least squares and the Levenberg–Marquardt algorithm <span class="citation" data-cites="nlsLM">(<a href="../references.html#ref-nlsLM" role="doc-biblioref">Elzhov et al. 2023</a>)</span>.</p>
 <p>The initial fit serves two purposes:</p>
 <ol type="1">
-<li>it provides estimates for an ordinary nonlinear analysis;</li>
-<li>it supplies starting values for generalized nonlinear least-squares or nonlinear mixed-effects estimation.</li>
+<li>it provides the final estimates for an ordinary nonlinear model;</li>
+<li>it provides starting values for GNLS or NLME estimation when additional model structures are requested.</li>
 </ol>
-<p>Starting values are generated automatically from the observed data and the selected growth model.</p>
 </section>
-<section id="parameter-transformations" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="parameter-transformations"><span class="header-section-number">8.2</span> Parameter transformations</h2>
-<p>Some models are fitted using transformed parameters to impose parameter constraints and improve numerical stability.</p>
-<p>For example, a positive parameter <span class="math inline">\(A\)</span> may be represented internally as</p>
-<p><span class="math display">\[A = \exp(\alpha).\]</span></p>
-<p>The reported estimate is returned to the natural parameter scale.</p>
+<section id="final-estimation-framework" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="final-estimation-framework"><span class="header-section-number">8.2</span> Final estimation framework</h2>
+<p>An ordinary NLS fit is retained when the model contains only the growth equation.</p>
+<p>GNLS is used when no random effects are specified but the model contains one or more of:</p>
+<ul>
+<li>fixed-effect predictors;</li>
+<li>a residual variance function;</li>
+<li>an AR(1) or CAR(1) residual correlation structure.</li>
+</ul>
+<p>NLME is used whenever at least one growth parameter contains a random effect.</p>
+<p>NLME models are estimated by maximum likelihood using the <code>nlme</code> framework <span class="citation" data-cites="nlme">(<a href="../references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span>.</p>
 </section>
-<section id="standard-errors" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="standard-errors"><span class="header-section-number">8.3</span> Standard errors</h2>
-<p>The covariance matrix is initially obtained on the transformed estimation scale.</p>
-<p>For parameters reported after nonlinear back-transformation, uncertainty is propagated to the natural scale using a first-order delta method.</p>
-<p>If <span class="math inline">\(\boldsymbol\theta\)</span> denotes the transformed parameters and <span class="math inline">\(g(\boldsymbol\theta)\)</span> their natural-scale representation, then</p>
-<p><span class="math display">\[\operatorname{Var}\!\left[g(\hat{\boldsymbol\theta})\right]
+<section id="parameter-specific-fixed-effects" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="parameter-specific-fixed-effects"><span class="header-section-number">8.3</span> Parameter-specific fixed effects</h2>
+<p>Each estimated growth parameter has its own fixed-effects formula.</p>
+<p>For example,</p>
+<p><span class="math display">\[
+\log(A)
+=
+\beta_{A0}
++
+\beta_{A1}X
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\log(K)
+=
+\beta_{K0}
++
+\beta_{K1}Z
++
+\beta_{K2}Q
++
+\beta_{K3}ZQ
+\]</span></p>
+<p>may be fitted simultaneously.</p>
+<p>A parameter with no assigned predictors is represented by an intercept-only formula.</p>
+</section>
+<section id="parameter-transformations" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="parameter-transformations"><span class="header-section-number">8.4</span> Parameter transformations</h2>
+<p>Positive parameters are fitted on transformed scales.</p>
+<p>The principal internal transformations are:</p>
+<p><span class="math display">\[
+A=\exp(\alpha),
+\]</span></p>
+<p><span class="math display">\[
+K=\exp(\kappa),
+\]</span></p>
+<p><span class="math display">\[
+d=\exp(\lambda)
+\]</span></p>
+<p>for free Richards shape, and</p>
+<p><span class="math display">\[
+\eta_0=
+\operatorname{logit}\left(\frac{W_0}{A}\right)
+\]</span></p>
+<p>under the <code>W0</code> parameterization.</p>
+<p><span class="math inline">\(T_i\)</span> is fitted directly on its natural time scale.</p>
+<p>When the asymptote is fixed, <span class="math inline">\(A\)</span> is removed from the estimated parameter vector.</p>
+</section>
+<section id="fixed-effect-design-validation" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="fixed-effect-design-validation"><span class="header-section-number">8.5</span> Fixed-effect design validation</h2>
+<p>Before GNLS or NLME estimation, PGM removes unused factor levels and checks the requested fixed-effects structure.</p>
+<p>Categorical predictors must retain at least two observed levels.</p>
+<p>The model matrix for each growth parameter must also have full column rank.</p>
+<p>Empty factor combinations, redundant interactions, or perfectly collinear predictors therefore produce an informative error rather than an unidentified fit.</p>
+</section>
+<section id="natural-scale-parameter-profiles" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="natural-scale-parameter-profiles"><span class="header-section-number">8.6</span> Natural-scale parameter profiles</h2>
+<p>The model is fitted on its estimation scale, but the parameter table reports values on the natural growth-parameter scale.</p>
+<p>For categorical predictors, the first observed factor level is used as the reference level.</p>
+<p>For continuous predictors, the reference profile is evaluated at zero.</p>
+<p>Rows corresponding to continuous effects represent the parameter profile at a predictor value of one relative to the zero reference profile.</p>
+<p>For interactions, the reported natural-scale parameter value includes the associated main-effect and interaction contributions required by that predictor profile.</p>
+</section>
+<section id="standard-errors" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="standard-errors"><span class="header-section-number">8.7</span> Standard errors</h2>
+<p>The covariance matrix is obtained on the model estimation scale.</p>
+<p>For a reported natural-scale quantity</p>
+<p><span class="math display">\[
+g(\boldsymbol\theta),
+\]</span></p>
+<p>PGM uses a first-order delta approximation:</p>
+<p><span class="math display">\[
+\operatorname{Var}
+\left[
+g(\hat{\boldsymbol\theta})
+\right]
 \approx
 J
-\operatorname{Var}(\hat{\boldsymbol\theta})
-J^\mathsf{T},\]</span></p>
-<p>where <span class="math inline">\(J\)</span> is the Jacobian matrix of the back-transformation.</p>
+\operatorname{Var}
+(\hat{\boldsymbol\theta})
+J^\mathsf{T},
+\]</span></p>
+<p>where <span class="math inline">\(J\)</span> is the Jacobian of the transformation evaluated at the corresponding parameter profile.</p>
+<p>For <span class="math inline">\(W_0\)</span>, uncertainty propagation includes its joint dependence on both the asymptote and the internal initial-value parameter when <span class="math inline">\(A\)</span> is estimated.</p>
 </section>
-<section id="confidence-intervals" class="level2" data-number="8.4">
-<h2 data-number="8.4" class="anchored" data-anchor-id="confidence-intervals"><span class="header-section-number">8.4</span> Confidence intervals</h2>
-<p>Approximate 95% confidence intervals are first constructed on the transformed scale and subsequently back-transformed.</p>
-<p>These intervals depend on asymptotic normal approximations and may be unreliable when:</p>
+<section id="confidence-intervals" class="level2" data-number="8.8">
+<h2 data-number="8.8" class="anchored" data-anchor-id="confidence-intervals"><span class="header-section-number">8.8</span> Confidence intervals</h2>
+<p>Approximate 95% confidence intervals are derived from the fitted covariance matrix and the corresponding transformed parameter profile.</p>
+<p>For positive transformed parameters, interval limits are returned to the natural parameter scale.</p>
+<p>For <span class="math inline">\(W_0\)</span>, PGM uses a log-scale delta approximation for the positive natural-scale quantity.</p>
+<p>These intervals are asymptotic approximations and may be unreliable when:</p>
 <ul>
-<li>the sample size is small;</li>
+<li>sample size or effective replication is small;</li>
 <li>parameters are weakly identified;</li>
-<li>estimates are near parameter boundaries;</li>
+<li>the observed trajectory poorly covers the relevant part of the curve;</li>
+<li>the fixed-effects design is nearly singular;</li>
 <li>the fitted model is numerically unstable.</li>
 </ul>
+</section>
+<section id="fixed-effect-p-values" class="level2" data-number="8.9">
+<h2 data-number="8.9" class="anchored" data-anchor-id="fixed-effect-p-values"><span class="header-section-number">8.9</span> Fixed-effect p-values</h2>
+<p>When fixed effects are present, PGM reports coefficient-level p-values obtained from the fitted NLS/GNLS/NLME model on the model estimation scale.</p>
+<p>These are tests of individual model coefficients.</p>
+<p>They are not automatically omnibus tests of an entire multi-level factor or interaction term.</p>
+<p>For categorical predictors, coefficients are interpreted relative to the reference level.</p>
+<p>For interactions, the reported p-value corresponds to the relevant interaction coefficient on the estimation scale.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-nlsLM" class="csl-entry" role="listitem">
 Elzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. <em><span class="nocase">minpack.lm</span>: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in <span>MINPACK</span>, Plus Support for Bounds</em>. <a href="https://doi.org/10.32614/CRAN.package.minpack.lm">https://doi.org/10.32614/CRAN.package.minpack.lm</a>.
+</div>
+<div id="ref-nlme" class="csl-entry" role="listitem">
+Pinheiro, José, Douglas Bates, and R Core Team. 2026. <em><span class="nocase">nlme</span>: Linear and Nonlinear Mixed Effects Models</em>. <a href="https://doi.org/10.32614/CRAN.package.nlme">https://doi.org/10.32614/CRAN.package.nlme</a>.
 </div>
 </div>
 </section>

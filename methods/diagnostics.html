@@ -487,8 +487,9 @@ ul.task-list li input[type="checkbox"] {
 <section id="residual-autocorrelation" class="level2" data-number="14.4">
 <h2 data-number="14.4" class="anchored" data-anchor-id="residual-autocorrelation"><span class="header-section-number">14.4</span> Residual autocorrelation</h2>
 <p>The autocorrelation plot assesses whether residuals remain associated across neighboring measurement occasions.</p>
-<p>For longitudinal models, residual autocorrelation is evaluated within subjects.</p>
-<p>Persistent residual autocorrelation may indicate that the selected random effects or residual correlation structure is insufficient.</p>
+<p>When Correlation Groups are supplied, the residual ACF is calculated within the grouping units defined by those variables.</p>
+<p>When no explicit Correlation Groups are supplied for an NLME model, PGM uses the innermost random-effects grouping level for the diagnostic grouping.</p>
+<p>Persistent residual autocorrelation may indicate that the selected mean structure, random effects, or residual correlation structure is insufficient.</p>
 </section>
 <section id="residual-scale" class="level2" data-number="14.5">
 <h2 data-number="14.5" class="anchored" data-anchor-id="residual-scale"><span class="header-section-number">14.5</span> Residual scale</h2>

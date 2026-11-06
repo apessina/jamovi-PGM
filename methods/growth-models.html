@@ -473,11 +473,14 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#general-formulation" id="toc-general-formulation" class="nav-link active" data-scroll-target="#general-formulation"><span class="header-section-number">7.1</span> General formulation</a></li>
-  <li><a href="#parameter-units" id="toc-parameter-units" class="nav-link" data-scroll-target="#parameter-units"><span class="header-section-number">7.2</span> Parameter units</a></li>
-  <li><a href="#richards-model" id="toc-richards-model" class="nav-link" data-scroll-target="#richards-model"><span class="header-section-number">7.3</span> Richards model</a></li>
-  <li><a href="#parameter-constraints" id="toc-parameter-constraints" class="nav-link" data-scroll-target="#parameter-constraints"><span class="header-section-number">7.4</span> Parameter constraints</a></li>
-  <li><a href="#starting-values" id="toc-starting-values" class="nav-link" data-scroll-target="#starting-values"><span class="header-section-number">7.5</span> Starting values</a></li>
+  <li><a href="#unified-growth-model-family" id="toc-unified-growth-model-family" class="nav-link active" data-scroll-target="#unified-growth-model-family"><span class="header-section-number">7.1</span> Unified growth-model family</a></li>
+  <li><a href="#regularized-unified-richards-representation" id="toc-regularized-unified-richards-representation" class="nav-link" data-scroll-target="#regularized-unified-richards-representation"><span class="header-section-number">7.2</span> Regularized Unified-Richards representation</a></li>
+  <li><a href="#shape-parameter" id="toc-shape-parameter" class="nav-link" data-scroll-target="#shape-parameter"><span class="header-section-number">7.3</span> Shape parameter</a></li>
+  <li><a href="#ti-parameterization" id="toc-ti-parameterization" class="nav-link" data-scroll-target="#ti-parameterization"><span class="header-section-number">7.4</span> Ti parameterization</a></li>
+  <li><a href="#w0-parameterization" id="toc-w0-parameterization" class="nav-link" data-scroll-target="#w0-parameterization"><span class="header-section-number">7.5</span> W0 parameterization</a></li>
+  <li><a href="#fixed-asymptote" id="toc-fixed-asymptote" class="nav-link" data-scroll-target="#fixed-asymptote"><span class="header-section-number">7.6</span> Fixed asymptote</a></li>
+  <li><a href="#parameter-transformations" id="toc-parameter-transformations" class="nav-link" data-scroll-target="#parameter-transformations"><span class="header-section-number">7.7</span> Parameter transformations</a></li>
+  <li><a href="#starting-values" id="toc-starting-values" class="nav-link" data-scroll-target="#starting-values"><span class="header-section-number">7.8</span> Starting values</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/apessina/jamovi-PGM/edit/main/methods/growth-models.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/apessina/jamovi-PGM/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -504,69 +507,144 @@ window.Quarto = {
 </header>
 
 
-<section id="general-formulation" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="general-formulation"><span class="header-section-number">7.1</span> General formulation</h2>
-<p>A parametric growth model represents the expected response at time <span class="math inline">\(t\)</span> as</p>
-<p><span class="math display">\[y_i = W(t_i;\boldsymbol\theta) + \varepsilon_i,\]</span></p>
-<p>where:</p>
-<p><span class="math inline">\(W(t_i;\boldsymbol\theta)\)</span> is the selected growth function; <span class="math inline">\(\boldsymbol\theta\)</span> is the vector of model parameters; <span class="math inline">\(\varepsilon_i\)</span> is the residual error.</p>
-<p>The interpretation of <span class="math inline">\(\boldsymbol\theta\)</span> depends on the exact equation and parametrization.</p>
-<p>Models with similar names may be expressed using different parameter definitions in different authors and software implementations.</p>
-</section>
-<section id="parameter-units" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="parameter-units"><span class="header-section-number">7.2</span> Parameter units</h2>
-<p>The units of each parameter should be determined from the model equation.</p>
-<p>Common interpretations include:</p>
+<section id="unified-growth-model-family" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="unified-growth-model-family"><span class="header-section-number">7.1</span> Unified growth-model family</h2>
+<p>PGM implements the Unified family of sigmoidal growth models described by Tjørve and Tjørve <span class="citation" data-cites="tjorve2010 tjorve2017">(<a href="../references.html#ref-tjorve2010" role="doc-biblioref">Tjørve and Tjørve 2010</a>; <a href="../references.html#ref-tjorve2017" role="doc-biblioref">Tjørve and Tjørve 2017</a>)</span>.</p>
+<p>The implemented family contains:</p>
 <ul>
-<li><span class="math inline">\(A\)</span>: response unit;</li>
-<li><span class="math inline">\(T_i\)</span>: time unit;</li>
-<li>rate parameters: inverse time or a parametrization-specific rate unit;</li>
-<li>shape parameters: dimensionless.</li>
+<li>Unified Richards;</li>
+<li>Unified Gompertz;</li>
+<li>Unified Logistic;</li>
+<li>Unified von Bertalanffy.</li>
 </ul>
-<p>Parameters should not be compared directly across equations unless their mathematical definitions are equivalent.</p>
+<p>The common parameters retain the same interpretation across family members.</p>
 </section>
-<section id="richards-model" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="richards-model"><span class="header-section-number">7.3</span> Richards model</h2>
-<p>PGM implements the Richards parametrization described by <span class="citation" data-cites="tjorve2010">Tjørve and Tjørve (<a href="../references.html#ref-tjorve2010" role="doc-biblioref">2010</a>)</span>.</p>
-<p>The growth function is</p>
-<p><span class="math display">\[A
-\left[
-1+
-(d-1)
-\exp\left(
--\frac{K(t-T_i)}
-{d^{d/(1-d)}}
-\right)
-\right]^{1/(1-d)}.\]</span></p>
-<p>The parameters are:</p>
+<section id="regularized-unified-richards-representation" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="regularized-unified-richards-representation"><span class="header-section-number">7.2</span> Regularized Unified-Richards representation</h2>
+<p>PGM uses</p>
+<p><span class="math display">\[
+\lambda = \log(d),
+\]</span></p>
+<p>and defines</p>
+<p><span class="math display">\[
+a = e^\lambda - 1.
+\]</span></p>
+<p>For <span class="math inline">\(a\neq0\)</span>, define</p>
+<p><span class="math display">\[
+R(\lambda,x)
+=
+\exp\left[
+-\frac{\log(1+ax)}{a}
+\right].
+\]</span></p>
+<p>At the Gompertz limit, <span class="math inline">\(\lambda=0\)</span> and <span class="math inline">\(a=0\)</span>, the continuous limit is</p>
+<p><span class="math display">\[
+R(0,x)=e^{-x}.
+\]</span></p>
+<p>The implementation evaluates this expression using numerically stable <code>expm1()</code> and <code>log1p()</code> formulations.</p>
+<p>This avoids a singularity at <span class="math inline">\(d=1\)</span> and allows the Richards surface to remain continuous through the Gompertz limit.</p>
+</section>
+<section id="shape-parameter" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="shape-parameter"><span class="header-section-number">7.3</span> Shape parameter</h2>
+<p>For Unified Richards,</p>
+<p><span class="math display">\[
+d=e^\lambda&gt;0
+\]</span></p>
+<p>is estimated freely.</p>
+<p>The three-parameter family members correspond to fixed values of <span class="math inline">\(\lambda\)</span>:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;"><span class="math inline">\(d\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\lambda\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Gompertz</td>
+<td style="text-align: right;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Logistic</td>
+<td style="text-align: right;"><span class="math inline">\(2\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\log 2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">von Bertalanffy</td>
+<td style="text-align: right;"><span class="math inline">\(2/3\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(\log(2/3)\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Only Richards estimates <span class="math inline">\(d\)</span> from the data.</p>
+</section>
+<section id="ti-parameterization" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="ti-parameterization"><span class="header-section-number">7.4</span> Ti parameterization</h2>
+<p>The <code>Ti</code> form uses:</p>
 <ul>
-<li><span class="math inline">\(A\)</span>: asymptotic response;</li>
-<li><span class="math inline">\(K\)</span>: growth-rate parameter under this parametrization;</li>
-<li><span class="math inline">\(T_i\)</span>: time at the inflection point;</li>
-<li><span class="math inline">\(d\)</span>: shape parameter controlling curve asymmetry.</li>
+<li><span class="math inline">\(A\)</span>: upper asymptote;</li>
+<li><span class="math inline">\(K\)</span>: Unified growth-rate parameter;</li>
+<li><span class="math inline">\(T_i\)</span>: time of inflection;</li>
+<li><span class="math inline">\(d\)</span>: Richards shape parameter, when free.</li>
 </ul>
-<p>The meaning of <span class="math inline">\(K\)</span> is specific to this parametrization and should not be assumed to equal the rate parameter of another Richards equation.</p>
+<p>For the three-parameter models, <span class="math inline">\(d\)</span> is fixed by the selected family.</p>
 </section>
-<section id="parameter-constraints" class="level2" data-number="7.4">
-<h2 data-number="7.4" class="anchored" data-anchor-id="parameter-constraints"><span class="header-section-number">7.4</span> Parameter constraints</h2>
-<p>PGM fits the Richards model using transformed parameters:</p>
-<p><span class="math display">\[A=\exp(\alpha),\]</span></p>
-<p><span class="math display">\[K=\exp(\kappa),\]</span></p>
-<p>and</p>
-<p><span class="math display">\[d=1.05+\exp(\delta).\]</span></p>
-<p>Consequently: <span class="math display">\[
-(A&gt;0); (K&gt;0); (d&gt;1.05).
-\]</span> The <span class="math inline">\(d&gt;1.05\)</span> restriction is part of the current computational implementation and restricts the range of Richards shapes that can be fitted.</p>
+<section id="w0-parameterization" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="w0-parameterization"><span class="header-section-number">7.5</span> W0 parameterization</h2>
+<p>The alternative <code>W0</code> form replaces <span class="math inline">\(T_i\)</span> with the fitted response at the time origin:</p>
+<p><span class="math display">\[
+W_0=W(0).
+\]</span></p>
+<p>The <code>Ti</code> and <code>W0</code> forms describe the same family of curve shapes; they differ only in the location parameter used to describe the trajectory.</p>
 </section>
-<section id="starting-values" class="level2" data-number="7.5">
-<h2 data-number="7.5" class="anchored" data-anchor-id="starting-values"><span class="header-section-number">7.5</span> Starting values</h2>
+<section id="fixed-asymptote" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="fixed-asymptote"><span class="header-section-number">7.6</span> Fixed asymptote</h2>
+<p>The asymptote may optionally be supplied as a fixed positive value.</p>
+<p>When <span class="math inline">\(A\)</span> is fixed, it is removed from the estimated parameter vector.</p>
+<p>This can be useful when:</p>
+<ul>
+<li>the asymptote is externally known;</li>
+<li>biological constraints justify a predetermined value;</li>
+<li>late-stage data are incomplete and unrestricted asymptote estimation is not desired.</li>
+</ul>
+<p>Fixing the asymptote changes the statistical model and should therefore be scientifically justified.</p>
+</section>
+<section id="parameter-transformations" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="parameter-transformations"><span class="header-section-number">7.7</span> Parameter transformations</h2>
+<p>For estimated parameters, PGM uses:</p>
+<p><span class="math display">\[
+A=\exp(\alpha),
+\]</span></p>
+<p><span class="math display">\[
+K=\exp(\kappa),
+\]</span></p>
+<p>and, for Richards,</p>
+<p><span class="math display">\[
+d=\exp(\lambda).
+\]</span></p>
+<p>Under the <code>W0</code> parameterization,</p>
+<p><span class="math display">\[
+\eta_0=
+\operatorname{logit}\left(\frac{W_0}{A}\right).
+\]</span></p>
+<p>These transformations enforce the required parameter domains while allowing unconstrained numerical optimization on the transformed scales.</p>
+</section>
+<section id="starting-values" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="starting-values"><span class="header-section-number">7.8</span> Starting values</h2>
 <p>Starting values are generated automatically from the observed trajectory.</p>
-<p>The initial asymptote is based on a value above the observed maximum response. The initial inflection time is informed by the largest numerical growth rate, and the initial rate parameter is derived from that rate relative to the initial asymptote.</p>
+<p>PGM uses a smooth spline to obtain an initial approximation to the growth rate.</p>
+<p>The initial asymptote is based on a value above the observed maximum unless a fixed asymptote is supplied. The initial location and growth-rate parameters are then derived from the smoothed trajectory and the selected Unified model.</p>
+<p>Starting values are computational aids and should not be interpreted as model estimates.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-tjorve2010" class="csl-entry" role="listitem">
 Tjørve, Even, and Kathleen M. C. Tjørve. 2010. <span>“A Unified Approach to the <span>Richards</span>-Model Family for Use in Growth Analyses: Why We Need Only Two Model Forms.”</span> <em>Journal of Theoretical Biology</em> 267 (3): 417–25. <a href="https://doi.org/10.1016/j.jtbi.2010.09.008">https://doi.org/10.1016/j.jtbi.2010.09.008</a>.
+</div>
+<div id="ref-tjorve2017" class="csl-entry" role="listitem">
+Tjørve, Kathleen M. C., and Even Tjørve. 2017. <span>“A Proposed Family of Unified Models for Sigmoidal Growth.”</span> <em>Ecological Modelling</em> 359: 117–27. <a href="https://doi.org/10.1016/j.ecolmodel.2017.05.008">https://doi.org/10.1016/j.ecolmodel.2017.05.008</a>.
 </div>
 </div>
 </section>

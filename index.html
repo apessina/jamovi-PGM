@@ -77,6 +77,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -461,14 +490,18 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><strong>PGM — Practical Growth Models</strong> is a jamovi module for fitting, evaluating, and interpreting nonlinear growth curves.</p>
-<p>The module provides tools for:</p>
+<p><strong>PGM — Practical Growth Modeling</strong> is a jamovi module for fitting, evaluating, and interpreting nonlinear biological growth curves.</p>
+<p>The module implements the Unified family of sigmoidal growth models and provides tools for:</p>
 <ul>
-<li>fitting parametric growth models;</li>
+<li>fitting Unified Richards, Gompertz, Logistic, and von Bertalanffy growth models;</li>
+<li>using either inflection-time (<span class="math inline">\(T_i\)</span>) or initial-value (<span class="math inline">\(W_0\)</span>) parameterizations;</li>
+<li>estimating or fixing the upper asymptote;</li>
+<li>assigning fixed effects and interactions to individual growth parameters;</li>
+<li>fitting nonlinear mixed-effects models with parameter-specific random effects;</li>
+<li>representing nested and composite grouping structures;</li>
 <li>modeling heteroscedastic residual variance;</li>
-<li>fitting nonlinear mixed-effects models for longitudinal data;</li>
-<li>modeling residual autocorrelation;</li>
-<li>evaluating model fit and prediction error;</li>
+<li>modeling discrete AR(1) and continuous-time CAR(1) residual correlation;</li>
+<li>evaluating goodness of fit and prediction error;</li>
 <li>estimating biologically and geometrically relevant growth points;</li>
 <li>visualizing fitted curves, derivatives, and residual diagnostics.</li>
 </ul>
@@ -478,20 +511,23 @@ ul.task-list li input[type="checkbox"] {
 <p>The documentation is divided into four main parts:</p>
 <ol type="1">
 <li><strong>Getting started</strong>, covering installation, data organization, and a first analysis;</li>
-<li><strong>Methods</strong>, describing the models, estimation procedures and analysis implemented in PGM;</li>
-<li><strong>Academic</strong>, providing reporting guidance and references.</li>
+<li><strong>Methods</strong>, describing the models, estimation procedures, effects structures, and diagnostics implemented in PGM;</li>
+<li><strong>Tutorials</strong>, providing examples and supporting resources;</li>
+<li><strong>Academic reporting</strong>, providing guidance for reporting PGM analyses and citing the software.</li>
 </ol>
 </section>
 <section id="important-considerations" class="level2" data-number="0.2">
 <h2 data-number="0.2" class="anchored" data-anchor-id="important-considerations"><span class="header-section-number">0.2</span> Important considerations</h2>
-<p>PGM assists with model estimation and interpretation but does not replace statistical judgment. Model selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, residual variance, dependence structure, parameter plausibility, and residual diagnostics should be considered jointly.</p>
+<p>PGM assists with model specification, estimation, and interpretation but does not replace statistical judgment.</p>
+<p>Model selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, fixed-effects structure, random-effects structure, residual variance, residual dependence, parameter plausibility, data coverage, and residual diagnostics should be considered jointly.</p>
+<p>Complex fixed-effect interactions and random-effects structures also require adequate replication. PGM checks several basic estimability conditions, but a model that converges is not necessarily scientifically appropriate.</p>
 </section>
 <section id="acknowledgments-and-contact" class="level2" data-number="0.3">
 <h2 data-number="0.3" class="anchored" data-anchor-id="acknowledgments-and-contact"><span class="header-section-number">0.3</span> Acknowledgments and Contact</h2>
 <p>This project is being developed at the School of Veterinary Medicine, São Paulo State University (UNESP), Araçatuba, São Paulo, Brazil.</p>
 <p>We extend our special thanks to the jamovi development team, particularly Jonathon Love, for his support, as well as to all users and testers who have contributed to the development of this project.</p>
 <p>Comments and feedback are welcome. Please contact us if you identify any errors, have suggestions or questions, or require methodological support for academic research.</p>
-<p>The development team can be reached at andre.pessina@unesp.br</p>
+<p>The development team can be reached at andre.pessina@unesp.br.</p>
 <p><strong><em>Citation instructions are provided in the chapter on academic reporting.</em></strong></p>
 
 

@@ -450,8 +450,9 @@ div.csl-indent {
   <li><a href="#generalized-nonlinear-least-squares" id="toc-generalized-nonlinear-least-squares" class="nav-link" data-scroll-target="#generalized-nonlinear-least-squares"><span class="header-section-number">17.4</span> Generalized nonlinear least squares</a></li>
   <li><a href="#nonlinear-mixed-effects-model" id="toc-nonlinear-mixed-effects-model" class="nav-link" data-scroll-target="#nonlinear-mixed-effects-model"><span class="header-section-number">17.5</span> Nonlinear mixed-effects model</a>
   <ul class="collapse">
-  <li><a href="#residual-autocorrelation" id="toc-residual-autocorrelation" class="nav-link" data-scroll-target="#residual-autocorrelation"><span class="header-section-number">17.5.1</span> Residual autocorrelation</a></li>
-  <li><a href="#heteroscedasticity" id="toc-heteroscedasticity" class="nav-link" data-scroll-target="#heteroscedasticity"><span class="header-section-number">17.5.2</span> Heteroscedasticity</a></li>
+  <li><a href="#fixed-effects-and-interactions" id="toc-fixed-effects-and-interactions" class="nav-link" data-scroll-target="#fixed-effects-and-interactions"><span class="header-section-number">17.5.1</span> Fixed effects and interactions</a></li>
+  <li><a href="#residual-autocorrelation" id="toc-residual-autocorrelation" class="nav-link" data-scroll-target="#residual-autocorrelation"><span class="header-section-number">17.5.2</span> Residual autocorrelation</a></li>
+  <li><a href="#heteroscedasticity" id="toc-heteroscedasticity" class="nav-link" data-scroll-target="#heteroscedasticity"><span class="header-section-number">17.5.3</span> Heteroscedasticity</a></li>
   </ul></li>
   <li><a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison"><span class="header-section-number">17.6</span> Model comparison</a></li>
   <li><a href="#derived-growth-descriptors" id="toc-derived-growth-descriptors" class="nav-link" data-scroll-target="#derived-growth-descriptors"><span class="header-section-number">17.7</span> Derived growth descriptors</a></li>
@@ -494,10 +495,11 @@ div.csl-indent {
 <section id="citation" class="level2" data-number="17.1">
 <h2 data-number="17.1" class="anchored" data-anchor-id="citation"><span class="header-section-number">17.1</span> Citation</h2>
 <p>Pessina ALR, Garcia-Neto M (2026). PGM: Practical Growth Modeling for jamovi [Version x.x.x]. doi: <a href="https://doi.org/10.5281/zenodo.15764773">10.5281/zenodo.15764773</a></p>
-<p><strong><em>The jamovi project <span class="citation" data-cites="jamovi">(<a href="references.html#ref-jamovi" role="doc-biblioref">The jamovi project 2026</a>)</span></em></strong> <strong>and <em>The R project</em><span class="citation" data-cites="R">(<a href="references.html#ref-R" role="doc-biblioref">R Core Team 2026</a>)</span> should also be cited.</strong> We also encourage authors to cite the packages and references used in the module’s analyses:</p>
+<p><strong><em>The jamovi project <span class="citation" data-cites="jamovi">(<a href="references.html#ref-jamovi" role="doc-biblioref">The jamovi project 2026</a>)</span></em></strong> <strong>and <em>The R project</em><span class="citation" data-cites="R">(<a href="references.html#ref-R" role="doc-biblioref">R Core Team 2026</a>)</span> should also be cited.</strong> We also encourage authors to cite the methodological references and R packages relevant to the analyses performed:</p>
 <ul>
-<li>minpack.lm <span class="citation" data-cites="nlsLM">(<a href="references.html#ref-nlsLM" role="doc-biblioref">Elzhov et al. 2023</a>)</span></li>
-<li>nlme <span class="citation" data-cites="nlme">(<a href="references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span></li>
+<li>Unified growth-model family: Tjørve and Tjørve <span class="citation" data-cites="tjorve2010 tjorve2017">(<a href="references.html#ref-tjorve2010" role="doc-biblioref">Tjørve and Tjørve 2010</a>; <a href="references.html#ref-tjorve2017" role="doc-biblioref">Tjørve and Tjørve 2017</a>)</span></li>
+<li>nonlinear least-squares estimation: minpack.lm <span class="citation" data-cites="nlsLM">(<a href="references.html#ref-nlsLM" role="doc-biblioref">Elzhov et al. 2023</a>)</span></li>
+<li>generalized and nonlinear mixed-effects models: nlme <span class="citation" data-cites="nlme">(<a href="references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span></li>
 </ul>
 </section>
 <section id="recommended-information" class="level2" data-number="17.2">
@@ -506,16 +508,17 @@ div.csl-indent {
 <ul>
 <li>the PGM version;</li>
 <li>the jamovi version;</li>
-<li>the selected growth equation;</li>
-<li>the equation parametrization;</li>
+<li>the selected Unified growth equation;</li>
+<li>the <code>Ti</code> or <code>W0</code> parameterization;</li>
+<li>whether the asymptote was estimated or fixed;</li>
 <li>the response and time units;</li>
 <li>the number of observations;</li>
-<li>the number of subjects, when longitudinal;</li>
-<li>the estimation framework;</li>
-<li>the random-effects structure;</li>
+<li>the fixed-effects structure for each growth parameter;</li>
+<li>relevant interaction terms;</li>
+<li>the random-effects structure and grouping hierarchy;</li>
 <li>the residual variance structure;</li>
-<li>the residual correlation structure;</li>
-<li>the estimation method;</li>
+<li>the residual correlation structure and Correlation Groups;</li>
+<li>the estimation framework;</li>
 <li>the model-comparison criteria;</li>
 <li>the residual diagnostics examined.</li>
 </ul>
@@ -536,23 +539,31 @@ div.csl-indent {
 </section>
 <section id="nonlinear-mixed-effects-model" class="level2" data-number="17.5">
 <h2 data-number="17.5" class="anchored" data-anchor-id="nonlinear-mixed-effects-model"><span class="header-section-number">17.5</span> Nonlinear mixed-effects model</h2>
-<p>For longitudinal data:</p>
+<p>For models containing random growth parameters, a possible methods statement is:</p>
 <blockquote class="blockquote">
-<p>Growth trajectories were fitted using the PGM module for jamovi. Repeated growth measurements were analyzed using a nonlinear mixed-effects model. Population growth parameters were represented by fixed effects, and between-subject variation in the asymptotic parameter was represented by a random effect. Parameters were estimated by maximum likelihood after initialization using a Levenberg–Marquardt nonlinear fit.</p>
+<p>Growth trajectories were fitted using the PGM module for jamovi. The [Unified Richards/Gompertz/Logistic/von Bertalanffy] model was expressed using the [Ti/W0] parameterization. Fixed effects of [predictors] were assigned to [growth parameters], including the interaction between [predictors] where specified. Between-[subject/group] variation in [parameters] was represented using parameter-specific random effects, with [grouping hierarchy]. Models were estimated by maximum likelihood after initialization from a Levenberg–Marquardt nonlinear fit.</p>
 </blockquote>
-<section id="residual-autocorrelation" class="level3" data-number="17.5.1">
-<h3 data-number="17.5.1" class="anchored" data-anchor-id="residual-autocorrelation"><span class="header-section-number">17.5.1</span> Residual autocorrelation</h3>
+<section id="fixed-effects-and-interactions" class="level3" data-number="17.5.1">
+<h3 data-number="17.5.1" class="anchored" data-anchor-id="fixed-effects-and-interactions"><span class="header-section-number">17.5.1</span> Fixed effects and interactions</h3>
+<p>When parameter-specific predictors are fitted:</p>
+<blockquote class="blockquote">
+<p>Systematic variation in the growth parameters was modeled using fixed effects. The parameter [A/K/Ti/W0/d] included effects of [predictors]. The interaction between [X] and [Z] was included to allow the effect of one predictor on the growth parameter to depend on the level of the other.</p>
+</blockquote>
+<p>PGM reports coefficient-level p-values on the model estimation scale. For factors or interactions represented by several coefficients, these should not be described as omnibus tests unless an appropriate joint test has been performed separately.</p>
+</section>
+<section id="residual-autocorrelation" class="level3" data-number="17.5.2">
+<h3 data-number="17.5.2" class="anchored" data-anchor-id="residual-autocorrelation"><span class="header-section-number">17.5.2</span> Residual autocorrelation</h3>
 <p>When applicable:</p>
 <blockquote class="blockquote">
-<p>Within-subject residual dependence was modeled using a first-order <u>[AR(1)/CAR(1)]</u> correlation structure.</p>
+<p>Residual dependence within [Correlation Groups] was modeled using a first-order [AR(1)/CAR(1)] correlation structure.</p>
 </blockquote>
-<p>For CAR(1), the report may clarify:</p>
+<p>For CAR(1):</p>
 <blockquote class="blockquote">
-<p>Correlation was modeled as a function of the actual temporal distance between observations.</p>
+<p>Residual correlation was modeled as a function of the actual temporal distance between observations.</p>
 </blockquote>
 </section>
-<section id="heteroscedasticity" class="level3" data-number="17.5.2">
-<h3 data-number="17.5.2" class="anchored" data-anchor-id="heteroscedasticity"><span class="header-section-number">17.5.2</span> Heteroscedasticity</h3>
+<section id="heteroscedasticity" class="level3" data-number="17.5.3">
+<h3 data-number="17.5.3" class="anchored" data-anchor-id="heteroscedasticity"><span class="header-section-number">17.5.3</span> Heteroscedasticity</h3>
 <p>When applicable:</p>
 <blockquote class="blockquote">
 <p>Residual variance was modeled as a <u>[power/exponential/constant-plus-power]</u> function of the absolute fitted response.</p>
@@ -627,6 +638,12 @@ R Core Team. 2026. <em><span>R</span>: A Language and Environment for Statistica
 </div>
 <div id="ref-jamovi" class="csl-entry" role="listitem">
 The jamovi project. 2026. <em>Jamovi</em>. <a href="https://www.jamovi.org/">https://www.jamovi.org/</a>.
+</div>
+<div id="ref-tjorve2010" class="csl-entry" role="listitem">
+Tjørve, Even, and Kathleen M. C. Tjørve. 2010. <span>“A Unified Approach to the <span>Richards</span>-Model Family for Use in Growth Analyses: Why We Need Only Two Model Forms.”</span> <em>Journal of Theoretical Biology</em> 267 (3): 417–25. <a href="https://doi.org/10.1016/j.jtbi.2010.09.008">https://doi.org/10.1016/j.jtbi.2010.09.008</a>.
+</div>
+<div id="ref-tjorve2017" class="csl-entry" role="listitem">
+Tjørve, Kathleen M. C., and Even Tjørve. 2017. <span>“A Proposed Family of Unified Models for Sigmoidal Growth.”</span> <em>Ecological Modelling</em> 359: 117–27. <a href="https://doi.org/10.1016/j.ecolmodel.2017.05.008">https://doi.org/10.1016/j.ecolmodel.2017.05.008</a>.
 </div>
 </div>
 </section>

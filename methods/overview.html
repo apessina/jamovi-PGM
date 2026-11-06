@@ -96,6 +96,35 @@ div.csl-indent {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -445,8 +474,13 @@ div.csl-indent {
    
   <ul>
   <li><a href="#estimation-pathways" id="toc-estimation-pathways" class="nav-link active" data-scroll-target="#estimation-pathways"><span class="header-section-number">6.1</span> Estimation pathways</a></li>
-  <li><a href="#mean-variance-and-dependence" id="toc-mean-variance-and-dependence" class="nav-link" data-scroll-target="#mean-variance-and-dependence"><span class="header-section-number">6.2</span> Mean, variance, and dependence</a></li>
-  <li><a href="#maximum-likelihood" id="toc-maximum-likelihood" class="nav-link" data-scroll-target="#maximum-likelihood"><span class="header-section-number">6.3</span> Maximum likelihood</a></li>
+  <li><a href="#mean-structure" id="toc-mean-structure" class="nav-link" data-scroll-target="#mean-structure"><span class="header-section-number">6.2</span> Mean structure</a></li>
+  <li><a href="#fixed-effects" id="toc-fixed-effects" class="nav-link" data-scroll-target="#fixed-effects"><span class="header-section-number">6.3</span> Fixed effects</a></li>
+  <li><a href="#random-effects" id="toc-random-effects" class="nav-link" data-scroll-target="#random-effects"><span class="header-section-number">6.4</span> Random effects</a></li>
+  <li><a href="#residual-variance" id="toc-residual-variance" class="nav-link" data-scroll-target="#residual-variance"><span class="header-section-number">6.5</span> Residual variance</a></li>
+  <li><a href="#residual-correlation" id="toc-residual-correlation" class="nav-link" data-scroll-target="#residual-correlation"><span class="header-section-number">6.6</span> Residual correlation</a></li>
+  <li><a href="#mean-random-variance-and-correlation-components" id="toc-mean-random-variance-and-correlation-components" class="nav-link" data-scroll-target="#mean-random-variance-and-correlation-components"><span class="header-section-number">6.7</span> Mean, random, variance, and correlation components</a></li>
+  <li><a href="#maximum-likelihood" id="toc-maximum-likelihood" class="nav-link" data-scroll-target="#maximum-likelihood"><span class="header-section-number">6.8</span> Maximum likelihood</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/apessina/jamovi-PGM/edit/main/methods/overview.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/apessina/jamovi-PGM/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -473,53 +507,103 @@ div.csl-indent {
 </header>
 
 
-<p>PGM selects the estimation framework according to the structure of the data and the analysis options.</p>
+<p>PGM selects the final estimation framework according to the requested fixed effects, random effects, residual variance function, and residual correlation structure.</p>
 <section id="estimation-pathways" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="estimation-pathways"><span class="header-section-number">6.1</span> Estimation pathways</h2>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;">Subject identifier</th>
-<th style="text-align: center;">Residual variance</th>
-<th style="text-align: left;">Estimation framework</th>
+<th style="text-align: center;">Random effects</th>
+<th style="text-align: center;">Fixed effects / variance / correlation</th>
+<th style="text-align: left;">Final framework</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: center;">No</td>
-<td style="text-align: center;">Constant</td>
-<td style="text-align: left;">Nonlinear least squares</td>
+<td style="text-align: center;">None</td>
+<td style="text-align: left;">Nonlinear least squares (NLS)</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">No</td>
-<td style="text-align: center;">Modeled</td>
-<td style="text-align: left;">Generalized nonlinear least squares</td>
+<td style="text-align: center;">Any selected</td>
+<td style="text-align: left;">Generalized nonlinear least squares (GNLS)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">Yes</td>
-<td style="text-align: center;">Any available option</td>
-<td style="text-align: left;">Nonlinear mixed-effects model</td>
+<td style="text-align: center;">Any</td>
+<td style="text-align: left;">Nonlinear mixed-effects model (NLME)</td>
 </tr>
 </tbody>
 </table>
-<p>All estimation pathways begin with an initial nonlinear fit using the Levenberg–Marquardt algorithm <span class="citation" data-cites="nlsLM">(<a href="../references.html#ref-nlsLM" role="doc-biblioref">Elzhov et al. 2023</a>)</span>.</p>
-<p>When a residual variance function is selected without a subject identifier, the initial estimates are used to initialize a generalized nonlinear least-squares model <span class="citation" data-cites="nlme">(<a href="../references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span>.</p>
-<p>When a subject identifier is selected, the initial estimates are used to initialize a nonlinear mixed-effects model <span class="citation" data-cites="nlme">(<a href="../references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span>.</p>
+<p>All pathways begin with an initial nonlinear fit using the Levenberg–Marquardt algorithm <span class="citation" data-cites="nlsLM">(<a href="../references.html#ref-nlsLM" role="doc-biblioref">Elzhov et al. 2023</a>)</span>.</p>
+<p>The initial fit provides starting values for the more general GNLS or NLME specification when these are required.</p>
 </section>
-<section id="mean-variance-and-dependence" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="mean-variance-and-dependence"><span class="header-section-number">6.2</span> Mean, variance, and dependence</h2>
-<p>The complete statistical specification may contain three components:</p>
+<section id="mean-structure" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="mean-structure"><span class="header-section-number">6.2</span> Mean structure</h2>
+<p>The mean structure consists of:</p>
 <ol type="1">
-<li><strong>Mean structure:</strong> the selected parametric growth equation;</li>
-<li><strong>Variance structure:</strong> the relationship between residual variance and fitted response;</li>
-<li><strong>Dependence structure:</strong> random effects and, optionally, residual autocorrelation.</li>
+<li>the selected Unified growth equation;</li>
+<li>the selected <code>Ti</code> or <code>W0</code> parameterization;</li>
+<li>the optional fixed asymptote;</li>
+<li>the fixed-effects formula assigned to each estimated growth parameter.</li>
 </ol>
-<p>These components address different features of the data and should not be treated as interchangeable.</p>
+<p>For example, different predictor structures may be specified for <span class="math inline">\(A\)</span>, <span class="math inline">\(K\)</span>, <span class="math inline">\(T_i\)</span> or <span class="math inline">\(W_0\)</span>, and <span class="math inline">\(d\)</span>.</p>
 </section>
-<section id="maximum-likelihood" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="maximum-likelihood"><span class="header-section-number">6.3</span> Maximum likelihood</h2>
+<section id="fixed-effects" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="fixed-effects"><span class="header-section-number">6.3</span> Fixed effects</h2>
+<p>Fixed effects represent systematic changes in growth parameters.</p>
+<p>Each estimated structural parameter has its own fixed-effects formula.</p>
+<p>Categorical predictors, continuous predictors, and interaction terms are supported.</p>
+<p>When no fixed effects are assigned to a parameter, that parameter is represented by an intercept-only model.</p>
+</section>
+<section id="random-effects" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="random-effects"><span class="header-section-number">6.4</span> Random effects</h2>
+<p>Random effects represent persistent differences in growth parameters among grouping units.</p>
+<p>Random grouping terms are assigned separately to the structural parameters.</p>
+<p>When at least one random effect is specified, PGM fits the model using <code>nlme</code> with maximum likelihood <span class="citation" data-cites="nlme">(<a href="../references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span>.</p>
+<p>The current implementation uses diagonal covariance matrices within each random grouping level.</p>
+</section>
+<section id="residual-variance" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="residual-variance"><span class="header-section-number">6.5</span> Residual variance</h2>
+<p>Residual heteroscedasticity may be represented using:</p>
+<ul>
+<li>power;</li>
+<li>exponential;</li>
+<li>constant-plus-power</li>
+</ul>
+<p>variance functions.</p>
+</section>
+<section id="residual-correlation" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="residual-correlation"><span class="header-section-number">6.6</span> Residual correlation</h2>
+<p>Residual serial dependence may be represented using:</p>
+<ul>
+<li>discrete AR(1);</li>
+<li>continuous-time CAR(1).</li>
+</ul>
+<p>Correlation Groups define the hierarchy within which residual correlation is evaluated.</p>
+<p>Residual correlation may be used with GNLS or NLME models.</p>
+</section>
+<section id="mean-random-variance-and-correlation-components" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="mean-random-variance-and-correlation-components"><span class="header-section-number">6.7</span> Mean, random, variance, and correlation components</h2>
+<p>These structures address different features of the data:</p>
+<ul>
+<li><strong>fixed effects</strong> represent systematic changes in the expected growth parameters;</li>
+<li><strong>random effects</strong> represent persistent variation among grouping units;</li>
+<li><strong>variance functions</strong> represent changes in residual dispersion;</li>
+<li><strong>correlation structures</strong> represent dependence among residual deviations.</li>
+</ul>
+<p>They are complementary and should not be treated as interchangeable.</p>
+</section>
+<section id="maximum-likelihood" class="level2" data-number="6.8">
+<h2 data-number="6.8" class="anchored" data-anchor-id="maximum-likelihood"><span class="header-section-number">6.8</span> Maximum likelihood</h2>
 <p>Nonlinear mixed-effects models in PGM are estimated using maximum likelihood.</p>
-<p>This facilitates comparisons between nested models with different fixed effects, provided that the models use the same response, observations, and likelihood framework.</p>
+<p>Likelihood-based comparisons should only be made between models fitted to the same response observations and under compatible likelihood definitions.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">

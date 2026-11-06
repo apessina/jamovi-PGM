@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -77,6 +96,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -427,17 +475,20 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#example-datasets" id="toc-example-datasets" class="nav-link active" data-scroll-target="#example-datasets"><span class="header-section-number">4.1</span> Example datasets</a></li>
   <li><a href="#basic-structure" id="toc-basic-structure" class="nav-link" data-scroll-target="#basic-structure"><span class="header-section-number">4.2</span> Basic structure</a></li>
-  <li><a href="#cross-sectional-structure" id="toc-cross-sectional-structure" class="nav-link" data-scroll-target="#cross-sectional-structure"><span class="header-section-number">4.3</span> Cross-sectional structure</a></li>
-  <li><a href="#longitudinal-structure" id="toc-longitudinal-structure" class="nav-link" data-scroll-target="#longitudinal-structure"><span class="header-section-number">4.4</span> Longitudinal structure</a></li>
+  <li><a href="#simple-structure" id="toc-simple-structure" class="nav-link" data-scroll-target="#simple-structure"><span class="header-section-number">4.3</span> Simple structure</a></li>
+  <li><a href="#repeated-measures-structure" id="toc-repeated-measures-structure" class="nav-link" data-scroll-target="#repeated-measures-structure"><span class="header-section-number">4.4</span> Repeated-measures structure</a></li>
   <li><a href="#variable-requirements" id="toc-variable-requirements" class="nav-link" data-scroll-target="#variable-requirements"><span class="header-section-number">4.5</span> Variable requirements</a>
   <ul class="collapse">
   <li><a href="#response" id="toc-response" class="nav-link" data-scroll-target="#response"><span class="header-section-number">4.5.1</span> Response</a></li>
   <li><a href="#time" id="toc-time" class="nav-link" data-scroll-target="#time"><span class="header-section-number">4.5.2</span> Time</a></li>
-  <li><a href="#subject-identifier" id="toc-subject-identifier" class="nav-link" data-scroll-target="#subject-identifier"><span class="header-section-number">4.5.3</span> Subject identifier</a></li>
+  <li><a href="#fixed-effect-predictors" id="toc-fixed-effect-predictors" class="nav-link" data-scroll-target="#fixed-effect-predictors"><span class="header-section-number">4.5.3</span> Fixed-effect predictors</a></li>
+  <li><a href="#random-effects-grouping-variables" id="toc-random-effects-grouping-variables" class="nav-link" data-scroll-target="#random-effects-grouping-variables"><span class="header-section-number">4.5.4</span> Random-effects grouping variables</a></li>
+  <li><a href="#correlation-groups" id="toc-correlation-groups" class="nav-link" data-scroll-target="#correlation-groups"><span class="header-section-number">4.5.5</span> Correlation Groups</a></li>
   </ul></li>
   <li><a href="#missing-observations" id="toc-missing-observations" class="nav-link" data-scroll-target="#missing-observations"><span class="header-section-number">4.6</span> Missing observations</a></li>
-  <li><a href="#measurement-schedule" id="toc-measurement-schedule" class="nav-link" data-scroll-target="#measurement-schedule"><span class="header-section-number">4.7</span> Measurement schedule</a></li>
-  <li><a href="#data-coverage" id="toc-data-coverage" class="nav-link" data-scroll-target="#data-coverage"><span class="header-section-number">4.8</span> Data coverage</a></li>
+  <li><a href="#factor-levels-and-estimability" id="toc-factor-levels-and-estimability" class="nav-link" data-scroll-target="#factor-levels-and-estimability"><span class="header-section-number">4.7</span> Factor levels and estimability</a></li>
+  <li><a href="#measurement-schedule" id="toc-measurement-schedule" class="nav-link" data-scroll-target="#measurement-schedule"><span class="header-section-number">4.8</span> Measurement schedule</a></li>
+  <li><a href="#data-coverage" id="toc-data-coverage" class="nav-link" data-scroll-target="#data-coverage"><span class="header-section-number">4.9</span> Data coverage</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/apessina/jamovi-PGM/edit/main/data.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/apessina/jamovi-PGM/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -467,24 +518,27 @@ ul.task-list li input[type="checkbox"] {
 <section id="example-datasets" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="example-datasets"><span class="header-section-number">4.1</span> Example datasets</h2>
 <p>The module includes example datasets derived from published studies for testing and learning purposes. References for the original data sources are provided with each dataset.</p>
-<p>They are available from the jamovi menu in the upper-left corner: <strong>Open → Data Library → PGM</strong>.</p>
+<p>They are available from the jamovi menu in the upper-left corner:</p>
+<p><strong>Open → Data Library → PGM</strong></p>
 </section>
 <section id="basic-structure" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="basic-structure"><span class="header-section-number">4.2</span> Basic structure</h2>
 <p>Data should be provided in long format, with one row per observation.</p>
-<p>At minimum, the dataset must contain:</p>
+<p>At minimum, an analysis requires:</p>
 <ul>
 <li>one numeric response variable;</li>
 <li>one numeric time or age variable.</li>
 </ul>
-<p>For longitudinal analyses, the dataset must also contain:</p>
+<p>Additional variables may be supplied as:</p>
 <ul>
-<li>one identification variable indicating the experimental unit or subject.</li>
+<li>fixed-effect predictors;</li>
+<li>random-effects grouping variables;</li>
+<li>residual-correlation grouping variables.</li>
 </ul>
 </section>
-<section id="cross-sectional-structure" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="cross-sectional-structure"><span class="header-section-number">4.3</span> Cross-sectional structure</h2>
-<p>A dataset without an identification variable is interpreted as containing independent observations.</p>
+<section id="simple-structure" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="simple-structure"><span class="header-section-number">4.3</span> Simple structure</h2>
+<p>For an ordinary nonlinear model:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -508,13 +562,14 @@ ul.task-list li input[type="checkbox"] {
 </tbody>
 </table>
 </section>
-<section id="longitudinal-structure" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="longitudinal-structure"><span class="header-section-number">4.4</span> Longitudinal structure</h2>
-<p>For repeated measurements, each subject must have a stable identifier.</p>
+<section id="repeated-measures-structure" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="repeated-measures-structure"><span class="header-section-number">4.4</span> Repeated-measures structure</h2>
+<p>For repeated measurements, each experimental unit should have a stable grouping identifier.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th style="text-align: left;">subject</th>
+<th style="text-align: left;">treatment</th>
 <th style="text-align: right;">time</th>
 <th style="text-align: right;">response</th>
 </tr>
@@ -522,72 +577,137 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">A01</td>
+<td style="text-align: left;">Control</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">12.4</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">A01</td>
+<td style="text-align: left;">Control</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">18.9</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">A01</td>
+<td style="text-align: left;">Control</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">27.5</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">A02</td>
+<td style="text-align: left;">Treated</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">11.8</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">A02</td>
+<td style="text-align: left;">Treated</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">19.7</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">A02</td>
+<td style="text-align: left;">Treated</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">29.1</td>
 </tr>
 </tbody>
 </table>
+<p>Here, <code>treatment</code> may be used as a fixed-effect predictor and <code>subject</code> as a random-effects or residual-correlation grouping variable.</p>
 </section>
 <section id="variable-requirements" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="variable-requirements"><span class="header-section-number">4.5</span> Variable requirements</h2>
 <section id="response" class="level3" data-number="4.5.1">
 <h3 data-number="4.5.1" class="anchored" data-anchor-id="response"><span class="header-section-number">4.5.1</span> Response</h3>
-<p>The response must be numeric and should represent a cumulative or monotonic biological growth process when a sigmoidal growth model is used.</p>
+<p>The response must be numeric and should represent a process compatible with the selected growth equation.</p>
+<p>Examples include body mass, length, concentration, plant height, biomass, or cumulative production.</p>
 </section>
 <section id="time" class="level3" data-number="4.5.2">
 <h3 data-number="4.5.2" class="anchored" data-anchor-id="time"><span class="header-section-number">4.5.2</span> Time</h3>
-<p>Time must be numeric. Examples include:</p>
+<p>Time must be numeric.</p>
+<p>Examples include:</p>
 <ul>
 <li>age in days;</li>
 <li>age in weeks;</li>
 <li>hours after inoculation;</li>
 <li>days after planting.</li>
 </ul>
-<p>The unit of time determines the unit of rate parameters and derivative quantities.</p>
+<p>The unit of time determines the numerical scale of time-dependent model parameters and derivative quantities.</p>
 </section>
-<section id="subject-identifier" class="level3" data-number="4.5.3">
-<h3 data-number="4.5.3" class="anchored" data-anchor-id="subject-identifier"><span class="header-section-number">4.5.3</span> Subject identifier</h3>
-<p>The subject identifier may be numeric or categorical. It is used to associate repeated observations with the same experimental unit.</p>
-<p>Selecting an identifier changes the statistical model from an <em>ordinary or generalized nonlinear model</em> to a <em>nonlinear mixed-effects model</em>.</p>
+<section id="fixed-effect-predictors" class="level3" data-number="4.5.3">
+<h3 data-number="4.5.3" class="anchored" data-anchor-id="fixed-effect-predictors"><span class="header-section-number">4.5.3</span> Fixed-effect predictors</h3>
+<p>Fixed effects represent systematic changes in one or more growth parameters.</p>
+<p>Predictors may be categorical or continuous.</p>
+<p>Categorical predictors must contain at least two observed levels in the data actually used for the fit. Interaction terms also require sufficient observations in the relevant combinations of predictor levels.</p>
+<p>For each growth parameter, the selected fixed-effect terms define a separate parameter model.</p>
+<p>For example,</p>
+<p><span class="math display">\[
+\log(K)
+=
+\beta_0+
+\beta_1 X+
+\beta_2 Z+
+\beta_3 XZ
+\]</span></p>
+<p>represents main effects of <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> and their interaction on the internally estimated <span class="math inline">\(K\)</span> parameter.</p>
+</section>
+<section id="random-effects-grouping-variables" class="level3" data-number="4.5.4">
+<h3 data-number="4.5.4" class="anchored" data-anchor-id="random-effects-grouping-variables"><span class="header-section-number">4.5.4</span> Random-effects grouping variables</h3>
+<p>Random-effects grouping variables identify units among which one or more growth parameters are allowed to vary.</p>
+<p>Examples include:</p>
+<ul>
+<li>subject;</li>
+<li>animal;</li>
+<li>nest;</li>
+<li>batch;</li>
+<li>experimental unit.</li>
+</ul>
+<p>Several grouping levels may be used when they form a nested hierarchy.</p>
+<p>For example, using the Imperial Shag dataset included with PGM <span class="citation" data-cites="svagelj2021">(<a href="references.html#ref-svagelj2021" role="doc-biblioref">Svagelj et al. 2021</a>)</span>:</p>
+<p><code>nestID</code><br>
+<code>chickID</code></p>
+<p>may represent chicks nested within nests when each chick belongs to one nest.</p>
+<p>Composite grouping terms may also be created explicitly. A term such as</p>
+<p><code>species:replicate</code></p>
+<p>represents the unique combinations of species and replicate.</p>
+<p>The current implementation requires a unique nested hierarchy. Crossed random-effects structures that cannot be represented as a unique nesting order are not supported.</p>
+</section>
+<section id="correlation-groups" class="level3" data-number="4.5.5">
+<h3 data-number="4.5.5" class="anchored" data-anchor-id="correlation-groups"><span class="header-section-number">4.5.5</span> Correlation Groups</h3>
+<p>Correlation Groups define the units within which an AR(1) or CAR(1) residual correlation structure is applied.</p>
+<p>When more than one variable is selected, they define an ordered grouping hierarchy from outer to inner level.</p>
+<p>For example:</p>
+<p><code>nestID / chickID</code></p>
+<p>models residual correlation within chicks nested in nests.</p>
+<p>Correlation Groups are conceptually distinct from random effects. They may coincide with random-effects groups, but they serve a different statistical purpose.</p>
 </section>
 </section>
 <section id="missing-observations" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="missing-observations"><span class="header-section-number">4.6</span> Missing observations</h2>
-<p>Rows containing missing values in variables required by a given analysis are excluded from that analysis.</p>
-<p>Different response variables may therefore be fitted using different numbers of observations.</p>
+<p>For each model setup, PGM uses complete observations for:</p>
+<ul>
+<li>the selected response;</li>
+<li>time;</li>
+<li>all selected fixed-effect predictors;</li>
+<li>all selected random-effects grouping variables;</li>
+<li>all selected Correlation Groups.</li>
+</ul>
+<p>Rows containing missing values in any required variable are excluded from that fit.</p>
+<p>This can be particularly important when predictors have structurally missing values. After complete-case filtering, a categorical predictor may be left with only one observed level, in which case its effect cannot be estimated.</p>
 </section>
-<section id="measurement-schedule" class="level2" data-number="4.7">
-<h2 data-number="4.7" class="anchored" data-anchor-id="measurement-schedule"><span class="header-section-number">4.7</span> Measurement schedule</h2>
-<p>For models using discrete AR(1) residual correlation, equally spaced observations are generally expected.</p>
-<p>For irregularly spaced measurements, continuous-time CAR(1) correlation is usually more appropriate.</p>
+<section id="factor-levels-and-estimability" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="factor-levels-and-estimability"><span class="header-section-number">4.7</span> Factor levels and estimability</h2>
+<p>Unused factor levels are removed before GNLS or NLME estimation.</p>
+<p>PGM checks whether categorical fixed-effect predictors retain at least two observed levels and whether the resulting fixed-effects design matrix has full column rank.</p>
+<p>Empty combinations of factor levels, redundant terms, or perfect collinearity may make a requested effect or interaction non-estimable.</p>
 </section>
-<section id="data-coverage" class="level2" data-number="4.8">
-<h2 data-number="4.8" class="anchored" data-anchor-id="data-coverage"><span class="header-section-number">4.8</span> Data coverage</h2>
+<section id="measurement-schedule" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="measurement-schedule"><span class="header-section-number">4.8</span> Measurement schedule</h2>
+<p>Discrete AR(1) correlation is most naturally used when observations follow an approximately equally spaced measurement schedule.</p>
+<p>For irregularly spaced measurements, continuous-time CAR(1) is generally more appropriate because correlation is modeled using the actual temporal distance.</p>
+</section>
+<section id="data-coverage" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="data-coverage"><span class="header-section-number">4.9</span> Data coverage</h2>
 <p>A nonlinear growth curve should ideally contain observations from the early, rapidly growing, and late portions of the trajectory.</p>
 <p>If the observed data do not adequately cover the upper part of the curve, the asymptotic parameter may be weakly identified and highly uncertain.</p>
 <p>Early or truncated datasets may produce:</p>
@@ -596,11 +716,17 @@ ul.task-list li input[type="checkbox"] {
 <li>strong parameter correlations;</li>
 <li>wide confidence intervals;</li>
 <li>implausible extrapolation;</li>
-<li><strong>convergence failures</strong>.</li>
+<li>convergence failures.</li>
 </ul>
-<p>Predictions beyond the observed time range should be treated cautiously, especially when the asymptotic phase is not well represented in the data.</p>
+<p>When the asymptote is scientifically known or deliberately constrained, PGM allows a positive fixed asymptotic value to be supplied in the Model Setup.</p>
+<p>Predictions beyond the observed time range should nevertheless be interpreted cautiously.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-svagelj2021" class="csl-entry" role="listitem">
+Svagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. <span>“Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.”</span> <em>Ibis</em> 163 (3): 1032–44. <a href="https://doi.org/10.1111/ibi.12920">https://doi.org/10.1111/ibi.12920</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->

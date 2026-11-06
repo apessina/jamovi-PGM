@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "PGM: Practical Growth Modeling for jamovi",
     "section": "",
-    "text": "0.1 Scope\nPGM — Practical Growth Models is a jamovi module for fitting, evaluating, and interpreting nonlinear growth curves.\nThe module provides tools for:\nPGM is intended for researchers analyzing longitudinal or cross-sectional growth data in animal science, plant science, microbiology, ecology, developmental biology, and related fields.\nThe documentation is divided into four main parts:",
+    "text": "0.1 Scope\nPGM — Practical Growth Modeling is a jamovi module for fitting, evaluating, and interpreting nonlinear biological growth curves.\nThe module implements the Unified family of sigmoidal growth models and provides tools for:\nPGM is intended for researchers analyzing longitudinal or cross-sectional growth data in animal science, plant science, microbiology, ecology, developmental biology, and related fields.\nThe documentation is divided into four main parts:",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
     ]
@@ -14,7 +14,7 @@
     "href": "index.html#scope",
     "title": "PGM: Practical Growth Modeling for jamovi",
     "section": "",
-    "text": "Getting started, covering installation, data organization, and a first analysis;\nMethods, describing the models, estimation procedures and analysis implemented in PGM;\nAcademic, providing reporting guidance and references.",
+    "text": "Getting started, covering installation, data organization, and a first analysis;\nMethods, describing the models, estimation procedures, effects structures, and diagnostics implemented in PGM;\nTutorials, providing examples and supporting resources;\nAcademic reporting, providing guidance for reporting PGM analyses and citing the software.",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
     ]
@@ -24,7 +24,7 @@
     "href": "index.html#important-considerations",
     "title": "PGM: Practical Growth Modeling for jamovi",
     "section": "0.2 Important considerations",
-    "text": "0.2 Important considerations\nPGM assists with model estimation and interpretation but does not replace statistical judgment. Model selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, residual variance, dependence structure, parameter plausibility, and residual diagnostics should be considered jointly.",
+    "text": "0.2 Important considerations\nPGM assists with model specification, estimation, and interpretation but does not replace statistical judgment.\nModel selection should not be based on a single goodness-of-fit statistic. The adequacy of the mean function, fixed-effects structure, random-effects structure, residual variance, residual dependence, parameter plausibility, data coverage, and residual diagnostics should be considered jointly.\nComplex fixed-effect interactions and random-effects structures also require adequate replication. PGM checks several basic estimability conditions, but a model that converges is not necessarily scientifically appropriate.",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
     ]
@@ -34,7 +34,7 @@
     "href": "index.html#acknowledgments-and-contact",
     "title": "PGM: Practical Growth Modeling for jamovi",
     "section": "0.3 Acknowledgments and Contact",
-    "text": "0.3 Acknowledgments and Contact\nThis project is being developed at the School of Veterinary Medicine, São Paulo State University (UNESP), Araçatuba, São Paulo, Brazil.\nWe extend our special thanks to the jamovi development team, particularly Jonathon Love, for his support, as well as to all users and testers who have contributed to the development of this project.\nComments and feedback are welcome. Please contact us if you identify any errors, have suggestions or questions, or require methodological support for academic research.\nThe development team can be reached at andre.pessina@unesp.br\nCitation instructions are provided in the chapter on academic reporting.",
+    "text": "0.3 Acknowledgments and Contact\nThis project is being developed at the School of Veterinary Medicine, São Paulo State University (UNESP), Araçatuba, São Paulo, Brazil.\nWe extend our special thanks to the jamovi development team, particularly Jonathon Love, for his support, as well as to all users and testers who have contributed to the development of this project.\nComments and feedback are welcome. Please contact us if you identify any errors, have suggestions or questions, or require methodological support for academic research.\nThe development team can be reached at andre.pessina@unesp.br.\nCitation instructions are provided in the chapter on academic reporting.",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Index</span>"
     ]
@@ -64,7 +64,7 @@
     "href": "introduction.html#statistical-challenges",
     "title": "2  Introduction",
     "section": "2.2 Statistical challenges",
-    "text": "2.2 Statistical challenges\nBiological growth data frequently present characteristics that are not adequately represented by ordinary nonlinear least squares, including:\n\nincreasing or decreasing residual variability;\nrepeated observations from the same experimental unit;\nbetween-individual variation in growth parameters;\nserial correlation between observations;\nincomplete or irregular measurement schedules.\n\nPGM therefore includes variance functions, nonlinear mixed-effects models, and residual correlation structures.",
+    "text": "2.2 Statistical challenges\nBiological growth data frequently present characteristics that are not adequately represented by ordinary nonlinear least squares, including:\n\nincreasing or decreasing residual variability;\nsystematic differences in growth parameters among treatments, sexes, populations, or other predictors;\nrepeated observations from the same experimental unit;\nbetween-unit variation in individual growth parameters;\nhierarchical sampling structures;\nserial correlation between observations;\nincomplete or irregular measurement schedules.\n\nPGM therefore combines Unified growth equations with parameter-specific fixed effects, nonlinear mixed effects, residual variance functions, and residual correlation structures.\nThese components have distinct interpretations. Fixed effects describe systematic changes in growth parameters, random effects describe persistent variation among grouping units, and residual correlation describes dependence remaining between observation-level deviations.",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introduction</span>"
     ]
@@ -94,7 +94,7 @@
     "href": "installation.html#installing-pgm-from-the-jamovi-library",
     "title": "3  Installation",
     "section": "3.2 Installing PGM from the jamovi library",
-    "text": "3.2 Installing PGM from the jamovi library\nPGM is available in the official jamovi library:\n\nOpen jamovi.\nSelect the Modules icon, in the upper-right of Analysis menu.\nOpen the jamovi module library.\nSearch for PGM.\nSelect Install.\n\nAfter installation, PGM will appear in the main analysis ribbon.",
+    "text": "3.2 Installing PGM from the jamovi library\nPGM is available in the official jamovi library:\n\nOpen jamovi.\nSelect the Modules icon, in the upper-right of Analysis menu.\nOpen the jamovi module library.\nSearch for PGM.\nSelect Install.\n\nAfter installation, “Growth” option will appear in the main analysis ribbon.",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Installation</span>"
     ]
@@ -144,7 +144,7 @@
     "href": "data.html",
     "title": "4  Data preparation",
     "section": "",
-    "text": "4.1 Example datasets\nThe module includes example datasets derived from published studies for testing and learning purposes. References for the original data sources are provided with each dataset.\nThey are available from the jamovi menu in the upper-left corner: Open → Data Library → PGM.",
+    "text": "4.1 Example datasets\nThe module includes example datasets derived from published studies for testing and learning purposes. References for the original data sources are provided with each dataset.\nThey are available from the jamovi menu in the upper-left corner:\nOpen → Data Library → PGM",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
@@ -154,27 +154,27 @@
     "href": "data.html#basic-structure",
     "title": "4  Data preparation",
     "section": "4.2 Basic structure",
-    "text": "4.2 Basic structure\nData should be provided in long format, with one row per observation.\nAt minimum, the dataset must contain:\n\none numeric response variable;\none numeric time or age variable.\n\nFor longitudinal analyses, the dataset must also contain:\n\none identification variable indicating the experimental unit or subject.",
+    "text": "4.2 Basic structure\nData should be provided in long format, with one row per observation.\nAt minimum, an analysis requires:\n\none numeric response variable;\none numeric time or age variable.\n\nAdditional variables may be supplied as:\n\nfixed-effect predictors;\nrandom-effects grouping variables;\nresidual-correlation grouping variables.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
   },
   {
-    "objectID": "data.html#cross-sectional-structure",
-    "href": "data.html#cross-sectional-structure",
+    "objectID": "data.html#simple-structure",
+    "href": "data.html#simple-structure",
     "title": "4  Data preparation",
-    "section": "4.3 Cross-sectional structure",
-    "text": "4.3 Cross-sectional structure\nA dataset without an identification variable is interpreted as containing independent observations.\n\n\n\ntime\nresponse\n\n\n\n\n1\n12.4\n\n\n2\n18.9\n\n\n3\n27.5",
+    "section": "4.3 Simple structure",
+    "text": "4.3 Simple structure\nFor an ordinary nonlinear model:\n\n\n\ntime\nresponse\n\n\n\n\n1\n12.4\n\n\n2\n18.9\n\n\n3\n27.5",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
   },
   {
-    "objectID": "data.html#longitudinal-structure",
-    "href": "data.html#longitudinal-structure",
+    "objectID": "data.html#repeated-measures-structure",
+    "href": "data.html#repeated-measures-structure",
     "title": "4  Data preparation",
-    "section": "4.4 Longitudinal structure",
-    "text": "4.4 Longitudinal structure\nFor repeated measurements, each subject must have a stable identifier.\n\n\n\nsubject\ntime\nresponse\n\n\n\n\nA01\n1\n12.4\n\n\nA01\n2\n18.9\n\n\nA01\n3\n27.5\n\n\nA02\n1\n11.8\n\n\nA02\n2\n19.7\n\n\nA02\n3\n29.1",
+    "section": "4.4 Repeated-measures structure",
+    "text": "4.4 Repeated-measures structure\nFor repeated measurements, each experimental unit should have a stable grouping identifier.\n\n\n\nsubject\ntreatment\ntime\nresponse\n\n\n\n\nA01\nControl\n1\n12.4\n\n\nA01\nControl\n2\n18.9\n\n\nA01\nControl\n3\n27.5\n\n\nA02\nTreated\n1\n11.8\n\n\nA02\nTreated\n2\n19.7\n\n\nA02\nTreated\n3\n29.1\n\n\n\nHere, treatment may be used as a fixed-effect predictor and subject as a random-effects or residual-correlation grouping variable.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
@@ -184,7 +184,7 @@
     "href": "data.html#variable-requirements",
     "title": "4  Data preparation",
     "section": "4.5 Variable requirements",
-    "text": "4.5 Variable requirements\n\n4.5.1 Response\nThe response must be numeric and should represent a cumulative or monotonic biological growth process when a sigmoidal growth model is used.\n\n\n4.5.2 Time\nTime must be numeric. Examples include:\n\nage in days;\nage in weeks;\nhours after inoculation;\ndays after planting.\n\nThe unit of time determines the unit of rate parameters and derivative quantities.\n\n\n4.5.3 Subject identifier\nThe subject identifier may be numeric or categorical. It is used to associate repeated observations with the same experimental unit.\nSelecting an identifier changes the statistical model from an ordinary or generalized nonlinear model to a nonlinear mixed-effects model.",
+    "text": "4.5 Variable requirements\n\n4.5.1 Response\nThe response must be numeric and should represent a process compatible with the selected growth equation.\nExamples include body mass, length, concentration, plant height, biomass, or cumulative production.\n\n\n4.5.2 Time\nTime must be numeric.\nExamples include:\n\nage in days;\nage in weeks;\nhours after inoculation;\ndays after planting.\n\nThe unit of time determines the numerical scale of time-dependent model parameters and derivative quantities.\n\n\n4.5.3 Fixed-effect predictors\nFixed effects represent systematic changes in one or more growth parameters.\nPredictors may be categorical or continuous.\nCategorical predictors must contain at least two observed levels in the data actually used for the fit. Interaction terms also require sufficient observations in the relevant combinations of predictor levels.\nFor each growth parameter, the selected fixed-effect terms define a separate parameter model.\nFor example,\n\\[\n\\log(K)\n=\n\\beta_0+\n\\beta_1 X+\n\\beta_2 Z+\n\\beta_3 XZ\n\\]\nrepresents main effects of \\(X\\) and \\(Z\\) and their interaction on the internally estimated \\(K\\) parameter.\n\n\n4.5.4 Random-effects grouping variables\nRandom-effects grouping variables identify units among which one or more growth parameters are allowed to vary.\nExamples include:\n\nsubject;\nanimal;\nnest;\nbatch;\nexperimental unit.\n\nSeveral grouping levels may be used when they form a nested hierarchy.\nFor example, using the Imperial Shag dataset included with PGM (Svagelj et al. 2021):\nnestID\nchickID\nmay represent chicks nested within nests when each chick belongs to one nest.\nComposite grouping terms may also be created explicitly. A term such as\nspecies:replicate\nrepresents the unique combinations of species and replicate.\nThe current implementation requires a unique nested hierarchy. Crossed random-effects structures that cannot be represented as a unique nesting order are not supported.\n\n\n4.5.5 Correlation Groups\nCorrelation Groups define the units within which an AR(1) or CAR(1) residual correlation structure is applied.\nWhen more than one variable is selected, they define an ordered grouping hierarchy from outer to inner level.\nFor example:\nnestID / chickID\nmodels residual correlation within chicks nested in nests.\nCorrelation Groups are conceptually distinct from random effects. They may coincide with random-effects groups, but they serve a different statistical purpose.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
@@ -194,7 +194,17 @@
     "href": "data.html#missing-observations",
     "title": "4  Data preparation",
     "section": "4.6 Missing observations",
-    "text": "4.6 Missing observations\nRows containing missing values in variables required by a given analysis are excluded from that analysis.\nDifferent response variables may therefore be fitted using different numbers of observations.",
+    "text": "4.6 Missing observations\nFor each model setup, PGM uses complete observations for:\n\nthe selected response;\ntime;\nall selected fixed-effect predictors;\nall selected random-effects grouping variables;\nall selected Correlation Groups.\n\nRows containing missing values in any required variable are excluded from that fit.\nThis can be particularly important when predictors have structurally missing values. After complete-case filtering, a categorical predictor may be left with only one observed level, in which case its effect cannot be estimated.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
+    ]
+  },
+  {
+    "objectID": "data.html#factor-levels-and-estimability",
+    "href": "data.html#factor-levels-and-estimability",
+    "title": "4  Data preparation",
+    "section": "4.7 Factor levels and estimability",
+    "text": "4.7 Factor levels and estimability\nUnused factor levels are removed before GNLS or NLME estimation.\nPGM checks whether categorical fixed-effect predictors retain at least two observed levels and whether the resulting fixed-effects design matrix has full column rank.\nEmpty combinations of factor levels, redundant terms, or perfect collinearity may make a requested effect or interaction non-estimable.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
@@ -203,8 +213,8 @@
     "objectID": "data.html#measurement-schedule",
     "href": "data.html#measurement-schedule",
     "title": "4  Data preparation",
-    "section": "4.7 Measurement schedule",
-    "text": "4.7 Measurement schedule\nFor models using discrete AR(1) residual correlation, equally spaced observations are generally expected.\nFor irregularly spaced measurements, continuous-time CAR(1) correlation is usually more appropriate.",
+    "section": "4.8 Measurement schedule",
+    "text": "4.8 Measurement schedule\nDiscrete AR(1) correlation is most naturally used when observations follow an approximately equally spaced measurement schedule.\nFor irregularly spaced measurements, continuous-time CAR(1) is generally more appropriate because correlation is modeled using the actual temporal distance.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
@@ -213,8 +223,8 @@
     "objectID": "data.html#data-coverage",
     "href": "data.html#data-coverage",
     "title": "4  Data preparation",
-    "section": "4.8 Data coverage",
-    "text": "4.8 Data coverage\nA nonlinear growth curve should ideally contain observations from the early, rapidly growing, and late portions of the trajectory.\nIf the observed data do not adequately cover the upper part of the curve, the asymptotic parameter may be weakly identified and highly uncertain.\nEarly or truncated datasets may produce:\n\nunstable asymptotes and geometric descriptors;\nstrong parameter correlations;\nwide confidence intervals;\nimplausible extrapolation;\nconvergence failures.\n\nPredictions beyond the observed time range should be treated cautiously, especially when the asymptotic phase is not well represented in the data.",
+    "section": "4.9 Data coverage",
+    "text": "4.9 Data coverage\nA nonlinear growth curve should ideally contain observations from the early, rapidly growing, and late portions of the trajectory.\nIf the observed data do not adequately cover the upper part of the curve, the asymptotic parameter may be weakly identified and highly uncertain.\nEarly or truncated datasets may produce:\n\nunstable asymptotes and geometric descriptors;\nstrong parameter correlations;\nwide confidence intervals;\nimplausible extrapolation;\nconvergence failures.\n\nWhen the asymptote is scientifically known or deliberately constrained, PGM allows a positive fixed asymptotic value to be supplied in the Model Setup.\nPredictions beyond the observed time range should nevertheless be interpreted cautiously.\n\n\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. “Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.” Ibis 163 (3): 1032–44. https://doi.org/10.1111/ibi.12920.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Data preparation</span>"
     ]
@@ -224,7 +234,7 @@
     "href": "first-analysis.html",
     "title": "5  Running an analysis",
     "section": "",
-    "text": "5.1 Opening the analysis\nTo begin:\nEach modeling setup defines the response variable, growth model, residual variance structure, and residual correlation structure to be used in that analysis.",
+    "text": "5.1 Opening the analysis\nTo begin:\nA model setup defines the response variable, growth model, residual variance structure, residual correlation structure, and optional fixed asymptote.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
@@ -234,57 +244,97 @@
     "href": "first-analysis.html#opening-the-analysis",
     "title": "5  Running an analysis",
     "section": "",
-    "text": "Open the dataset in jamovi.\nSelect PGM from the analysis ribbon.\nOpen the growth-curve analysis.\nAssign the time variable.\nAssign one or more response variables.\nAdd a modeling setup for each response-model combination.",
+    "text": "Open the dataset in jamovi.\nSelect PGM from the analysis ribbon.\nOpen Growth Curve Modeling.\nAssign one or more Dependent Variables.\nAssign the numeric Time Variable.\nConfigure one or more rows in Model Setup.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
   },
   {
-    "objectID": "first-analysis.html#selecting-the-response",
-    "href": "first-analysis.html#selecting-the-response",
+    "objectID": "first-analysis.html#model-parameterization",
+    "href": "first-analysis.html#model-parameterization",
     "title": "5  Running an analysis",
-    "section": "5.2 Selecting the response",
-    "text": "5.2 Selecting the response\nThe response should be numeric and should represent a process compatible with the selected growth equation.\nExamples include: body weight; organism size; microbial concentration; plant height; cumulative production; other continuous responses measured over time.\nA sigmoidal growth model should not be selected solely because the observations increase over time. The observed trajectory should also exhibit a biologically and statistically plausible sigmoidal form.",
+    "section": "5.2 Model parameterization",
+    "text": "5.2 Model parameterization\nPGM provides two location parameterizations for the Unified growth-model family.\n\n5.2.1 Ti\nThe Ti parameterization reports the time of the inflection point.\nThis form is useful when the timing of maximum growth rate has a direct biological interpretation.\n\n\n5.2.2 W0\nThe W0 parameterization reports the fitted response at \\(t=0\\).\nThis form may be useful when the initial value has a direct biological interpretation or when comparison at a common temporal origin is important.\nThe parameterization is selected globally for the analysis and the corresponding parameter label is updated in the Fixed Effects and Random Effects sections.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
   },
   {
-    "objectID": "first-analysis.html#selecting-time",
-    "href": "first-analysis.html#selecting-time",
+    "objectID": "first-analysis.html#selecting-a-growth-model",
+    "href": "first-analysis.html#selecting-a-growth-model",
     "title": "5  Running an analysis",
-    "section": "5.3 Selecting time",
-    "text": "5.3 Selecting time\nThe time variable must be numeric.\nIts measurement unit determines the units of:\n\nrate parameters;\ninflection time;\ncritical-point locations;\nderivative-based descriptors;\nautocorrelation distances.\n\nChanging time from days to weeks changes the numerical values of time-dependent parameters.",
+    "section": "5.3 Selecting a growth model",
+    "text": "5.3 Selecting a growth model\nEach setup may use one of the following Unified models:\n\nRichards;\nGompertz;\nLogistic;\nvon Bertalanffy.\n\nThe three-parameter models are special cases of the Unified-Richards family and retain the same interpretation of the common parameters.\nRichards additionally estimates the shape parameter \\(d\\).\nDifferent equations should be compared using model adequacy, biological plausibility, convergence, and residual diagnostics rather than fit statistics alone.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
   },
   {
-    "objectID": "first-analysis.html#subject-identifier",
-    "href": "first-analysis.html#subject-identifier",
+    "objectID": "first-analysis.html#fixed-asymptote",
+    "href": "first-analysis.html#fixed-asymptote",
     "title": "5  Running an analysis",
-    "section": "5.4 Subject identifier",
-    "text": "5.4 Subject identifier\nFor repeated measurements, assign a subject or experimental-unit identifier.\nWhen no identifier is supplied, observations are treated as independent.\nWhen an identifier is supplied, PGM fits a nonlinear mixed-effects model in which repeated observations are grouped within subjects.\nThe identifier should represent the unit that generates the repeated trajectory, such as: animal; plant; patient; experimental vessel; microbial batch; plot.\nTreatment group, sex, breed, or experimental condition should not be used as the subject identifier unless each category genuinely represents one repeated observational unit.",
+    "section": "5.4 Fixed asymptote",
+    "text": "5.4 Fixed asymptote\nA positive value may be entered in the Asymptote column of a Model Setup.\nWhen supplied, \\(A\\) is treated as fixed rather than estimated for that setup.\nThis may be useful when the upper asymptote is externally known or when incomplete late-stage data make free asymptote estimation scientifically inappropriate.\nBecause \\(A\\) is then not an estimated parameter, fixed or random effects assigned to \\(A\\) are not fitted for that setup.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
   },
   {
-    "objectID": "first-analysis.html#selecting-a-model",
-    "href": "first-analysis.html#selecting-a-model",
+    "objectID": "first-analysis.html#residual-variance",
+    "href": "first-analysis.html#residual-variance",
     "title": "5  Running an analysis",
-    "section": "5.5 Selecting a model",
-    "text": "5.5 Selecting a model\nChoose the growth equation according to: the expected trajectory shape; parameter interpretability; biological context; data coverage; convergence; residual diagnostics; comparative model performance.\nDifferent equations may fit similarly while producing parameters with different meanings.\nThe current version fits only the 4-parameter Richards, that should cover the shapes of both Gompertz and Logistic models.",
+    "section": "5.5 Residual variance",
+    "text": "5.5 Residual variance\nThe Variance column controls the residual variance function.\nAvailable options are:\n\nNone;\nPower;\nExponential;\nConstant-plus-power.\n\nUse a variance function when residual spread changes systematically with the fitted response.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
   },
   {
-    "objectID": "first-analysis.html#selecting-a-residual-variance-structure",
-    "href": "first-analysis.html#selecting-a-residual-variance-structure",
+    "objectID": "first-analysis.html#residual-correlation",
+    "href": "first-analysis.html#residual-correlation",
     "title": "5  Running an analysis",
-    "section": "5.6 Selecting a residual variance structure",
-    "text": "5.6 Selecting a residual variance structure\nUse a variance function when residual spread changes systematically with the fitted response.\nAvailable structures may include:\n\nconstant variance;\npower variance;\nexponential variance;\nconstant-plus-power variance.\n\nThe selection should be supported by residual diagnostics and comparative model evaluation.\nSelecting residual correlation\nResidual correlation structures are available for longitudinal analyses.\nUse:\nAR(1) when measurements are approximately equally spaced and correlation is interpreted by measurement lag; CAR(1) when measurement intervals are irregular and correlation depends on the actual temporal distance.\nRandom effects and residual autocorrelation represent different dependence mechanisms and may be included simultaneously.",
+    "section": "5.6 Residual correlation",
+    "text": "5.6 Residual correlation\nThe Correlation column controls residual serial dependence.\nAvailable options are:\n\nNone;\nAR(1);\nCAR(1).\n\nWhen AR(1) or CAR(1) is selected, one or more variables must be assigned under Correlation Groups.\nAR(1) is most appropriate for approximately equally spaced repeated observations.\nCAR(1) uses the actual temporal distance and is generally preferable for irregularly spaced observations.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#fixed-effects",
+    "href": "first-analysis.html#fixed-effects",
+    "title": "5  Running an analysis",
+    "section": "5.7 Fixed Effects",
+    "text": "5.7 Fixed Effects\nThe Fixed Effects section assigns predictors to individual growth parameters.\nFor example, the terms\nsex\ntreatment\nsex:treatment\nassigned to \\(A\\) specify:\n\\[\n\\log(A)\n=\n\\beta_0+\n\\beta_1\\,sex+\n\\beta_2\\,treatment+\n\\beta_3\\,sex\\times treatment.\n\\]\nThe exact internal parameter scale depends on the selected growth parameter.\nMain effects and interaction terms are specified explicitly. An interaction does not replace its component main effects unless that is the intended model.\nThe same fixed-effect specification is applied to each model setup in which the corresponding structural parameter is estimated.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#random-effects",
+    "href": "first-analysis.html#random-effects",
+    "title": "5  Running an analysis",
+    "section": "5.8 Random Effects",
+    "text": "5.8 Random Effects\nThe Random Effects section assigns grouping terms to individual growth parameters.\nFor example, the Imperial Shag dataset distributed with PGM contains chick and nest identifiers (Svagelj et al. 2021):\nA: chickID\nallows the asymptotic parameter to vary among chicks.\nDifferent growth parameters may receive different random grouping structures.\nMultiple nested levels are also supported. For example:\nnestID\nchickID\nmay represent chicks nested within nests when the data support that hierarchy.\nA composite term such as\nspecies:replicate\ncreates a grouping factor from the unique combinations of its components.\nRandom-effect interaction terms therefore describe combined grouping units; they are not fixed-effect interactions and are not random slopes for predictor variables.\nWithin each grouping level, PGM currently uses a diagonal covariance structure for multiple random growth parameters.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#correlation-groups",
+    "href": "first-analysis.html#correlation-groups",
+    "title": "5  Running an analysis",
+    "section": "5.9 Correlation Groups",
+    "text": "5.9 Correlation Groups\nCorrelation Groups define the grouping hierarchy for residual autocorrelation.\nFor example:\nnestID\nchickID\ncorresponds to an outer-to-inner hierarchy equivalent to nestID/chickID.\nWhen random effects are also present, PGM reconciles their hierarchy with the selected correlation groups and stops with an informative error if the structures are incompatible.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
+    ]
+  },
+  {
+    "objectID": "first-analysis.html#estimation-pathway",
+    "href": "first-analysis.html#estimation-pathway",
+    "title": "5  Running an analysis",
+    "section": "5.10 Estimation pathway",
+    "text": "5.10 Estimation pathway\nPGM always starts from a Levenberg–Marquardt nonlinear fit.\nThe final estimator then depends on the requested model:\n\nordinary NLS when no fixed effects, random effects, variance function, or residual correlation are requested;\nGNLS when fixed effects and/or residual variance/correlation structures are requested without random effects;\nNLME when at least one random effect is requested.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
@@ -293,8 +343,8 @@
     "objectID": "first-analysis.html#recommended-workflow",
     "href": "first-analysis.html#recommended-workflow",
     "title": "5  Running an analysis",
-    "section": "5.7 Recommended workflow",
-    "text": "5.7 Recommended workflow\nA defensible analysis commonly follows this sequence:\n\ninspect the raw trajectories;\nfit a biologically plausible mean curve;\nassess parameter estimates and convergence;\ninspect residuals versus fitted values and time;\nevaluate heteroscedasticity;\naccount for repeated measurements using a subject identifier;\ninvestigate residual autocorrelation;\ncompare candidate specifications;\nverify parameter plausibility;\ninterpret derived growth descriptors only after accepting the underlying fitted model.",
+    "section": "5.11 Recommended workflow",
+    "text": "5.11 Recommended workflow\nA defensible analysis commonly follows this sequence:\n\ninspect the observed trajectories;\nselect a biologically plausible Unified growth model;\nassess the basic parameter estimates and convergence;\nadd scientifically justified fixed effects;\nadd random effects when repeated or hierarchical units require them;\ninspect residual spread and consider a variance function;\ninspect serial dependence and consider AR(1) or CAR(1);\nevaluate parameter plausibility and model diagnostics;\ncompare candidate specifications using compatible data and likelihoods;\ninterpret derivative-based descriptors only after accepting the underlying fitted model.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
@@ -303,8 +353,8 @@
     "objectID": "first-analysis.html#multiple-modeling-setups",
     "href": "first-analysis.html#multiple-modeling-setups",
     "title": "5  Running an analysis",
-    "section": "5.8 Multiple modeling setups",
-    "text": "5.8 Multiple modeling setups\nPGM allows multiple response-model configurations in the same analysis.\nThis can be used to:\n\ncompare candidate growth models;\ncompare variance structures;\ncompare response variables;\ninspect alternative residual-correlation structures.\n\nComparisons should only be interpreted formally when the models use the same response observations and compatible likelihoods.",
+    "section": "5.12 Multiple modeling setups",
+    "text": "5.12 Multiple modeling setups\nPGM allows several response-model setups in the same analysis.\nThis can be used to compare:\n\ndifferent Unified growth models;\nresidual variance structures;\nresidual correlation structures;\nfixed versus estimated asymptotes;\ndifferent response variables.\n\nFixed Effects, Random Effects, Correlation Groups, and the selected Ti/W0 parameterization are analysis-level specifications and apply to all compatible setups.\nFormal comparisons require the same response observations and compatible likelihood definitions.\n\n\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. “Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.” Ibis 163 (3): 1032–44. https://doi.org/10.1111/ibi.12920.",
     "crumbs": [
       "<span class='chapter-number'>5</span>  <span class='chapter-title'>Running an analysis</span>"
     ]
@@ -314,7 +364,7 @@
     "href": "methods/overview.html",
     "title": "6  Overview",
     "section": "",
-    "text": "6.1 Estimation pathways\nPGM selects the estimation framework according to the structure of the data and the analysis options.\nAll estimation pathways begin with an initial nonlinear fit using the Levenberg–Marquardt algorithm (Elzhov et al. 2023).\nWhen a residual variance function is selected without a subject identifier, the initial estimates are used to initialize a generalized nonlinear least-squares model (Pinheiro et al. 2026).\nWhen a subject identifier is selected, the initial estimates are used to initialize a nonlinear mixed-effects model (Pinheiro et al. 2026).",
+    "text": "6.1 Estimation pathways\nPGM selects the final estimation framework according to the requested fixed effects, random effects, residual variance function, and residual correlation structure.\nAll pathways begin with an initial nonlinear fit using the Levenberg–Marquardt algorithm (Elzhov et al. 2023).\nThe initial fit provides starting values for the more general GNLS or NLME specification when these are required.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
@@ -325,18 +375,73 @@
     "href": "methods/overview.html#estimation-pathways",
     "title": "6  Overview",
     "section": "",
-    "text": "Subject identifier\nResidual variance\nEstimation framework\n\n\n\n\nNo\nConstant\nNonlinear least squares\n\n\nNo\nModeled\nGeneralized nonlinear least squares\n\n\nYes\nAny available option\nNonlinear mixed-effects model",
+    "text": "Random effects\nFixed effects / variance / correlation\nFinal framework\n\n\n\n\nNo\nNone\nNonlinear least squares (NLS)\n\n\nNo\nAny selected\nGeneralized nonlinear least squares (GNLS)\n\n\nYes\nAny\nNonlinear mixed-effects model (NLME)",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
     ]
   },
   {
-    "objectID": "methods/overview.html#mean-variance-and-dependence",
-    "href": "methods/overview.html#mean-variance-and-dependence",
+    "objectID": "methods/overview.html#mean-structure",
+    "href": "methods/overview.html#mean-structure",
     "title": "6  Overview",
-    "section": "6.2 Mean, variance, and dependence",
-    "text": "6.2 Mean, variance, and dependence\nThe complete statistical specification may contain three components:\n\nMean structure: the selected parametric growth equation;\nVariance structure: the relationship between residual variance and fitted response;\nDependence structure: random effects and, optionally, residual autocorrelation.\n\nThese components address different features of the data and should not be treated as interchangeable.",
+    "section": "6.2 Mean structure",
+    "text": "6.2 Mean structure\nThe mean structure consists of:\n\nthe selected Unified growth equation;\nthe selected Ti or W0 parameterization;\nthe optional fixed asymptote;\nthe fixed-effects formula assigned to each estimated growth parameter.\n\nFor example, different predictor structures may be specified for \\(A\\), \\(K\\), \\(T_i\\) or \\(W_0\\), and \\(d\\).",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#fixed-effects",
+    "href": "methods/overview.html#fixed-effects",
+    "title": "6  Overview",
+    "section": "6.3 Fixed effects",
+    "text": "6.3 Fixed effects\nFixed effects represent systematic changes in growth parameters.\nEach estimated structural parameter has its own fixed-effects formula.\nCategorical predictors, continuous predictors, and interaction terms are supported.\nWhen no fixed effects are assigned to a parameter, that parameter is represented by an intercept-only model.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#random-effects",
+    "href": "methods/overview.html#random-effects",
+    "title": "6  Overview",
+    "section": "6.4 Random effects",
+    "text": "6.4 Random effects\nRandom effects represent persistent differences in growth parameters among grouping units.\nRandom grouping terms are assigned separately to the structural parameters.\nWhen at least one random effect is specified, PGM fits the model using nlme with maximum likelihood (Pinheiro et al. 2026).\nThe current implementation uses diagonal covariance matrices within each random grouping level.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#residual-variance",
+    "href": "methods/overview.html#residual-variance",
+    "title": "6  Overview",
+    "section": "6.5 Residual variance",
+    "text": "6.5 Residual variance\nResidual heteroscedasticity may be represented using:\n\npower;\nexponential;\nconstant-plus-power\n\nvariance functions.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#residual-correlation",
+    "href": "methods/overview.html#residual-correlation",
+    "title": "6  Overview",
+    "section": "6.6 Residual correlation",
+    "text": "6.6 Residual correlation\nResidual serial dependence may be represented using:\n\ndiscrete AR(1);\ncontinuous-time CAR(1).\n\nCorrelation Groups define the hierarchy within which residual correlation is evaluated.\nResidual correlation may be used with GNLS or NLME models.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
+    ]
+  },
+  {
+    "objectID": "methods/overview.html#mean-random-variance-and-correlation-components",
+    "href": "methods/overview.html#mean-random-variance-and-correlation-components",
+    "title": "6  Overview",
+    "section": "6.7 Mean, random, variance, and correlation components",
+    "text": "6.7 Mean, random, variance, and correlation components\nThese structures address different features of the data:\n\nfixed effects represent systematic changes in the expected growth parameters;\nrandom effects represent persistent variation among grouping units;\nvariance functions represent changes in residual dispersion;\ncorrelation structures represent dependence among residual deviations.\n\nThey are complementary and should not be treated as interchangeable.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
@@ -346,8 +451,8 @@
     "objectID": "methods/overview.html#maximum-likelihood",
     "href": "methods/overview.html#maximum-likelihood",
     "title": "6  Overview",
-    "section": "6.3 Maximum likelihood",
-    "text": "6.3 Maximum likelihood\nNonlinear mixed-effects models in PGM are estimated using maximum likelihood.\nThis facilitates comparisons between nested models with different fixed effects, provided that the models use the same response, observations, and likelihood framework.\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.",
+    "section": "6.8 Maximum likelihood",
+    "text": "6.8 Maximum likelihood\nNonlinear mixed-effects models in PGM are estimated using maximum likelihood.\nLikelihood-based comparisons should only be made between models fitted to the same response observations and under compatible likelihood definitions.\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Overview</span>"
@@ -358,40 +463,84 @@
     "href": "methods/growth-models.html",
     "title": "7  Growth Models",
     "section": "",
-    "text": "7.1 General formulation\nA parametric growth model represents the expected response at time \\(t\\) as\n\\[y_i = W(t_i;\\boldsymbol\\theta) + \\varepsilon_i,\\]\nwhere:\n\\(W(t_i;\\boldsymbol\\theta)\\) is the selected growth function; \\(\\boldsymbol\\theta\\) is the vector of model parameters; \\(\\varepsilon_i\\) is the residual error.\nThe interpretation of \\(\\boldsymbol\\theta\\) depends on the exact equation and parametrization.\nModels with similar names may be expressed using different parameter definitions in different authors and software implementations.",
+    "text": "7.1 Unified growth-model family\nPGM implements the Unified family of sigmoidal growth models described by Tjørve and Tjørve (Tjørve and Tjørve 2010; Tjørve and Tjørve 2017).\nThe implemented family contains:\nThe common parameters retain the same interpretation across family members.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
     ]
   },
   {
-    "objectID": "methods/growth-models.html#parameter-units",
-    "href": "methods/growth-models.html#parameter-units",
+    "objectID": "methods/growth-models.html#unified-growth-model-family",
+    "href": "methods/growth-models.html#unified-growth-model-family",
     "title": "7  Growth Models",
-    "section": "7.2 Parameter units",
-    "text": "7.2 Parameter units\nThe units of each parameter should be determined from the model equation.\nCommon interpretations include:\n\n\\(A\\): response unit;\n\\(T_i\\): time unit;\nrate parameters: inverse time or a parametrization-specific rate unit;\nshape parameters: dimensionless.\n\nParameters should not be compared directly across equations unless their mathematical definitions are equivalent.",
+    "section": "",
+    "text": "Unified Richards;\nUnified Gompertz;\nUnified Logistic;\nUnified von Bertalanffy.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
     ]
   },
   {
-    "objectID": "methods/growth-models.html#richards-model",
-    "href": "methods/growth-models.html#richards-model",
+    "objectID": "methods/growth-models.html#regularized-unified-richards-representation",
+    "href": "methods/growth-models.html#regularized-unified-richards-representation",
     "title": "7  Growth Models",
-    "section": "7.3 Richards model",
-    "text": "7.3 Richards model\nPGM implements the Richards parametrization described by Tjørve and Tjørve (2010).\nThe growth function is\n\\[A\n\\left[\n1+\n(d-1)\n\\exp\\left(\n-\\frac{K(t-T_i)}\n{d^{d/(1-d)}}\n\\right)\n\\right]^{1/(1-d)}.\\]\nThe parameters are:\n\n\\(A\\): asymptotic response;\n\\(K\\): growth-rate parameter under this parametrization;\n\\(T_i\\): time at the inflection point;\n\\(d\\): shape parameter controlling curve asymmetry.\n\nThe meaning of \\(K\\) is specific to this parametrization and should not be assumed to equal the rate parameter of another Richards equation.",
+    "section": "7.2 Regularized Unified-Richards representation",
+    "text": "7.2 Regularized Unified-Richards representation\nPGM uses\n\\[\n\\lambda = \\log(d),\n\\]\nand defines\n\\[\na = e^\\lambda - 1.\n\\]\nFor \\(a\\neq0\\), define\n\\[\nR(\\lambda,x)\n=\n\\exp\\left[\n-\\frac{\\log(1+ax)}{a}\n\\right].\n\\]\nAt the Gompertz limit, \\(\\lambda=0\\) and \\(a=0\\), the continuous limit is\n\\[\nR(0,x)=e^{-x}.\n\\]\nThe implementation evaluates this expression using numerically stable expm1() and log1p() formulations.\nThis avoids a singularity at \\(d=1\\) and allows the Richards surface to remain continuous through the Gompertz limit.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
     ]
   },
   {
-    "objectID": "methods/growth-models.html#parameter-constraints",
-    "href": "methods/growth-models.html#parameter-constraints",
+    "objectID": "methods/growth-models.html#shape-parameter",
+    "href": "methods/growth-models.html#shape-parameter",
     "title": "7  Growth Models",
-    "section": "7.4 Parameter constraints",
-    "text": "7.4 Parameter constraints\nPGM fits the Richards model using transformed parameters:\n\\[A=\\exp(\\alpha),\\]\n\\[K=\\exp(\\kappa),\\]\nand\n\\[d=1.05+\\exp(\\delta).\\]\nConsequently: \\[\n(A&gt;0); (K&gt;0); (d&gt;1.05).\n\\] The \\(d&gt;1.05\\) restriction is part of the current computational implementation and restricts the range of Richards shapes that can be fitted.",
+    "section": "7.3 Shape parameter",
+    "text": "7.3 Shape parameter\nFor Unified Richards,\n\\[\nd=e^\\lambda&gt;0\n\\]\nis estimated freely.\nThe three-parameter family members correspond to fixed values of \\(\\lambda\\):\n\n\n\nModel\n\\(d\\)\n\\(\\lambda\\)\n\n\n\n\nGompertz\n\\(1\\)\n\\(0\\)\n\n\nLogistic\n\\(2\\)\n\\(\\log 2\\)\n\n\nvon Bertalanffy\n\\(2/3\\)\n\\(\\log(2/3)\\)\n\n\n\nOnly Richards estimates \\(d\\) from the data.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#ti-parameterization",
+    "href": "methods/growth-models.html#ti-parameterization",
+    "title": "7  Growth Models",
+    "section": "7.4 Ti parameterization",
+    "text": "7.4 Ti parameterization\nThe Ti form uses:\n\n\\(A\\): upper asymptote;\n\\(K\\): Unified growth-rate parameter;\n\\(T_i\\): time of inflection;\n\\(d\\): Richards shape parameter, when free.\n\nFor the three-parameter models, \\(d\\) is fixed by the selected family.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#w0-parameterization",
+    "href": "methods/growth-models.html#w0-parameterization",
+    "title": "7  Growth Models",
+    "section": "7.5 W0 parameterization",
+    "text": "7.5 W0 parameterization\nThe alternative W0 form replaces \\(T_i\\) with the fitted response at the time origin:\n\\[\nW_0=W(0).\n\\]\nThe Ti and W0 forms describe the same family of curve shapes; they differ only in the location parameter used to describe the trajectory.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#fixed-asymptote",
+    "href": "methods/growth-models.html#fixed-asymptote",
+    "title": "7  Growth Models",
+    "section": "7.6 Fixed asymptote",
+    "text": "7.6 Fixed asymptote\nThe asymptote may optionally be supplied as a fixed positive value.\nWhen \\(A\\) is fixed, it is removed from the estimated parameter vector.\nThis can be useful when:\n\nthe asymptote is externally known;\nbiological constraints justify a predetermined value;\nlate-stage data are incomplete and unrestricted asymptote estimation is not desired.\n\nFixing the asymptote changes the statistical model and should therefore be scientifically justified.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
+    ]
+  },
+  {
+    "objectID": "methods/growth-models.html#parameter-transformations",
+    "href": "methods/growth-models.html#parameter-transformations",
+    "title": "7  Growth Models",
+    "section": "7.7 Parameter transformations",
+    "text": "7.7 Parameter transformations\nFor estimated parameters, PGM uses:\n\\[\nA=\\exp(\\alpha),\n\\]\n\\[\nK=\\exp(\\kappa),\n\\]\nand, for Richards,\n\\[\nd=\\exp(\\lambda).\n\\]\nUnder the W0 parameterization,\n\\[\n\\eta_0=\n\\operatorname{logit}\\left(\\frac{W_0}{A}\\right).\n\\]\nThese transformations enforce the required parameter domains while allowing unconstrained numerical optimization on the transformed scales.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
@@ -401,8 +550,8 @@
     "objectID": "methods/growth-models.html#starting-values",
     "href": "methods/growth-models.html#starting-values",
     "title": "7  Growth Models",
-    "section": "7.5 Starting values",
-    "text": "7.5 Starting values\nStarting values are generated automatically from the observed trajectory.\nThe initial asymptote is based on a value above the observed maximum response. The initial inflection time is informed by the largest numerical growth rate, and the initial rate parameter is derived from that rate relative to the initial asymptote.\n\n\n\n\nTjørve, Even, and Kathleen M. C. Tjørve. 2010. “A Unified Approach to the Richards-Model Family for Use in Growth Analyses: Why We Need Only Two Model Forms.” Journal of Theoretical Biology 267 (3): 417–25. https://doi.org/10.1016/j.jtbi.2010.09.008.",
+    "section": "7.8 Starting values",
+    "text": "7.8 Starting values\nStarting values are generated automatically from the observed trajectory.\nPGM uses a smooth spline to obtain an initial approximation to the growth rate.\nThe initial asymptote is based on a value above the observed maximum unless a fixed asymptote is supplied. The initial location and growth-rate parameters are then derived from the smoothed trajectory and the selected Unified model.\nStarting values are computational aids and should not be interpreted as model estimates.\n\n\n\n\nTjørve, Even, and Kathleen M. C. Tjørve. 2010. “A Unified Approach to the Richards-Model Family for Use in Growth Analyses: Why We Need Only Two Model Forms.” Journal of Theoretical Biology 267 (3): 417–25. https://doi.org/10.1016/j.jtbi.2010.09.008.\n\n\nTjørve, Kathleen M. C., and Even Tjørve. 2017. “A Proposed Family of Unified Models for Sigmoidal Growth.” Ecological Modelling 359: 117–27. https://doi.org/10.1016/j.ecolmodel.2017.05.008.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>Growth Models</span>"
@@ -413,7 +562,7 @@
     "href": "methods/estimation.html",
     "title": "8  Estimation",
     "section": "",
-    "text": "8.1 Initial nonlinear fit\nPGM first fits the selected growth equation using nonlinear least squares and the Levenberg–Marquardt algorithm (Elzhov et al. 2023).\nThe initial fit serves two purposes:\nStarting values are generated automatically from the observed data and the selected growth model.",
+    "text": "8.1 Initial nonlinear fit\nPGM first fits the selected Unified growth equation using nonlinear least squares and the Levenberg–Marquardt algorithm (Elzhov et al. 2023).\nThe initial fit serves two purposes:",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
@@ -424,7 +573,29 @@
     "href": "methods/estimation.html#initial-nonlinear-fit",
     "title": "8  Estimation",
     "section": "",
-    "text": "it provides estimates for an ordinary nonlinear analysis;\nit supplies starting values for generalized nonlinear least-squares or nonlinear mixed-effects estimation.",
+    "text": "it provides the final estimates for an ordinary nonlinear model;\nit provides starting values for GNLS or NLME estimation when additional model structures are requested.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#final-estimation-framework",
+    "href": "methods/estimation.html#final-estimation-framework",
+    "title": "8  Estimation",
+    "section": "8.2 Final estimation framework",
+    "text": "8.2 Final estimation framework\nAn ordinary NLS fit is retained when the model contains only the growth equation.\nGNLS is used when no random effects are specified but the model contains one or more of:\n\nfixed-effect predictors;\na residual variance function;\nan AR(1) or CAR(1) residual correlation structure.\n\nNLME is used whenever at least one growth parameter contains a random effect.\nNLME models are estimated by maximum likelihood using the nlme framework (Pinheiro et al. 2026).",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#parameter-specific-fixed-effects",
+    "href": "methods/estimation.html#parameter-specific-fixed-effects",
+    "title": "8  Estimation",
+    "section": "8.3 Parameter-specific fixed effects",
+    "text": "8.3 Parameter-specific fixed effects\nEach estimated growth parameter has its own fixed-effects formula.\nFor example,\n\\[\n\\log(A)\n=\n\\beta_{A0}\n+\n\\beta_{A1}X\n\\]\nand\n\\[\n\\log(K)\n=\n\\beta_{K0}\n+\n\\beta_{K1}Z\n+\n\\beta_{K2}Q\n+\n\\beta_{K3}ZQ\n\\]\nmay be fitted simultaneously.\nA parameter with no assigned predictors is represented by an intercept-only formula.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
@@ -434,8 +605,30 @@
     "objectID": "methods/estimation.html#parameter-transformations",
     "href": "methods/estimation.html#parameter-transformations",
     "title": "8  Estimation",
-    "section": "8.2 Parameter transformations",
-    "text": "8.2 Parameter transformations\nSome models are fitted using transformed parameters to impose parameter constraints and improve numerical stability.\nFor example, a positive parameter \\(A\\) may be represented internally as\n\\[A = \\exp(\\alpha).\\]\nThe reported estimate is returned to the natural parameter scale.",
+    "section": "8.4 Parameter transformations",
+    "text": "8.4 Parameter transformations\nPositive parameters are fitted on transformed scales.\nThe principal internal transformations are:\n\\[\nA=\\exp(\\alpha),\n\\]\n\\[\nK=\\exp(\\kappa),\n\\]\n\\[\nd=\\exp(\\lambda)\n\\]\nfor free Richards shape, and\n\\[\n\\eta_0=\n\\operatorname{logit}\\left(\\frac{W_0}{A}\\right)\n\\]\nunder the W0 parameterization.\n\\(T_i\\) is fitted directly on its natural time scale.\nWhen the asymptote is fixed, \\(A\\) is removed from the estimated parameter vector.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#fixed-effect-design-validation",
+    "href": "methods/estimation.html#fixed-effect-design-validation",
+    "title": "8  Estimation",
+    "section": "8.5 Fixed-effect design validation",
+    "text": "8.5 Fixed-effect design validation\nBefore GNLS or NLME estimation, PGM removes unused factor levels and checks the requested fixed-effects structure.\nCategorical predictors must retain at least two observed levels.\nThe model matrix for each growth parameter must also have full column rank.\nEmpty factor combinations, redundant interactions, or perfectly collinear predictors therefore produce an informative error rather than an unidentified fit.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#natural-scale-parameter-profiles",
+    "href": "methods/estimation.html#natural-scale-parameter-profiles",
+    "title": "8  Estimation",
+    "section": "8.6 Natural-scale parameter profiles",
+    "text": "8.6 Natural-scale parameter profiles\nThe model is fitted on its estimation scale, but the parameter table reports values on the natural growth-parameter scale.\nFor categorical predictors, the first observed factor level is used as the reference level.\nFor continuous predictors, the reference profile is evaluated at zero.\nRows corresponding to continuous effects represent the parameter profile at a predictor value of one relative to the zero reference profile.\nFor interactions, the reported natural-scale parameter value includes the associated main-effect and interaction contributions required by that predictor profile.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
@@ -445,8 +638,8 @@
     "objectID": "methods/estimation.html#standard-errors",
     "href": "methods/estimation.html#standard-errors",
     "title": "8  Estimation",
-    "section": "8.3 Standard errors",
-    "text": "8.3 Standard errors\nThe covariance matrix is initially obtained on the transformed estimation scale.\nFor parameters reported after nonlinear back-transformation, uncertainty is propagated to the natural scale using a first-order delta method.\nIf \\(\\boldsymbol\\theta\\) denotes the transformed parameters and \\(g(\\boldsymbol\\theta)\\) their natural-scale representation, then\n\\[\\operatorname{Var}\\!\\left[g(\\hat{\\boldsymbol\\theta})\\right]\n\\approx\nJ\n\\operatorname{Var}(\\hat{\\boldsymbol\\theta})\nJ^\\mathsf{T},\\]\nwhere \\(J\\) is the Jacobian matrix of the back-transformation.",
+    "section": "8.7 Standard errors",
+    "text": "8.7 Standard errors\nThe covariance matrix is obtained on the model estimation scale.\nFor a reported natural-scale quantity\n\\[\ng(\\boldsymbol\\theta),\n\\]\nPGM uses a first-order delta approximation:\n\\[\n\\operatorname{Var}\n\\left[\ng(\\hat{\\boldsymbol\\theta})\n\\right]\n\\approx\nJ\n\\operatorname{Var}\n(\\hat{\\boldsymbol\\theta})\nJ^\\mathsf{T},\n\\]\nwhere \\(J\\) is the Jacobian of the transformation evaluated at the corresponding parameter profile.\nFor \\(W_0\\), uncertainty propagation includes its joint dependence on both the asymptote and the internal initial-value parameter when \\(A\\) is estimated.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
@@ -456,8 +649,19 @@
     "objectID": "methods/estimation.html#confidence-intervals",
     "href": "methods/estimation.html#confidence-intervals",
     "title": "8  Estimation",
-    "section": "8.4 Confidence intervals",
-    "text": "8.4 Confidence intervals\nApproximate 95% confidence intervals are first constructed on the transformed scale and subsequently back-transformed.\nThese intervals depend on asymptotic normal approximations and may be unreliable when:\n\nthe sample size is small;\nparameters are weakly identified;\nestimates are near parameter boundaries;\nthe fitted model is numerically unstable.\n\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.",
+    "section": "8.8 Confidence intervals",
+    "text": "8.8 Confidence intervals\nApproximate 95% confidence intervals are derived from the fitted covariance matrix and the corresponding transformed parameter profile.\nFor positive transformed parameters, interval limits are returned to the natural parameter scale.\nFor \\(W_0\\), PGM uses a log-scale delta approximation for the positive natural-scale quantity.\nThese intervals are asymptotic approximations and may be unreliable when:\n\nsample size or effective replication is small;\nparameters are weakly identified;\nthe observed trajectory poorly covers the relevant part of the curve;\nthe fixed-effects design is nearly singular;\nthe fitted model is numerically unstable.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/estimation.html#fixed-effect-p-values",
+    "href": "methods/estimation.html#fixed-effect-p-values",
+    "title": "8  Estimation",
+    "section": "8.9 Fixed-effect p-values",
+    "text": "8.9 Fixed-effect p-values\nWhen fixed effects are present, PGM reports coefficient-level p-values obtained from the fitted NLS/GNLS/NLME model on the model estimation scale.\nThese are tests of individual model coefficients.\nThey are not automatically omnibus tests of an entire multi-level factor or interaction term.\nFor categorical predictors, coefficients are interpreted relative to the reference level.\nFor interactions, the reported p-value corresponds to the relevant interaction coefficient on the estimation scale.\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>8</span>  <span class='chapter-title'>Estimation</span>"
@@ -468,40 +672,95 @@
     "href": "methods/mixed-effects.html",
     "title": "9  Mixed Effects",
     "section": "",
-    "text": "9.1 When mixed effects are used\nA nonlinear mixed-effects model is fitted when a subject identification variable is supplied (Pinheiro et al. 2026).\nThe model separates:",
+    "text": "9.1 When mixed effects are used\nPGM fits a nonlinear mixed-effects model whenever at least one random effect is assigned to a growth parameter (Pinheiro et al. 2026).\nRandom effects represent persistent variation in structural growth parameters among grouping units.\nThey are distinct from residual variation and residual autocorrelation.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
     ]
   },
   {
-    "objectID": "methods/mixed-effects.html#when-mixed-effects-are-used",
-    "href": "methods/mixed-effects.html#when-mixed-effects-are-used",
+    "objectID": "methods/mixed-effects.html#parameter-specific-random-effects",
+    "href": "methods/mixed-effects.html#parameter-specific-random-effects",
     "title": "9  Mixed Effects",
-    "section": "",
-    "text": "population-level growth parameters, represented by fixed effects;\nindividual deviations from the population trajectory, represented by random effects;\nwithin-individual residual variation.",
+    "section": "9.2 Parameter-specific random effects",
+    "text": "9.2 Parameter-specific random effects\nRandom effects may be assigned independently to the estimated growth parameters.\nFor example,\n\\[\n\\log(A_i)\n=\n\\log(A)+b_{Ai}\n\\]\nallows the asymptote to vary among subjects, whereas\n\\[\n\\log(K_i)\n=\n\\log(K)+b_{Ki}\n\\]\nallows the Unified growth-rate parameter to vary.\nUnder the Ti parameterization, \\(T_i\\) may also contain a random effect.\nUnder the W0 parameterization, the corresponding internal initial-value parameter may contain a random effect.\nFor Richards, the shape parameter \\(d\\) may also vary randomly.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
     ]
   },
   {
-    "objectID": "methods/mixed-effects.html#current-random-effects-structure",
-    "href": "methods/mixed-effects.html#current-random-effects-structure",
+    "objectID": "methods/mixed-effects.html#different-grouping-structures-by-parameter",
+    "href": "methods/mixed-effects.html#different-grouping-structures-by-parameter",
     "title": "9  Mixed Effects",
-    "section": "9.2 Current random-effects structure",
-    "text": "9.2 Current random-effects structure\nIn the current implementation, the asymptotic parameter \\(A\\) contains an individual random effect.\nOn the transformed scale, the subject-specific asymptote may be written as\n\\[\\log(A_i) = \\log(A) + b_{Ai},\\]\nwhere\n\\[b_{Ai} \\sim N(0,\\sigma_A^2).\\]\nAll remaining growth parameters are treated as fixed population parameters.",
+    "section": "9.3 Different grouping structures by parameter",
+    "text": "9.3 Different grouping structures by parameter\nDifferent growth parameters may be assigned to different grouping levels.\nFor example, using grouping variables available in the Imperial Shag dataset of Svagelj et al. (Svagelj et al. 2021):\n\n\\(A\\): nestID;\n\\(K\\): chickID;\n\\(T_i\\): chickID.\n\nThe resulting model allows different sources of between-unit variation to act on different aspects of the growth trajectory.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
     ]
   },
   {
-    "objectID": "methods/mixed-effects.html#interpretation",
-    "href": "methods/mixed-effects.html#interpretation",
+    "objectID": "methods/mixed-effects.html#nested-grouping-structures",
+    "href": "methods/mixed-effects.html#nested-grouping-structures",
     "title": "9  Mixed Effects",
-    "section": "9.3 Interpretation",
-    "text": "9.3 Interpretation\nThe fixed asymptotic parameter represents the population-level central trajectory on the model scale.\nThe random effect represents persistent between-individual variation in the asymptotic level.\nResidual error represents observation-level variation remaining after accounting for the fixed effects, random effects, variance function, and residual correlation structure.",
+    "section": "9.4 Nested grouping structures",
+    "text": "9.4 Nested grouping structures\nPGM supports multiple grouping levels when they form a unique nested hierarchy.\nFor example,\nnestID\nchickID\nmay be interpreted as chicks nested within nests when every chick belongs to exactly one nest.\nThe hierarchy is evaluated from the observed grouping structure and, when residual Correlation Groups are supplied, from their explicit order.\nGrouping selections that form crossed or otherwise non-orderable structures are rejected.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#composite-grouping-terms",
+    "href": "methods/mixed-effects.html#composite-grouping-terms",
+    "title": "9  Mixed Effects",
+    "section": "9.5 Composite grouping terms",
+    "text": "9.5 Composite grouping terms\nThe Random Effects interface also allows interaction terms between grouping variables.\nFor random effects, a term such as\nspecies:replicate\ndoes not represent a fixed-effect interaction.\nIt defines a new grouping factor whose levels are the unique combinations of species and replicate.\nFor example,\nspecies\nspecies:replicate\nmay represent replicate units nested within species.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#random-effects-covariance",
+    "href": "methods/mixed-effects.html#random-effects-covariance",
+    "title": "9  Mixed Effects",
+    "section": "9.6 Random-effects covariance",
+    "text": "9.6 Random-effects covariance\nWithin each grouping level, PGM currently uses a diagonal random-effects covariance structure.\nIf more than one growth parameter varies at the same grouping level, their random deviations are therefore estimated with separate variances but without estimated covariance terms.\nThis is equivalent to using a pdDiag structure in nlme.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#random-effects-output",
+    "href": "methods/mixed-effects.html#random-effects-output",
+    "title": "9  Mixed Effects",
+    "section": "9.7 Random-effects output",
+    "text": "9.7 Random-effects output\nThe Random Effects table reports:\n\ngrouping level;\ngrowth parameter;\nestimated standard deviation.\n\nThe reported SD is expressed on the natural growth-parameter scale.\nFor log-transformed parameters, PGM converts the fitted transformed-scale variation to the induced natural-scale variation.\nFor \\(W_0\\), a first-order delta approximation is used at the reference profile.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#fixed-and-random-effects-together",
+    "href": "methods/mixed-effects.html#fixed-and-random-effects-together",
+    "title": "9  Mixed Effects",
+    "section": "9.8 Fixed and random effects together",
+    "text": "9.8 Fixed and random effects together\nA growth parameter may contain both fixed and random effects.\nThe fixed effects describe systematic population-level differences associated with predictors.\nThe random effects describe remaining persistent variation among grouping units around those systematic patterns.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#residual-error",
+    "href": "methods/mixed-effects.html#residual-error",
+    "title": "9  Mixed Effects",
+    "section": "9.9 Residual error",
+    "text": "9.9 Residual error\nResidual variation remains at the observation level after accounting for:\n\nthe nonlinear mean function;\nfixed effects;\nrandom effects;\nan optional variance function;\nan optional AR(1) or CAR(1) correlation structure.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
@@ -511,8 +770,19 @@
     "objectID": "methods/mixed-effects.html#conditional-fitted-values",
     "href": "methods/mixed-effects.html#conditional-fitted-values",
     "title": "9  Mixed Effects",
-    "section": "9.4 Conditional fitted values",
-    "text": "9.4 Conditional fitted values\nResidual diagnostics for nonlinear mixed-effects models use conditional fitted values. These include the estimated individual random effects.\nConsequently, the diagnostic residuals describe fit to individual trajectories rather than only to the population-average trajectory.\n\n\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.",
+    "section": "9.10 Conditional fitted values",
+    "text": "9.10 Conditional fitted values\nResidual diagnostics for nonlinear mixed-effects models use conditional fitted values at the innermost random-effects grouping level.\nConsequently, these diagnostics describe fit to the grouped trajectories after accounting for estimated random effects rather than only the population-average curve.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
+    ]
+  },
+  {
+    "objectID": "methods/mixed-effects.html#current-limitations",
+    "href": "methods/mixed-effects.html#current-limitations",
+    "title": "9  Mixed Effects",
+    "section": "9.11 Current limitations",
+    "text": "9.11 Current limitations\nThe current interface assumes a uniquely nested grouping hierarchy.\nGeneral crossed random-effects structures are not supported.\nRandom-effect interaction terms define composite grouping units; they do not define random slopes for fixed-effect predictors.\n\n\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. “Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.” Ibis 163 (3): 1032–44. https://doi.org/10.1111/ibi.12920.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mixed Effects</span>"
@@ -523,7 +793,7 @@
     "href": "methods/variance-functions.html",
     "title": "10  Variance Functions",
     "section": "",
-    "text": "10.1 Power variance function\nOrdinary nonlinear least squares assumes constant residual variance:\n\\[\\operatorname{Var}(\\varepsilon_i)=\\sigma^2.\\]\nThis assumption is often unrealistic for biological growth data because larger responses may exhibit greater absolute variability.\nPGM provides alternative residual variance functions based on the fitted response \\(\\hat y_i\\).\n\\[\\operatorname{Var}(\\varepsilon_i)\n=\n\\sigma^2 |\\hat y_i|^{2\\theta}.\\]\nInterpretation:",
+    "text": "10.1 Power variance function\nOrdinary nonlinear least squares assumes constant residual variance:\n\\[\\operatorname{Var}(\\varepsilon_i)=\\sigma^2.\\]\nThis assumption is often unrealistic for biological growth data because larger responses may exhibit greater absolute variability.\nPGM provides alternative residual variance functions based on the fitted response \\(\\hat y_i\\), implemented through the variance-function structures available in nlme (Pinheiro et al. 2026).\n\\[\\operatorname{Var}(\\varepsilon_i)\n=\n\\sigma^2 |\\hat y_i|^{2\\theta}.\\]\nInterpretation:",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>Variance Functions</span>"
@@ -567,7 +837,7 @@
     "href": "methods/variance-functions.html#choosing-a-variance-structure",
     "title": "10  Variance Functions",
     "section": "10.4 Choosing a variance structure",
-    "text": "10.4 Choosing a variance structure\nA variance function should be considered when residual spread changes systematically across fitted values or time.\nSelection should consider:\n\nresidual-versus-fitted plots;\nnormalized residuals;\ninformation criteria;\nparameter stability;\nbiological plausibility.\n\nA lower AIC alone is insufficient if the fitted variance structure produces unstable parameters or implausible trajectories.",
+    "text": "10.4 Choosing a variance structure\nA variance function should be considered when residual spread changes systematically across fitted values or time.\nSelection should consider:\n\nresidual-versus-fitted plots;\nnormalized residuals;\ninformation criteria;\nparameter stability;\nbiological plausibility.\n\nA lower AIC alone is insufficient if the fitted variance structure produces unstable parameters or implausible trajectories.\n\n\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>Variance Functions</span>"
@@ -578,7 +848,18 @@
     "href": "methods/residual-correlation.html",
     "title": "11  Residual Correlation",
     "section": "",
-    "text": "11.1 AR(1)\nRepeated observations from the same subject may remain correlated even after individual random effects are included.\nPGM provides first-order discrete and continuous-time correlation structures.\nFor observations separated by \\(h\\) measurement steps,\n\\[\\operatorname{Corr}\n(\\varepsilon_{i,t},\\varepsilon_{i,t+h})\n=\n\\phi^{|h|},\\]\nwhere \\(-1 &lt; \\phi &lt; 1\\).\nAR(1) is most naturally interpreted when observations are ordered and approximately equally spaced.",
+    "text": "11.1 Correlation Groups\nRepeated observations from the same experimental unit may remain correlated even after the mean structure and random effects have been modeled.\nPGM provides first-order discrete and continuous-time residual correlation structures through the nlme framework (Pinheiro et al. 2026).\nResidual correlation is defined within the variables selected under Correlation Groups.\nWhen more than one grouping variable is supplied, their order defines an outer-to-inner hierarchy.\nFor example, using the grouping variables from the Imperial Shag example dataset (Svagelj et al. 2021):\nnestID\nchickID\ncorresponds to a correlation grouping structure conceptually equivalent to\n\\[\n\\text{nestID}/\\text{chickID}.\n\\]\nWhen AR(1) or CAR(1) is selected, at least one Correlation Group is required.\nCorrelation Groups are independent of the Random Effects specification, although the two structures must be mutually compatible when they are used together.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/residual-correlation.html#ar1",
+    "href": "methods/residual-correlation.html#ar1",
+    "title": "11  Residual Correlation",
+    "section": "11.2 AR(1)",
+    "text": "11.2 AR(1)\nFor observations separated by \\(h\\) discrete measurement lags,\n\\[\n\\operatorname{Corr}\n(\\varepsilon_{i,t},\\varepsilon_{i,t+h})\n=\n\\phi^{|h|},\n\\]\nwhere\n\\[\n-1&lt;\\phi&lt;1.\n\\]\nAR(1) is most naturally interpreted when observations are ordered and approximately equally spaced.\nThe model describes correlation by discrete measurement lag rather than by arbitrary continuous temporal distance.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
@@ -588,8 +869,30 @@
     "objectID": "methods/residual-correlation.html#car1",
     "href": "methods/residual-correlation.html#car1",
     "title": "11  Residual Correlation",
-    "section": "11.2 CAR(1)",
-    "text": "11.2 CAR(1)\nFor observations made at times \\(t\\_{ij}\\) and \\(t\\_{ik}\\),\n\\[\\operatorname{Corr}\n(\\varepsilon_{ij},\\varepsilon_{ik})\n=\n\\phi^{|t_{ij}-t_{ik}|}.\\]\nCAR(1) uses the actual temporal distance between observations and is therefore suitable for irregularly spaced measurements.",
+    "section": "11.3 CAR(1)",
+    "text": "11.3 CAR(1)\nFor observations made at times \\(t_{ij}\\) and \\(t_{ik}\\),\n\\[\n\\operatorname{Corr}\n(\\varepsilon_{ij},\\varepsilon_{ik})\n=\n\\phi^{|t_{ij}-t_{ik}|}.\n\\]\nCAR(1) uses the actual temporal separation between observations and is therefore generally more appropriate for irregularly spaced measurements.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/residual-correlation.html#correlation-without-random-effects",
+    "href": "methods/residual-correlation.html#correlation-without-random-effects",
+    "title": "11  Residual Correlation",
+    "section": "11.4 Correlation without random effects",
+    "text": "11.4 Correlation without random effects\nResidual correlation does not require a random-effects model.\nIf AR(1) or CAR(1) is requested without random effects, PGM fits the structure through generalized nonlinear least squares.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/residual-correlation.html#correlation-with-random-effects",
+    "href": "methods/residual-correlation.html#correlation-with-random-effects",
+    "title": "11  Residual Correlation",
+    "section": "11.5 Correlation with random effects",
+    "text": "11.5 Correlation with random effects\nWhen random effects are present, PGM reconciles the random grouping hierarchy with the selected Correlation Groups.\nA composite random grouping term may represent the same grouping unit as a sequence of correlation groups.\nFor example,\nspecies:replicate\nmay be used as a random grouping unit while\nspecies / replicate\ndefines the corresponding residual-correlation hierarchy.\nThe model is rejected when the random and correlation grouping structures cannot be represented by a compatible nested hierarchy.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
@@ -599,8 +902,8 @@
     "objectID": "methods/residual-correlation.html#random-effects-are-not-autocorrelation",
     "href": "methods/residual-correlation.html#random-effects-are-not-autocorrelation",
     "title": "11  Residual Correlation",
-    "section": "11.3 Random effects are not autocorrelation",
-    "text": "11.3 Random effects are not autocorrelation\nRandom effects and residual correlation represent different sources of dependence.\nA random effect represents persistent individual differences in the growth trajectory.\nResidual autocorrelation represents association between observation-level departures occurring close together in time.\nA model may require one, both, or neither structure.",
+    "section": "11.6 Random effects are not autocorrelation",
+    "text": "11.6 Random effects are not autocorrelation\nRandom effects and residual correlation represent different dependence mechanisms.\nA random effect represents persistent differences among growth trajectories.\nResidual autocorrelation represents association between observation-level departures occurring close together in time.\nA model may require one, both, or neither structure.\n\n\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. “Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.” Ibis 163 (3): 1032–44. https://doi.org/10.1111/ibi.12920.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>Residual Correlation</span>"
@@ -710,7 +1013,7 @@
     "href": "methods/model-evaluation.html",
     "title": "13  Model Evaluation",
     "section": "",
-    "text": "13.1 Estimation information\nThe estimation-information table describes the computational and statistical framework used for each modeling setup.\nDepending on the selected options, it may report:\nThis table should be consulted before reporting the model because the same mean equation may be fitted under different residual and dependence assumptions.",
+    "text": "13.1 Estimation information\nThe Estimation Methods table summarizes the statistical and computational specification used for each model setup.\nDepending on the selected options, it may report:\nThis table should be consulted before reporting a model because the same growth equation may be fitted under substantially different fixed, random, variance, and correlation assumptions.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
@@ -721,7 +1024,7 @@
     "href": "methods/model-evaluation.html#estimation-information",
     "title": "13  Model Evaluation",
     "section": "",
-    "text": "nonlinear least squares (NLS);\ngeneralized nonlinear least squares (GNLS);\nnonlinear mixed-effects estimation (NLME);\nLevenberg–Marquardt initialization (LM);\nGauss–Newton estimation;\nresidual variance structure;\nresidual correlation structure;\nrandom-effects structure.",
+    "text": "NLS, GNLS, or NLME estimation;\nLevenberg–Marquardt initialization;\nthe parameter-specific fixed-effects formulas;\na fixed asymptotic value, when supplied;\nthe parameter-specific random-effects structure;\nthe residual variance function and its fitted coefficients;\nthe AR(1) or CAR(1) structure, its grouping hierarchy, and estimated correlation coefficient.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
@@ -732,7 +1035,29 @@
     "href": "methods/model-evaluation.html#parameter-estimates",
     "title": "13  Model Evaluation",
     "section": "13.2 Parameter estimates",
-    "text": "13.2 Parameter estimates\nThe parameter table reports estimates on the natural parameter scale.\nAvailable columns may include:\n\nparameter estimate;\nstandard error;\nlower confidence limit;\nupper confidence limit.\n\nSome parameters are estimated internally on a transformed scale and subsequently returned to their natural scale.\nApproximate uncertainty is propagated through the back-transformation using a first-order delta method.",
+    "text": "13.2 Parameter estimates\nThe Model Parameters table reports growth parameters on their natural interpretation scale.\nWhen no fixed predictors are assigned to a parameter, the table contains its reference estimate.\nWhen fixed effects are present, additional rows represent natural-scale parameter profiles associated with the fitted model coefficients.\nFor categorical predictors, the first observed level is used as the reference.\nFor continuous predictors, the reference value is zero.\nFor interaction coefficients, the displayed parameter profile incorporates the required main-effect and interaction contributions.\nAvailable columns include:\n\nestimate;\nstandard error;\nlower 95% confidence limit;\nupper 95% confidence limit;\np-value for fixed-effect coefficient rows.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#interpretation-of-p-values",
+    "href": "methods/model-evaluation.html#interpretation-of-p-values",
+    "title": "13  Model Evaluation",
+    "section": "13.3 Interpretation of p-values",
+    "text": "13.3 Interpretation of p-values\nThe p-values reported in the parameter table are coefficient-level tests obtained on the model estimation scale.\nThey should not be interpreted as tests of the natural-scale parameter estimate itself.\nReference-profile rows do not receive a p-value.\nFor a categorical predictor, a coefficient tests the corresponding contrast against its reference level.\nFor an interaction, the p-value tests the associated interaction coefficient.\nFor factors or interactions represented by several coefficients, these values are not equivalent to an omnibus test of the entire term.",
+    "crumbs": [
+      "Methods",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
+    ]
+  },
+  {
+    "objectID": "methods/model-evaluation.html#random-effects-table",
+    "href": "methods/model-evaluation.html#random-effects-table",
+    "title": "13  Model Evaluation",
+    "section": "13.4 Random Effects table",
+    "text": "13.4 Random Effects table\nWhen an NLME model is fitted, PGM may display a separate Random Effects table.\nThe table reports:\n\ngrouping structure;\ngrowth parameter;\nestimated random-effect standard deviation on the natural parameter scale.\n\nWithin each grouping level, the current model uses a diagonal covariance structure; covariance or correlation among random growth parameters is therefore not reported.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
@@ -742,8 +1067,8 @@
     "objectID": "methods/model-evaluation.html#interpreting-confidence-intervals",
     "href": "methods/model-evaluation.html#interpreting-confidence-intervals",
     "title": "13  Model Evaluation",
-    "section": "13.3 Interpreting confidence intervals",
-    "text": "13.3 Interpreting confidence intervals\nConfidence intervals quantify uncertainty under the fitted model and its asymptotic approximation.\nWide intervals may indicate:\n\ninsufficient sample size;\ninadequate coverage of the growth trajectory;\nstrong correlation among model parameters;\nweak identification;\nexcessive model flexibility;\nnumerical instability.",
+    "section": "13.5 Interpreting confidence intervals",
+    "text": "13.5 Interpreting confidence intervals\nConfidence intervals quantify uncertainty under the fitted model and its asymptotic approximation.\nWide intervals may indicate:\n\ninsufficient effective replication;\ninadequate coverage of the growth trajectory;\nstrong dependence among model parameters;\nweak identification;\nexcessive model complexity;\nnumerical instability.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
@@ -753,8 +1078,8 @@
     "objectID": "methods/model-evaluation.html#goodness-of-fit-measures",
     "href": "methods/model-evaluation.html#goodness-of-fit-measures",
     "title": "13  Model Evaluation",
-    "section": "13.4 Goodness-of-fit measures",
-    "text": "13.4 Goodness-of-fit measures\n\n13.4.1 Akaike information criterion\nThe Akaike information criterion is \\[-2\\ell + 2k,\\]\nwhere \\(\\ell\\) is the maximized log-likelihood and \\(k\\) is the number of estimated parameters counted by the fitted likelihood.\nLower AIC values indicate better expected predictive information performance among comparable models.\nThe absolute AIC value is not interpreted independently.",
+    "section": "13.6 Goodness-of-fit measures",
+    "text": "13.6 Goodness-of-fit measures\n\n13.6.1 Akaike information criterion\nThe Akaike information criterion is \\[-2\\ell + 2k,\\]\nwhere \\(\\ell\\) is the maximized log-likelihood and \\(k\\) is the number of estimated parameters counted by the fitted likelihood.\nLower AIC values indicate better expected predictive information performance among comparable models.\nThe absolute AIC value is not interpreted independently.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>13</span>  <span class='chapter-title'>Model Evaluation</span>"
@@ -864,7 +1189,7 @@
     "href": "methods/diagnostics.html#residual-autocorrelation",
     "title": "14  Residual diagnostics",
     "section": "14.4 Residual autocorrelation",
-    "text": "14.4 Residual autocorrelation\nThe autocorrelation plot assesses whether residuals remain associated across neighboring measurement occasions.\nFor longitudinal models, residual autocorrelation is evaluated within subjects.\nPersistent residual autocorrelation may indicate that the selected random effects or residual correlation structure is insufficient.",
+    "text": "14.4 Residual autocorrelation\nThe autocorrelation plot assesses whether residuals remain associated across neighboring measurement occasions.\nWhen Correlation Groups are supplied, the residual ACF is calculated within the grouping units defined by those variables.\nWhen no explicit Correlation Groups are supplied for an NLME model, PGM uses the innermost random-effects grouping level for the diagnostic grouping.\nPersistent residual autocorrelation may indicate that the selected mean structure, random effects, or residual correlation structure is insufficient.",
     "crumbs": [
       "Methods",
       "<span class='chapter-number'>14</span>  <span class='chapter-title'>Residual diagnostics</span>"
@@ -886,7 +1211,62 @@
     "href": "tutorials/example-datasets.html",
     "title": "15  Example Datasets",
     "section": "",
-    "text": "16 Example Datasets",
+    "text": "15.1 Chicken Growth — Aggrey (2002)\nPGM includes example datasets derived from published studies for testing, teaching, and methodological demonstration.\nThey are available from:\nOpen → Data Library → PGM\nMean body-weight measurements from an unselected Athens-Canadian randombred chicken population at different ages, derived from the data reported by Aggrey (Aggrey 2002).\nDOI: https://doi.org/10.1093/ps/81.12.1782",
+    "crumbs": [
+      "Tutorials",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Example Datasets</span>"
+    ]
+  },
+  {
+    "objectID": "tutorials/example-datasets.html#fruit-weight-gerhard-moltchanova-2022",
+    "href": "tutorials/example-datasets.html#fruit-weight-gerhard-moltchanova-2022",
+    "title": "15  Example Datasets",
+    "section": "15.2 Fruit Weight — Gerhard & Moltchanova (2022)",
+    "text": "15.2 Fruit Weight — Gerhard & Moltchanova (2022)\nMeasurements of grape bunch weight over a growing period of 103 days, derived from the data reported by Gerhard and Moltchanova (Gerhard and Moltchanova 2022).\nDOI: https://doi.org/10.1111/anzs.12380",
+    "crumbs": [
+      "Tutorials",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Example Datasets</span>"
+    ]
+  },
+  {
+    "objectID": "tutorials/example-datasets.html#plant-growth-gregorczyk-1998",
+    "href": "tutorials/example-datasets.html#plant-growth-gregorczyk-1998",
+    "title": "15  Example Datasets",
+    "section": "15.3 Plant Growth — Gregorczyk (1998)",
+    "text": "15.3 Plant Growth — Gregorczyk (1998)\nExperimental observations of dry-matter accumulation in buckwheat plants during vegetation, derived from the data reported by Gregorczyk (Gregorczyk 1998).\nDOI: https://doi.org/10.1111/j.1439-037X.1998.tb00424.x",
+    "crumbs": [
+      "Tutorials",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Example Datasets</span>"
+    ]
+  },
+  {
+    "objectID": "tutorials/example-datasets.html#leaf-growth-peng-et-al.-2023",
+    "href": "tutorials/example-datasets.html#leaf-growth-peng-et-al.-2023",
+    "title": "15  Example Datasets",
+    "section": "15.4 Leaf Growth — Peng et al. (2023)",
+    "text": "15.4 Leaf Growth — Peng et al. (2023)\nRepeated measurements of leaf length and width in Camptotheca acuminata during leaf expansion, derived from the data reported by Peng et al. (Peng et al. 2023).\nDOI: https://doi.org/10.1016/j.ecolmodel.2023.110531",
+    "crumbs": [
+      "Tutorials",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Example Datasets</span>"
+    ]
+  },
+  {
+    "objectID": "tutorials/example-datasets.html#avian-growth-svagelj-et-al.-2019",
+    "href": "tutorials/example-datasets.html#avian-growth-svagelj-et-al.-2019",
+    "title": "15  Example Datasets",
+    "section": "15.5 Avian Growth — Svagelj et al. (2019)",
+    "text": "15.5 Avian Growth — Svagelj et al. (2019)\nMeasurements of body mass and morphometric traits in female Imperial Shag chicks from hatching to approximately 40 days, derived from the data reported by Svagelj et al. (Svagelj et al. 2019).\nDOI: https://doi.org/10.1111/jav.01864",
+    "crumbs": [
+      "Tutorials",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Example Datasets</span>"
+    ]
+  },
+  {
+    "objectID": "tutorials/example-datasets.html#avian-growth-svagelj-et-al.-2021",
+    "href": "tutorials/example-datasets.html#avian-growth-svagelj-et-al.-2021",
+    "title": "15  Example Datasets",
+    "section": "15.6 Avian Growth — Svagelj et al. (2021)",
+    "text": "15.6 Avian Growth — Svagelj et al. (2021)\nRepeated body-mass measurements of Imperial Shag chicks from hatching to approximately 52 days, including sex, hatching order, brood size, sibling sex, nest, individual identity, and year, derived from the supporting data of Svagelj et al. (Svagelj et al. 2021).\nThis dataset is particularly useful for demonstrating:\n\nparameter-specific fixed effects;\nfactorial interactions;\nnested random effects;\nAR/CAR residual structures;\nnonlinear mixed-effects modeling.\n\nDOI: https://doi.org/10.1111/ibi.12920\n\n\n\n\nAggrey, Samuel E. 2002. “Comparison of Three Nonlinear and Spline Regression Models for Describing Chicken Growth Curves.” Poultry Science 81 (12): 1782–88. https://doi.org/10.1093/ps/81.12.1782.\n\n\nGerhard, Daniel, and Elena Moltchanova. 2022. “A Richards Growth Model to Predict Fruit Weight.” Australian & New Zealand Journal of Statistics 64 (4): 413–21. https://doi.org/10.1111/anzs.12380.\n\n\nGregorczyk, Andrzej. 1998. “Richards Plant Growth Model.” Journal of Agronomy and Crop Science 181 (4): 243–47. https://doi.org/10.1111/j.1439-037X.1998.tb00424.x.\n\n\nPeng, Qiang, Long Chen, Karl J. Niklas, Weihao Yao, Meng Lian, and Peijian Shi. 2023. “Comparison of Three Sigmoidal Functions Describing the Leaf Growth of Camptotheca Acuminata Decne.” Ecological Modelling 486: 110531. https://doi.org/10.1016/j.ecolmodel.2023.110531.\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. “Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.” Ibis 163 (3): 1032–44. https://doi.org/10.1111/ibi.12920.\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, and Flavio Quintana. 2019. “Richards’s Equation and Nonlinear Mixed Models Applied to Avian Growth: Why Use Them?” Journal of Avian Biology 50: e01864. https://doi.org/10.1111/jav.01864.",
     "crumbs": [
       "Tutorials",
       "<span class='chapter-number'>15</span>  <span class='chapter-title'>Example Datasets</span>"
@@ -908,7 +1288,7 @@
     "href": "academic-reporting.html",
     "title": "17  Academic Reporting",
     "section": "",
-    "text": "17.1 Citation\nPessina ALR, Garcia-Neto M (2026). PGM: Practical Growth Modeling for jamovi [Version x.x.x]. doi: 10.5281/zenodo.15764773\nThe jamovi project (The jamovi project 2026) and The R project(R Core Team 2026) should also be cited. We also encourage authors to cite the packages and references used in the module’s analyses:",
+    "text": "17.1 Citation\nPessina ALR, Garcia-Neto M (2026). PGM: Practical Growth Modeling for jamovi [Version x.x.x]. doi: 10.5281/zenodo.15764773\nThe jamovi project (The jamovi project 2026) and The R project(R Core Team 2026) should also be cited. We also encourage authors to cite the methodological references and R packages relevant to the analyses performed:",
     "crumbs": [
       "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
     ]
@@ -918,7 +1298,7 @@
     "href": "academic-reporting.html#citation",
     "title": "17  Academic Reporting",
     "section": "",
-    "text": "minpack.lm (Elzhov et al. 2023)\nnlme (Pinheiro et al. 2026)",
+    "text": "Unified growth-model family: Tjørve and Tjørve (Tjørve and Tjørve 2010; Tjørve and Tjørve 2017)\nnonlinear least-squares estimation: minpack.lm (Elzhov et al. 2023)\ngeneralized and nonlinear mixed-effects models: nlme (Pinheiro et al. 2026)",
     "crumbs": [
       "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
     ]
@@ -928,7 +1308,7 @@
     "href": "academic-reporting.html#recommended-information",
     "title": "17  Academic Reporting",
     "section": "17.2 Recommended information",
-    "text": "17.2 Recommended information\nAn academic report should identify:\n\nthe PGM version;\nthe jamovi version;\nthe selected growth equation;\nthe equation parametrization;\nthe response and time units;\nthe number of observations;\nthe number of subjects, when longitudinal;\nthe estimation framework;\nthe random-effects structure;\nthe residual variance structure;\nthe residual correlation structure;\nthe estimation method;\nthe model-comparison criteria;\nthe residual diagnostics examined.",
+    "text": "17.2 Recommended information\nAn academic report should identify:\n\nthe PGM version;\nthe jamovi version;\nthe selected Unified growth equation;\nthe Ti or W0 parameterization;\nwhether the asymptote was estimated or fixed;\nthe response and time units;\nthe number of observations;\nthe fixed-effects structure for each growth parameter;\nrelevant interaction terms;\nthe random-effects structure and grouping hierarchy;\nthe residual variance structure;\nthe residual correlation structure and Correlation Groups;\nthe estimation framework;\nthe model-comparison criteria;\nthe residual diagnostics examined.",
     "crumbs": [
       "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
     ]
@@ -958,7 +1338,7 @@
     "href": "academic-reporting.html#nonlinear-mixed-effects-model",
     "title": "17  Academic Reporting",
     "section": "17.5 Nonlinear mixed-effects model",
-    "text": "17.5 Nonlinear mixed-effects model\nFor longitudinal data:\n\nGrowth trajectories were fitted using the PGM module for jamovi. Repeated growth measurements were analyzed using a nonlinear mixed-effects model. Population growth parameters were represented by fixed effects, and between-subject variation in the asymptotic parameter was represented by a random effect. Parameters were estimated by maximum likelihood after initialization using a Levenberg–Marquardt nonlinear fit.\n\n\n17.5.1 Residual autocorrelation\nWhen applicable:\n\nWithin-subject residual dependence was modeled using a first-order [AR(1)/CAR(1)] correlation structure.\n\nFor CAR(1), the report may clarify:\n\nCorrelation was modeled as a function of the actual temporal distance between observations.\n\n\n\n17.5.2 Heteroscedasticity\nWhen applicable:\n\nResidual variance was modeled as a [power/exponential/constant-plus-power] function of the absolute fitted response.",
+    "text": "17.5 Nonlinear mixed-effects model\nFor models containing random growth parameters, a possible methods statement is:\n\nGrowth trajectories were fitted using the PGM module for jamovi. The [Unified Richards/Gompertz/Logistic/von Bertalanffy] model was expressed using the [Ti/W0] parameterization. Fixed effects of [predictors] were assigned to [growth parameters], including the interaction between [predictors] where specified. Between-[subject/group] variation in [parameters] was represented using parameter-specific random effects, with [grouping hierarchy]. Models were estimated by maximum likelihood after initialization from a Levenberg–Marquardt nonlinear fit.\n\n\n17.5.1 Fixed effects and interactions\nWhen parameter-specific predictors are fitted:\n\nSystematic variation in the growth parameters was modeled using fixed effects. The parameter [A/K/Ti/W0/d] included effects of [predictors]. The interaction between [X] and [Z] was included to allow the effect of one predictor on the growth parameter to depend on the level of the other.\n\nPGM reports coefficient-level p-values on the model estimation scale. For factors or interactions represented by several coefficients, these should not be described as omnibus tests unless an appropriate joint test has been performed separately.\n\n\n17.5.2 Residual autocorrelation\nWhen applicable:\n\nResidual dependence within [Correlation Groups] was modeled using a first-order [AR(1)/CAR(1)] correlation structure.\n\nFor CAR(1):\n\nResidual correlation was modeled as a function of the actual temporal distance between observations.\n\n\n\n17.5.3 Heteroscedasticity\nWhen applicable:\n\nResidual variance was modeled as a [power/exponential/constant-plus-power] function of the absolute fitted response.",
     "crumbs": [
       "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
     ]
@@ -998,7 +1378,7 @@
     "href": "academic-reporting.html#figures",
     "title": "17  Academic Reporting",
     "section": "17.9 Figures",
-    "text": "17.9 Figures\n\n17.9.1 Growth-curve figures\n\nobserved data;\nfitted trajectory;\nresponse and time units;\ngroup or subject definition;\ncritical-point labels, when used.\n\n\n\n17.9.2 Residual figures\nResidual figures should be reported or summarized whenever model assumptions are important to the conclusions.\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nR Core Team. 2026. R: A Language and Environment for Statistical Computing. R Foundation for Statistical Computing. https://doi.org/10.32614/R.manuals.\n\n\nThe jamovi project. 2026. Jamovi. https://www.jamovi.org/.",
+    "text": "17.9 Figures\n\n17.9.1 Growth-curve figures\n\nobserved data;\nfitted trajectory;\nresponse and time units;\ngroup or subject definition;\ncritical-point labels, when used.\n\n\n\n17.9.2 Residual figures\nResidual figures should be reported or summarized whenever model assumptions are important to the conclusions.\n\n\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben Bolker. 2023. minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects Models. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nR Core Team. 2026. R: A Language and Environment for Statistical Computing. R Foundation for Statistical Computing. https://doi.org/10.32614/R.manuals.\n\n\nThe jamovi project. 2026. Jamovi. https://www.jamovi.org/.\n\n\nTjørve, Even, and Kathleen M. C. Tjørve. 2010. “A Unified Approach to the Richards-Model Family for Use in Growth Analyses: Why We Need Only Two Model Forms.” Journal of Theoretical Biology 267 (3): 417–25. https://doi.org/10.1016/j.jtbi.2010.09.008.\n\n\nTjørve, Kathleen M. C., and Even Tjørve. 2017. “A Proposed Family of Unified Models for Sigmoidal Growth.” Ecological Modelling 359: 117–27. https://doi.org/10.1016/j.ecolmodel.2017.05.008.",
     "crumbs": [
       "<span class='chapter-number'>17</span>  <span class='chapter-title'>Academic Reporting</span>"
     ]
@@ -1008,7 +1388,7 @@
     "href": "references.html",
     "title": "References",
     "section": "",
-    "text": "Elzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben\nBolker. 2023. minpack.lm: R Interface to\nthe Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in\nMINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nGarcia-Neto, M., E. Kebreab, and M. J. A. Faria-Junior. 2020.\nPPFM: Practical Program for Forces Modeling.\nSoftware spreadsheet. https://sites.google.com/view/ppfm-spreadsheet/.\n\n\nGregorczyk, Andrzej. 1991. “The Logistic Function—Its Application\nto the Description and Prognosis of Plant Growth.” Acta\nSocietatis Botanicorum Poloniae 60 (1–2): 67–76. https://doi.org/10.5586/asbp.1991.004.\n\n\nKorkmaz, Mehmet, Volkan Oda, and Elif Ozkurt Basustaoglu. 2018. “A\nStudy over Determination of Asymptotic Deceleration and Absolute\nAcceleration Points in Logistic Growth Model.” Turkish\nJournal of Mathematics and Computer Science 10: 33–37. https://dergipark.org.tr/en/pub/tjmcs/article/448246.\n\n\nMischan, M. M., S. Z. Pinho, and L. R. Carvalho. 2011.\n“Determination of a Point Sufficiently Close to the Asymptote in\nNonlinear Growth Functions.” Scientia Agricola 68 (1):\n109–14. https://doi.org/10.1590/S0103-90162011000100016.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects\nModels. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nR Core Team. 2026. R: A Language and Environment for\nStatistical Computing. R Foundation for Statistical Computing. https://doi.org/10.32614/R.manuals.\n\n\nThe jamovi project. 2026. Jamovi. https://www.jamovi.org/.\n\n\nTjørve, Even, and Kathleen M. C. Tjørve. 2010. “A Unified Approach\nto the Richards-Model Family for Use in Growth Analyses:\nWhy We Need Only Two Model Forms.” Journal of Theoretical\nBiology 267 (3): 417–25. https://doi.org/10.1016/j.jtbi.2010.09.008.",
+    "text": "Aggrey, Samuel E. 2002. “Comparison of Three Nonlinear and Spline\nRegression Models for Describing Chicken Growth Curves.”\nPoultry Science 81 (12): 1782–88. https://doi.org/10.1093/ps/81.12.1782.\n\n\nElzhov, Timur V., Katharine M. Mullen, Andrej-Nikolai Spiess, and Ben\nBolker. 2023. minpack.lm: R Interface to\nthe Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in\nMINPACK, Plus Support for Bounds. https://doi.org/10.32614/CRAN.package.minpack.lm.\n\n\nGarcia-Neto, M., E. Kebreab, and M. J. A. Faria-Junior. 2020.\nPPFM: Practical Program for Forces Modeling.\nSoftware spreadsheet. https://sites.google.com/view/ppfm-spreadsheet/.\n\n\nGerhard, Daniel, and Elena Moltchanova. 2022. “A Richards Growth\nModel to Predict Fruit Weight.” Australian & New Zealand\nJournal of Statistics 64 (4): 413–21. https://doi.org/10.1111/anzs.12380.\n\n\nGregorczyk, Andrzej. 1991. “The Logistic Function—Its Application\nto the Description and Prognosis of Plant Growth.” Acta\nSocietatis Botanicorum Poloniae 60 (1–2): 67–76. https://doi.org/10.5586/asbp.1991.004.\n\n\nGregorczyk, Andrzej. 1998. “Richards Plant Growth Model.”\nJournal of Agronomy and Crop Science 181 (4): 243–47. https://doi.org/10.1111/j.1439-037X.1998.tb00424.x.\n\n\nKorkmaz, Mehmet, Volkan Oda, and Elif Ozkurt Basustaoglu. 2018. “A\nStudy over Determination of Asymptotic Deceleration and Absolute\nAcceleration Points in Logistic Growth Model.” Turkish\nJournal of Mathematics and Computer Science 10: 33–37. https://dergipark.org.tr/en/pub/tjmcs/article/448246.\n\n\nMischan, M. M., S. Z. Pinho, and L. R. Carvalho. 2011.\n“Determination of a Point Sufficiently Close to the Asymptote in\nNonlinear Growth Functions.” Scientia Agricola 68 (1):\n109–14. https://doi.org/10.1590/S0103-90162011000100016.\n\n\nPeng, Qiang, Long Chen, Karl J. Niklas, Weihao Yao, Meng Lian, and\nPeijian Shi. 2023. “Comparison of Three Sigmoidal Functions\nDescribing the Leaf Growth of Camptotheca Acuminata Decne.”\nEcological Modelling 486: 110531. https://doi.org/10.1016/j.ecolmodel.2023.110531.\n\n\nPinheiro, José, Douglas Bates, and R Core Team. 2026. nlme: Linear and Nonlinear Mixed Effects\nModels. https://doi.org/10.32614/CRAN.package.nlme.\n\n\nR Core Team. 2026. R: A Language and Environment for\nStatistical Computing. R Foundation for Statistical Computing. https://doi.org/10.32614/R.manuals.\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M.\nSomoza, and Flavio Quintana. 2021. “Sex-Specific Environmental\nSensitivity on the Postnatal Growth of a Sexually Size-Dimorphic\nSeabird.” Ibis 163 (3): 1032–44. https://doi.org/10.1111/ibi.12920.\n\n\nSvagelj, Walter S., Agustina Gómez-Laich, and Flavio Quintana. 2019.\n“Richards’s Equation and Nonlinear Mixed Models Applied to Avian\nGrowth: Why Use Them?” Journal of Avian Biology 50:\ne01864. https://doi.org/10.1111/jav.01864.\n\n\nThe jamovi project. 2026. Jamovi. https://www.jamovi.org/.\n\n\nTjørve, Even, and Kathleen M. C. Tjørve. 2010. “A Unified Approach\nto the Richards-Model Family for Use in Growth Analyses:\nWhy We Need Only Two Model Forms.” Journal of Theoretical\nBiology 267 (3): 417–25. https://doi.org/10.1016/j.jtbi.2010.09.008.\n\n\nTjørve, Kathleen M. C., and Even Tjørve. 2017. “A Proposed Family\nof Unified Models for Sigmoidal Growth.” Ecological\nModelling 359: 117–27. https://doi.org/10.1016/j.ecolmodel.2017.05.008.",
     "crumbs": [
       "References"
     ]

@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -454,9 +473,12 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ar1" id="toc-ar1" class="nav-link active" data-scroll-target="#ar1"><span class="header-section-number">11.1</span> AR(1)</a></li>
-  <li><a href="#car1" id="toc-car1" class="nav-link" data-scroll-target="#car1"><span class="header-section-number">11.2</span> CAR(1)</a></li>
-  <li><a href="#random-effects-are-not-autocorrelation" id="toc-random-effects-are-not-autocorrelation" class="nav-link" data-scroll-target="#random-effects-are-not-autocorrelation"><span class="header-section-number">11.3</span> Random effects are not autocorrelation</a></li>
+  <li><a href="#correlation-groups" id="toc-correlation-groups" class="nav-link active" data-scroll-target="#correlation-groups"><span class="header-section-number">11.1</span> Correlation Groups</a></li>
+  <li><a href="#ar1" id="toc-ar1" class="nav-link" data-scroll-target="#ar1"><span class="header-section-number">11.2</span> AR(1)</a></li>
+  <li><a href="#car1" id="toc-car1" class="nav-link" data-scroll-target="#car1"><span class="header-section-number">11.3</span> CAR(1)</a></li>
+  <li><a href="#correlation-without-random-effects" id="toc-correlation-without-random-effects" class="nav-link" data-scroll-target="#correlation-without-random-effects"><span class="header-section-number">11.4</span> Correlation without random effects</a></li>
+  <li><a href="#correlation-with-random-effects" id="toc-correlation-with-random-effects" class="nav-link" data-scroll-target="#correlation-with-random-effects"><span class="header-section-number">11.5</span> Correlation with random effects</a></li>
+  <li><a href="#random-effects-are-not-autocorrelation" id="toc-random-effects-are-not-autocorrelation" class="nav-link" data-scroll-target="#random-effects-are-not-autocorrelation"><span class="header-section-number">11.6</span> Random effects are not autocorrelation</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/apessina/jamovi-PGM/edit/main/methods/residual-correlation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/apessina/jamovi-PGM/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -483,35 +505,81 @@ window.Quarto = {
 </header>
 
 
-<p>Repeated observations from the same subject may remain correlated even after individual random effects are included.</p>
-<p>PGM provides first-order discrete and continuous-time correlation structures.</p>
-<section id="ar1" class="level2" data-number="11.1">
-<h2 data-number="11.1" class="anchored" data-anchor-id="ar1"><span class="header-section-number">11.1</span> AR(1)</h2>
-<p>For observations separated by <span class="math inline">\(h\)</span> measurement steps,</p>
-<p><span class="math display">\[\operatorname{Corr}
+<p>Repeated observations from the same experimental unit may remain correlated even after the mean structure and random effects have been modeled.</p>
+<p>PGM provides first-order discrete and continuous-time residual correlation structures through the <code>nlme</code> framework <span class="citation" data-cites="nlme">(<a href="../references.html#ref-nlme" role="doc-biblioref">Pinheiro et al. 2026</a>)</span>.</p>
+<section id="correlation-groups" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="correlation-groups"><span class="header-section-number">11.1</span> Correlation Groups</h2>
+<p>Residual correlation is defined within the variables selected under <strong>Correlation Groups</strong>.</p>
+<p>When more than one grouping variable is supplied, their order defines an outer-to-inner hierarchy.</p>
+<p>For example, using the grouping variables from the Imperial Shag example dataset <span class="citation" data-cites="svagelj2021">(<a href="../references.html#ref-svagelj2021" role="doc-biblioref">Svagelj et al. 2021</a>)</span>:</p>
+<p><code>nestID</code><br>
+<code>chickID</code></p>
+<p>corresponds to a correlation grouping structure conceptually equivalent to</p>
+<p><span class="math display">\[
+\text{nestID}/\text{chickID}.
+\]</span></p>
+<p>When AR(1) or CAR(1) is selected, at least one Correlation Group is required.</p>
+<p>Correlation Groups are independent of the Random Effects specification, although the two structures must be mutually compatible when they are used together.</p>
+</section>
+<section id="ar1" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="ar1"><span class="header-section-number">11.2</span> AR(1)</h2>
+<p>For observations separated by <span class="math inline">\(h\)</span> discrete measurement lags,</p>
+<p><span class="math display">\[
+\operatorname{Corr}
 (\varepsilon_{i,t},\varepsilon_{i,t+h})
 =
-\phi^{|h|},\]</span></p>
-<p>where <span class="math inline">\(-1 &lt; \phi &lt; 1\)</span>.</p>
-<p>AR(1) is most naturally interpreted when observations are ordered and <strong>approximately equally spaced</strong>.</p>
+\phi^{|h|},
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+-1&lt;\phi&lt;1.
+\]</span></p>
+<p>AR(1) is most naturally interpreted when observations are ordered and approximately equally spaced.</p>
+<p>The model describes correlation by discrete measurement lag rather than by arbitrary continuous temporal distance.</p>
 </section>
-<section id="car1" class="level2" data-number="11.2">
-<h2 data-number="11.2" class="anchored" data-anchor-id="car1"><span class="header-section-number">11.2</span> CAR(1)</h2>
-<p>For observations made at times <span class="math inline">\(t\_{ij}\)</span> and <span class="math inline">\(t\_{ik}\)</span>,</p>
-<p><span class="math display">\[\operatorname{Corr}
+<section id="car1" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="car1"><span class="header-section-number">11.3</span> CAR(1)</h2>
+<p>For observations made at times <span class="math inline">\(t_{ij}\)</span> and <span class="math inline">\(t_{ik}\)</span>,</p>
+<p><span class="math display">\[
+\operatorname{Corr}
 (\varepsilon_{ij},\varepsilon_{ik})
 =
-\phi^{|t_{ij}-t_{ik}|}.\]</span></p>
-<p>CAR(1) uses the actual temporal distance between observations and is therefore suitable for <strong>irregularly spaced measurements</strong>.</p>
+\phi^{|t_{ij}-t_{ik}|}.
+\]</span></p>
+<p>CAR(1) uses the actual temporal separation between observations and is therefore generally more appropriate for irregularly spaced measurements.</p>
 </section>
-<section id="random-effects-are-not-autocorrelation" class="level2" data-number="11.3">
-<h2 data-number="11.3" class="anchored" data-anchor-id="random-effects-are-not-autocorrelation"><span class="header-section-number">11.3</span> Random effects are not autocorrelation</h2>
-<p>Random effects and residual correlation represent different sources of dependence.</p>
-<p>A random effect represents persistent individual differences in the growth trajectory.</p>
+<section id="correlation-without-random-effects" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="correlation-without-random-effects"><span class="header-section-number">11.4</span> Correlation without random effects</h2>
+<p>Residual correlation does not require a random-effects model.</p>
+<p>If AR(1) or CAR(1) is requested without random effects, PGM fits the structure through generalized nonlinear least squares.</p>
+</section>
+<section id="correlation-with-random-effects" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="correlation-with-random-effects"><span class="header-section-number">11.5</span> Correlation with random effects</h2>
+<p>When random effects are present, PGM reconciles the random grouping hierarchy with the selected Correlation Groups.</p>
+<p>A composite random grouping term may represent the same grouping unit as a sequence of correlation groups.</p>
+<p>For example,</p>
+<p><code>species:replicate</code></p>
+<p>may be used as a random grouping unit while</p>
+<p><code>species / replicate</code></p>
+<p>defines the corresponding residual-correlation hierarchy.</p>
+<p>The model is rejected when the random and correlation grouping structures cannot be represented by a compatible nested hierarchy.</p>
+</section>
+<section id="random-effects-are-not-autocorrelation" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="random-effects-are-not-autocorrelation"><span class="header-section-number">11.6</span> Random effects are not autocorrelation</h2>
+<p>Random effects and residual correlation represent different dependence mechanisms.</p>
+<p>A random effect represents persistent differences among growth trajectories.</p>
 <p>Residual autocorrelation represents association between observation-level departures occurring close together in time.</p>
 <p>A model may require one, both, or neither structure.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-nlme" class="csl-entry" role="listitem">
+Pinheiro, José, Douglas Bates, and R Core Team. 2026. <em><span class="nocase">nlme</span>: Linear and Nonlinear Mixed Effects Models</em>. <a href="https://doi.org/10.32614/CRAN.package.nlme">https://doi.org/10.32614/CRAN.package.nlme</a>.
+</div>
+<div id="ref-svagelj2021" class="csl-entry" role="listitem">
+Svagelj, Walter S., Agustina Gómez-Laich, María Rita Pérez, Gustavo M. Somoza, and Flavio Quintana. 2021. <span>“Sex-Specific Environmental Sensitivity on the Postnatal Growth of a Sexually Size-Dimorphic Seabird.”</span> <em>Ibis</em> 163 (3): 1032–44. <a href="https://doi.org/10.1111/ibi.12920">https://doi.org/10.1111/ibi.12920</a>.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
