@@ -305,58 +305,49 @@ compute_critical_points <- function(
 
 ## Area Under the Curve calculation
 compute_auc <- function(
-  op,
-  t, 
-  Wderivs
+    op,
+    t,
+    Wderivs
 ) {
   
-  ## Geometric integral descriptors
   aucGf <- NA_real_
   aucSgr <- NA_real_
   aucGfSgr <- NA_real_
   
-    
-  # Integration interval
+  notes <- character(0)
+  
   if (op$aucInterval) {
     aucLower <- op$aucLower
     aucUpper <- op$aucUpper
   } else {
-    aucLower <- min(t, na.rm=TRUE)
-    aucUpper <- max(t, na.rm=TRUE)
+    aucLower <- min(t, na.rm = TRUE)
+    aucUpper <- max(t, na.rm = TRUE)
   }
   
-  
-  ## Growth function
-  if ("growthFunction" %in% op$aucFunction) {
-    aucGf <- integrate(
-      Wderivs$W, lower = aucLower, upper = aucUpper
-    )$value
+  safe_integrate <- function(fun, label) {
+    tryCatch(
+      stats::integrate(fun, lower = aucLower, upper = aucUpper)$value,
+      error = function(e) {
+        notes <<- c(notes,
+          paste0(label, " AUC could not be computed: ", conditionMessage(e))
+        )
+        NA_real_
+      }
+    )
   }
   
-  ## Square of the growth rate
-  if ("squaredRate" %in% op$aucFunction) {
-    aucSgr <- integrate(
-      Wderivs$W1s, lower = aucLower, upper = aucUpper
-    )$value
-  }
+  if ("growthFunction" %in% op$aucFunction)
+    aucGf <- safe_integrate(Wderivs$W, "Growth function")
   
-  ## Weighted square of the growth rate
-  if ("gfSquaredRate" %in% op$aucFunction) {
-    aucGfSgr <- integrate(
-      Wderivs$W_W1s, lower = aucLower, upper = aucUpper
-    )$value
-  }
-
+  if ("squaredRate" %in% op$aucFunction)
+    aucSgr <- safe_integrate(Wderivs$W1s, "Squared growth rate")
+  
+  if ("gfSquaredRate" %in% op$aucFunction)
+    aucGfSgr <- safe_integrate(Wderivs$W_W1s, "Weighted squared growth rate")
   
   list(
-    interval = list(
-      aucLower = aucLower,
-      aucUpper = aucUpper
-    ),
-    metrics = list(
-      aucGf    = aucGf,
-      aucSgr   = aucSgr,
-      aucGfSgr = aucGfSgr
-    )
+    interval = list(aucLower = aucLower, aucUpper = aucUpper),
+    metrics = list(aucGf = aucGf, aucSgr = aucSgr, aucGfSgr = aucGfSgr),
+    note = if (length(notes)) paste(unique(notes), collapse = " ") else NULL
   )
 }

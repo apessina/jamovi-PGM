@@ -88,65 +88,41 @@ populate_growthplot <- function(
 prepare_comparison_data <- function(
     op,
     tCurves,
-    tCurvesGlobal,
-    tSamplesGlobal,
-    ySamples,
     functions,
     cp = NULL
 ) {
   
+  ## Growth curve
+  curves <- list(x = tCurves, growth = functions$W(tCurves))
   
-  ySamples <- c(
-    ySamples, rep(NA, length(tSamplesGlobal) - length(ySamples))
-  )
-  
-  
-  ## Fill length with NA to plot trimmed depSetupLabel lengths
-  Wpred <- functions$W(tCurves)
-  
-  curves <- list(
-    x = c(
-      tCurves,
-      rep(NA, length(tCurvesGlobal) - length(tCurves))
-    ),
-    growth = c(
-      Wpred,
-      rep(NA, length(tCurvesGlobal) - length(Wpred))
-    )
-  )
-  
-  
+  ## Right-axis function
   if (op$comparisonRightFunc != "none") {
     
-    raPred <- make_plot_ypred(
+    curves$rightAxis <- make_plot_ypred(
       t = tCurves,
       curve = op$comparisonRightFunc,
       functions = functions
     )$ypred
     
-    curves$rightAxis <- c(
-      raPred,
-      rep(NA, length(tCurvesGlobal) - length(raPred))
-    )
   }
   
-  
+  ## Critical points
   if ("critPoints" %in% op$plotsElements && !is.null(cp)) {
+    
     critPoints <- get_plot_cpoints(
       op = op,
       yfunc = functions$W,
       critPoints = cp
     )
+    
   } else {
     critPoints <- NULL
   }
   
-  
   list(
-    ySamples = ySamples,
     curves = curves,
     cps = critPoints
-    )
+  )
 }
 
 

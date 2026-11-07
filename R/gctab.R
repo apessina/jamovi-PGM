@@ -196,7 +196,7 @@ populate_goftable <- function(
     stop("ERROR: metrics must be a list in populate_goftable()")
   }  
   
-  table$addRow(
+  table$setRow(
   
     rowKey = setup,
     
@@ -212,8 +212,6 @@ populate_goftable <- function(
   )
   
   add_note(key = setup, ref = label, note, table)
-  
-  table$setVisible(visible = TRUE)
 }
 
 ## Error metrics
@@ -229,7 +227,7 @@ populate_emtable <- function(
     stop("ERROR: metrics must be a list in populate_emtable()")
   }
   
-  table$addRow(
+  table$setRow(
     
     rowKey = setup, 
     
@@ -245,8 +243,6 @@ populate_emtable <- function(
   )
 
   add_note(key = setup, ref = label, note, table)
-  
-  table$setVisible(visible = TRUE)
 }
 
 ## Area Under the Curve metrics
@@ -263,7 +259,7 @@ populate_auctable <- function(
     stop("ERROR: metrics must be a list in populate_auctable()")
   }
     
-  table$addRow(
+  table$setRow(
       
     rowKey = setup, 
     
@@ -279,8 +275,6 @@ populate_auctable <- function(
   )
   
   add_note(key = setup, ref = label, note, table)
-  
-  table$setVisible(visible = TRUE)
 }
 
 ## Critical points location
@@ -300,7 +294,7 @@ populate_cptable <- function(
   }
   
   ## Location on time axis
-  table$addRow(
+  table$setRow(
     
     rowKey = paste0(setup, "_time"), 
     
@@ -323,7 +317,7 @@ populate_cptable <- function(
   )
   
   ## Location on dependent axis
-  table$addRow(
+  table$setRow(
     
     rowKey = paste0(setup, "_dep"), 
     
@@ -345,8 +339,6 @@ populate_cptable <- function(
   )
 
   add_note(key = setup, ref = label, note, table)
-  
-  table$setVisible(visible = TRUE)
 }
 
 
@@ -371,11 +363,15 @@ rank_auctable <- function(
     )
   )
   
-  maxValues <- apply(
+  maxValues <- vapply(
     aucDataFrame,
-    2,
-    max,
-    na.rm = TRUE
+    function(x) {
+      x <- x[is.finite(x)]
+      if (!length(x))
+        return(NA_real_)
+      max(x)
+    },
+    numeric(1)
   )
   maxValues[maxValues == 0] <- NA_real_
   

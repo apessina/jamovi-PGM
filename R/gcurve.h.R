@@ -17,15 +17,15 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             duplicateSetup = FALSE,
             removeSetup = FALSE,
             fixedTerms = list(
-                list(),
-                list(),
-                list(),
-                list()),
+                list(param="A", terms=list()),
+                list(param="K", terms=list()),
+                list(param="Ti", terms=list()),
+                list(param="d", terms=list())),
             randomGroups = list(
-                list(),
-                list(),
-                list(),
-                list()),
+                list(param="A", terms=list()),
+                list(param="K", terms=list()),
+                list(param="Ti", terms=list()),
+                list(param="d", terms=list())),
             gofMetrics = NULL,
             errorMetrics = NULL,
             iPoints = FALSE,
@@ -163,24 +163,38 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 "fixedTerms",
                 fixedTerms,
                 default=list(
-                    list(),
-                    list(),
-                    list(),
-                    list()),
-                template=jmvcore::OptionTerms$new(
+                    list(param="A", terms=list()),
+                    list(param="K", terms=list()),
+                    list(param="Ti", terms=list()),
+                    list(param="d", terms=list())),
+                template=jmvcore::OptionGroup$new(
                     "fixedTerms",
-                    NULL))
+                    NULL,
+                    elements=list(
+                        jmvcore::OptionString$new(
+                            "param",
+                            NULL),
+                        jmvcore::OptionTerms$new(
+                            "terms",
+                            NULL))))
             private$..randomGroups <- jmvcore::OptionArray$new(
                 "randomGroups",
                 randomGroups,
                 default=list(
-                    list(),
-                    list(),
-                    list(),
-                    list()),
-                template=jmvcore::OptionTerms$new(
+                    list(param="A", terms=list()),
+                    list(param="K", terms=list()),
+                    list(param="Ti", terms=list()),
+                    list(param="d", terms=list())),
+                template=jmvcore::OptionGroup$new(
                     "randomGroups",
-                    NULL))
+                    NULL,
+                    elements=list(
+                        jmvcore::OptionString$new(
+                            "param",
+                            NULL),
+                        jmvcore::OptionTerms$new(
+                            "terms",
+                            NULL))))
             private$..gofMetrics <- jmvcore::OptionNMXList$new(
                 "gofMetrics",
                 gofMetrics,
@@ -515,12 +529,22 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$add(jmvcore::Html$new(
                 options=options,
                 name="documentation",
+                visible=FALSE,
                 content="<p style=\"margin: 0; font-size: 0.9em;\">\n  See the <a href=\"https://apessina.github.io/jamovi-PGM/\">PGM documentation</a>\n  for detailed methods, instructions, and citation information.\n</p>\n"))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="parTable",
                 title="Model Parameters",
                 visible="(parTables)",
+                clearWith=list(
+                    "deps",
+                    "time",
+                    "corrGroups",
+                    "modelParam",
+                    "modelPhase",
+                    "modeling",
+                    "fixedTerms",
+                    "randomGroups"),
                 columns=list(
                     list(
                         `name`="var", 
@@ -549,12 +573,23 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `type`="number", 
                         `format`="zto,pvalue")),
                 refs=list(
-                    "pgm")))
+                    "pgm",
+                    "richards")))
             self$add(jmvcore::Table$new(
                 options=options,
                 name="randomTable",
                 title="Random Effects",
                 visible=FALSE,
+                clearWith=list(
+                    "deps",
+                    "time",
+                    "corrGroups",
+                    "modelParam",
+                    "modelPhase",
+                    "modeling",
+                    "fixedTerms",
+                    "randomGroups",
+                    "parTables"),
                 columns=list(
                     list(
                         `name`="var", 
@@ -579,6 +614,15 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 name="estTable",
                 title="Estimation Methods",
                 visible="(estTables)",
+                clearWith=list(
+                    "deps",
+                    "time",
+                    "corrGroups",
+                    "modelParam",
+                    "modelPhase",
+                    "modeling",
+                    "fixedTerms",
+                    "randomGroups"),
                 columns=list(
                     list(
                         `name`="var", 
@@ -612,7 +656,17 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                             options=options,
                             name="gofTable",
                             title="Goodness of Fit",
-                            visible=FALSE,
+                            visible="(length(gofMetrics) > 0)",
+                            clearWith=list(
+                                "deps",
+                                "time",
+                                "corrGroups",
+                                "modelParam",
+                                "modelPhase",
+                                "modeling",
+                                "fixedTerms",
+                                "randomGroups",
+                                "gofMetrics"),
                             columns=list(
                                 list(
                                     `name`="var", 
@@ -646,7 +700,17 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                             options=options,
                             name="emTable",
                             title="Error Metrics",
-                            visible=FALSE,
+                            visible="(length(errorMetrics) > 0)",
+                            clearWith=list(
+                                "deps",
+                                "time",
+                                "corrGroups",
+                                "modelParam",
+                                "modelPhase",
+                                "modeling",
+                                "fixedTerms",
+                                "randomGroups",
+                                "errorMetrics"),
                             columns=list(
                                 list(
                                     `name`="var", 
@@ -666,11 +730,13 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                                     `visible`="(errorMetrics:medae)"),
                                 list(
                                     `name`="sMAPE", 
-                                    `type`="text", 
+                                    `title`="sMAPE (%)", 
+                                    `type`="number", 
                                     `visible`="(errorMetrics:smape)"),
                                 list(
                                     `name`="RRMSE", 
-                                    `type`="text", 
+                                    `title`="RRMSE (%)", 
+                                    `type`="number", 
                                     `visible`="(errorMetrics:rrmse)")),
                             refs=list(
                                 "pgm")))}))$new(options=options))
@@ -678,7 +744,20 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 options=options,
                 name="aucTable",
                 title="Area Under the Curve",
-                visible=FALSE,
+                visible="(length(aucFunction) > 0)",
+                clearWith=list(
+                    "deps",
+                    "time",
+                    "corrGroups",
+                    "modelParam",
+                    "modelPhase",
+                    "modeling",
+                    "fixedTerms",
+                    "randomGroups",
+                    "aucFunction",
+                    "aucInterval",
+                    "aucLower",
+                    "aucUpper"),
                 columns=list(
                     list(
                         `name`="var", 
@@ -700,9 +779,9 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `visible`="(aucFunction:growthFunction)"),
                     list(
                         `name`="gfRank", 
-                        `title`="Rank", 
+                        `title`="Rank (%)", 
                         `superTitle`="Growth function", 
-                        `type`="text", 
+                        `type`="number", 
                         `visible`="(aucFunction:growthFunction)"),
                     list(
                         `name`="sgr", 
@@ -712,9 +791,9 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `visible`="(aucFunction:squaredRate)"),
                     list(
                         `name`="sgrRank", 
-                        `title`="Rank", 
+                        `title`="Rank (%)", 
                         `superTitle`="Squared rate", 
-                        `type`="text", 
+                        `type`="number", 
                         `visible`="(aucFunction:squaredRate)"),
                     list(
                         `name`="gfSgr", 
@@ -724,9 +803,9 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `visible`="(aucFunction:gfSquaredRate)"),
                     list(
                         `name`="gfSgrRank", 
-                        `title`="Rank", 
+                        `title`="Rank (%)", 
                         `superTitle`="Weighted rate\u00B2", 
-                        `type`="text", 
+                        `type`="number", 
                         `visible`="(aucFunction:gfSquaredRate)")),
                 refs=list(
                     "pgm",
@@ -734,8 +813,24 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$add(jmvcore::Table$new(
                 options=options,
                 name="critPointsTable",
-                title="Critical points",
-                visible=FALSE,
+                title="Critical Points",
+                visible="(iPoints || length(lagPoints) > 0 || length(ogfPoints) > 0 || length(accPoints) > 0 || length(asyPoints) > 0)",
+                clearWith=list(
+                    "deps",
+                    "time",
+                    "corrGroups",
+                    "modelParam",
+                    "modelPhase",
+                    "modeling",
+                    "fixedTerms",
+                    "randomGroups",
+                    "iPoints",
+                    "lagPoints",
+                    "ogfPoints",
+                    "accPoints",
+                    "asyPoints",
+                    "thValue",
+                    "timeAxisFactor"),
                 columns=list(
                     list(
                         `name`="var", 
@@ -806,7 +901,6 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     width=700,
                     height=500,
                     renderFun=".residualPlot",
-                    requiresData=TRUE,
                     refs=list(
                         "pgm"))))
             self$add(jmvcore::Array$new(
@@ -821,7 +915,6 @@ gcurveResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     width=700,
                     height=500,
                     renderFun=".growthPlot",
-                    requiresData=TRUE,
                     refs=list(
                         "pgm"))))
             self$add(jmvcore::Image$new(
@@ -843,7 +936,7 @@ gcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "gcurve",
-                version = c(0,10,0),
+                version = c(0,10,1),
                 options = options,
                 results = gcurveResults$new(options=options),
                 data = data,
@@ -987,15 +1080,15 @@ gcurve <- function(
     duplicateSetup = FALSE,
     removeSetup = FALSE,
     fixedTerms = list(
-                list(),
-                list(),
-                list(),
-                list()),
+                list(param="A", terms=list()),
+                list(param="K", terms=list()),
+                list(param="Ti", terms=list()),
+                list(param="d", terms=list())),
     randomGroups = list(
-                list(),
-                list(),
-                list(),
-                list()),
+                list(param="A", terms=list()),
+                list(param="K", terms=list()),
+                list(param="Ti", terms=list()),
+                list(param="d", terms=list())),
     gofMetrics = NULL,
     errorMetrics = NULL,
     iPoints = FALSE,

@@ -512,3 +512,18 @@ pgm_validate_fixed_design <- function(
   invisible(TRUE)
 }
 
+pgm_parameter_terms <- function(x) {
+  
+  lapply(x, function(item) {
+    
+    if (
+      is.list(item) &&
+      !is.null(names(item)) &&
+      "terms" %in% names(item)
+    ) {
+      return(item$terms)
+    }
+    
+    item
+  })
+}

@@ -7,7 +7,7 @@
         `author`="Pessina ALR, Garcia Neto M", 
         `year`=2026, 
         `title`="PGM: Practical Growth Modeling", 
-        `publisher`="(Version 0.10.0) [jamovi module]. DOI: 10.5281/zenodo.15764773", 
+        `publisher`="(Version 0.10.1) [jamovi module]. DOI: 10.5281/zenodo.15764773", 
         `url`="https://github.com/apessina/jamovi-PGM"), 
     `richards`=list(
         `type`="article", 
@@ -16,7 +16,8 @@
         `title`="A unified approach to the Richards-model family for use in growth analyses: why we need only two model forms", 
         `publisher`="Journal of Theoretical Biology", 
         `volume`=267, 
-        `pages`="417\u2013425"), 
+        `pages`="417\u2013425", 
+        `url`="https://doi.org/10.1016/j.jtbi.2010.09.008"), 
     `ppfm`=list(
         `type`="software", 
         `author`="Garcia-Neto M, Kebreab E, Faria Junior MJA", 
@@ -31,7 +32,8 @@
         `title`="A Study Over Determination of Asymptotic Deceleration and  Absolute Acceleration Points in Logistic Growth Model", 
         `publisher`="Turk. J. Math. Comput. Sci.", 
         `volume`=10, 
-        `pages`="33\u201337"), 
+        `pages`="33\u201337", 
+        `url`="https://dergipark.org.tr/tr/pub/tjmcs/issue/42027/448246"), 
     `pda`=list(
         `type`="article", 
         `author`="Mischan MM, Pinho SZ, Carvalho LR", 
@@ -39,7 +41,8 @@
         `title`="Determination of a point sufficiently close to the asymptote  in nonlinear growth functions", 
         `publisher`="Scientia Agricola", 
         `volume`=68, 
-        `pages`="109\u2013114"), 
+        `pages`="109\u2013114", 
+        `url`="https://doi.org/10.1590/S0103-90162011000100016"), 
     `nlsLM`=list(
         `type`="software", 
         `author`="Elzhov TV, Mullen KM, Spiess A-N, Bolker B", 

@@ -2,31 +2,12 @@
 module.exports = {
 
     view_loaded: function(ui, event) {
-
-        makeButtonCompact(ui.duplicateSetup);
-        makeButtonCompact(ui.removeSetup);
-
-        ui.duplicateSetup.$el
-            .off('click.gcurve')
-            .on('click.gcurve', () => {
-                this.duplicateSetup(ui);
-            });
-
-        ui.removeSetup.$el
-            .off('click.gcurve')
-            .on('click.gcurve', () => {
-                this.removeSetup(ui);
-            });
-            
-        setTimeout(() => updateParameterLabels(ui), 0);
+        syncParameterRows(ui);
     },
-    
     
     view_updated: function(ui, event) {
-      
-        setTimeout(() => updateParameterLabels(ui), 0);
+        syncParameterRows(ui);
     },
-
 
     deps_changed: function(ui, event) {
 
@@ -55,10 +36,25 @@ module.exports = {
         if (!sameModeling(current, next))
             ui.modeling.setValue(next);
     },
+    
+    duplicateSetup_clicked: function(ui, event) {
+
+        if (ui.duplicateSetup.value() !== true)
+            return;
+
+        this.duplicateSetup(ui);
+    },
+
+    removeSetup_clicked: function(ui, event) {
+
+        if (ui.removeSetup.value() !== true)
+            return;
+
+        this.removeSetup(ui);
+    },
 
     modelParam_changed: function(ui, event) {
-    
-        setTimeout(() => updateParameterLabels(ui), 0);
+        syncParameterRows(ui);
     },
 
     duplicateSetup: function(ui) {
@@ -246,51 +242,64 @@ function getSelectedModelingIndex(ui) {
 }
 
 
-function makeButtonCompact(control) {
+function syncParameterRows(ui) {
 
-    if (!control || !control.$el)
-        return;
+    const names = [
+        'A',
+        'K',
+        ui.modelParam.value() === 'W0' ? 'W0' : 'Ti',
+        'd'
+    ];
 
-    control.$el.css({
-        width: 'auto',
-        minWidth: '0',
-        height: '26px',
-        padding: '2px 9px',
-        fontSize: '12px',
-        lineHeight: '18px',
-        flexGrow: '0'
+    const fixedCurrent = asArray(ui.fixedTerms.value());
+    const randomCurrent = asArray(ui.randomGroups.value());
+
+    const fixedNext =
+        normalizeParameterRows(fixedCurrent, names);
+
+    const randomNext =
+        normalizeParameterRows(randomCurrent, names);
+
+    ui.view.model.options.beginEdit();
+
+    if (!sameValue(fixedCurrent, fixedNext))
+        ui.fixedTerms.setValue(fixedNext);
+
+    if (!sameValue(randomCurrent, randomNext))
+        ui.randomGroups.setValue(randomNext);
+
+    ui.view.model.options.endEdit();
+}
+
+
+function normalizeParameterRows(current, names) {
+
+    return names.map((param, index) => {
+
+        const row = current[index];
+
+        if (
+            row &&
+            !Array.isArray(row) &&
+            typeof row === 'object'
+        ) {
+            return {
+                param: param,
+                terms: asArray(row.terms)
+            };
+        }
+
+        return {
+            param: param,
+            terms: Array.isArray(row)
+                ? row.slice()
+                : []
+        };
     });
 }
 
 
-function updateParameterLabels(ui) {
-
-    const param = ui.modelParam.value();
-    const names = ['A', 'K', param === 'W0' ? 'W0' : 'Ti', 'd'];
-
-    updateLabels(ui.fixedTerms, names);
-    updateLabels(ui.randomGroups, names);
-}
-
-
-function updateLabels(control, names) {
-
-    if (!control || !control.$el)
-        return;
-
-    const validNames = ['Parameter', 'A', 'K', 'Ti', 'W0', 'd'];
-
-    const labels = control.$el.find('*').filter(function() {
-
-        return this.children.length === 0 &&
-            validNames.includes(this.textContent.trim());
-    });
-
-    if (labels.length !== names.length)
-        return;
-
-    labels.each(function(index) {
-        this.textContent = names[index];
-    });
+function sameValue(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
 }
 

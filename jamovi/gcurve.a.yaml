@@ -3,7 +3,7 @@ name:  gcurve
 title: Growth Curve Modeling
 menuGroup: Growth
 menuTitle: Curve Modeling
-version: '0.10.0'
+version: '0.10.1'
 jas: '1.2'
 
 description:
@@ -94,7 +94,7 @@ options:
             `TRUE` (default) or `FALSE`, provide estimated parameters values tables
       
     - name: estTables
-      title: Estimation Info
+      title: Estimation info
       type: Bool
       default: false
       description:
@@ -130,7 +130,7 @@ options:
       default: single
       description:
           ui: >
-            define the number of phases for the delected model family.
+            define the number of phases for the selected model family.
           R: >
             one of `'single'`
 
@@ -213,9 +213,18 @@ options:
     - name: fixedTerms
       title: Parameters
       type: Array
-      default: [[], [], [], []]
+      default:
+        - { param: A,  terms: [] }
+        - { param: K,  terms: [] }
+        - { param: Ti, terms: [] }
+        - { param: d,  terms: [] }
       template:
-          type: Terms
+          type: Group
+          elements:
+            - name: param
+              type: String
+            - name: terms
+              type: Terms
       description:
           ui: >
             define the fixed-effect terms assigned to each estimated growth
@@ -226,9 +235,18 @@ options:
     - name: randomGroups
       title: Parameters
       type: Array
-      default: [[], [], [], []]
+      default:
+        - { param: A,  terms: [] }
+        - { param: K,  terms: [] }
+        - { param: Ti, terms: [] }
+        - { param: d,  terms: [] }
       template:
-          type: Terms
+          type: Group
+          elements:
+            - name: param
+              type: String
+            - name: terms
+              type: Terms
       description:
           ui: >
             define the random-effects grouping terms assigned to each estimated
@@ -374,7 +392,7 @@ options:
             one or more of `'ogf3'`, or `'pda'`
     
     - name: aucFunction
-      title: Geometric descriptors
+      title: Geometric Descriptors
       type: NMXList
       options:
         - name: growthFunction
@@ -388,7 +406,7 @@ options:
           ui: >
             provide functions for calculating the area under the curve and 
             performing comparative geometric analyses based on relative AUC 
-            values; Growth funtion, Squared Growth Rate, or Squared Growth Rate 
+            values; Growth function, Squared Growth Rate, or Squared Growth Rate 
             weighted by the Growth Function.
           R: >
             one or more of `'growthFunction'`, `'squaredRate'`, or 
@@ -407,7 +425,7 @@ options:
             `TRUE` or `FALSE` (default), 
       
     - name: aucLower
-      title: Integral Lower
+      title: Integral lower
       type: Number
       min: 0
       default: 0
@@ -418,7 +436,7 @@ options:
             a number >= 0 (default: 0), lower interval for AUC calculation
       
     - name: aucUpper
-      title: Integral Upper
+      title: Integral upper
       type: Number
       min: 0
       default: 0
@@ -429,7 +447,7 @@ options:
             a number >= 0 (default: 0), upper interval for AUC calculation
 
     - name: growthPlots
-      title: Growth Curve Plot
+      title: Growth curve plot
       type: Bool
       default: false
       description:
@@ -637,6 +655,7 @@ options:
             growth curves
       
     - name: comparisonRightFunc
+      title: Function
       type: List
       options:
         - title: None
@@ -645,7 +664,7 @@ options:
           name:  growthRate
         - title: Acceleration
           name:  acceleration
-        - title: Growth rate²
+        - title: Squared rate
           name:  squaredRate
         - title: Weighted rate²
           name:  gfSquaredRate
@@ -664,7 +683,7 @@ options:
             growthComparisonPlots
 
     - name: plotsElements
-      title: Plots elements
+      title: Plot elements
       type: NMXList
       options:
         - name: dataPoints

@@ -3,6 +3,48 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
     inherit = gcurveBase,
     private = list(
       
+      .init = function() {
+        
+        op <- self$options
+        results <- self$results
+        
+        hasDeps <- length(op$deps) > 0L
+        hasTime <- length(op$time) > 0L
+        
+        results$documentation$setVisible(!(hasDeps && hasTime))
+        
+        for (setup in op$modeling) {
+          
+          setupId <- setup$setupId
+          label <- paste0(setup$var, ": ", setup$setupLabel)
+          
+          results$modelEval$gofTable$addRow(
+            rowKey = setupId,
+            values = list(var = label)
+          )
+          
+          results$modelEval$emTable$addRow(
+            rowKey = setupId,
+            values = list(var = label)
+          )
+          
+          results$aucTable$addRow(
+            rowKey = setupId,
+            values = list(var = label)
+          )
+          
+          results$critPointsTable$addRow(
+            rowKey = paste0(setupId, "_time"),
+            values = list(var = label, Axis = if (hasTime) op$time else "")
+          )
+          
+          results$critPointsTable$addRow(
+            rowKey = paste0(setupId, "_dep"),
+            values = list(Axis = setup$var)
+          )
+        }
+      },
+      
       .run = function() {
         
         ##### Data -----
@@ -10,19 +52,25 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Option values into shorter variable names
         op <- self$options
         results <- self$results
-        
-        deps  <- op$deps
+        deps <- op$deps
         time <- op$time
         corrGroups <- op$corrGroups
-        fixedTerms <- op$fixedTerms
-        randomGroups <- op$randomGroups
         
         ## Get required data
         if (is.null(deps) || is.null(time))
           return()
         
-        fixedTerms <- unique(unlist(fixedTerms, use.names = FALSE))
-        randomGroups <- unique(unlist(randomGroups, use.names = FALSE))
+        if (isTRUE(op$aucInterval) && op$aucUpper <= op$aucLower) {
+          jmvcore::reject(
+            "The upper AUC limit must be greater than the lower limit"
+          )
+        }
+        
+        fixedTermBlocks <- pgm_parameter_terms(op$fixedTerms)
+        randomGroupBlocks <- pgm_parameter_terms(op$randomGroups)
+        
+        fixedTerms <- unique(unlist(fixedTermBlocks, use.names = FALSE))
+        randomGroups <- unique(unlist(randomGroupBlocks, use.names = FALSE))
         vars <- unique(c(deps, time, corrGroups, fixedTerms, randomGroups))
         data <- self$data[, vars, drop = FALSE]
         
@@ -34,12 +82,11 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ## Giving time a new "resolution" for smooth lines
         if (length(unique(na.omit(data[[time]]))) < 2)
-          stop("At least two different time values are required")
-        trawGlobal <- data[[time]]
-        trangeGlobal <- range(trawGlobal, na.rm = TRUE)
-        tnewSize <- min(3000, max(
-            500, round(diff(trangeGlobal) * op$timeAxisFactor)
-          )
+          jmvcore::reject("At least two different time values are required")
+
+        trangeGlobal <- range(data[[time]], na.rm = TRUE)
+        tnewSize <- min(3000, 
+          max(500, round(diff(trangeGlobal) * op$timeAxisFactor))
         )
         tnewGlobal <- seq(trangeGlobal[1], trangeGlobal[2], length.out = tnewSize)
         
@@ -47,7 +94,7 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ##### Model Setups Iteration -----
         
         ## Global variables
-        ySamplesList <- list(trawGlobal = trawGlobal)
+        ySamplesList <- list()
         curvesList <- list(tnewGlobal = tnewGlobal)
         cpList <- list()
         aucs <- list()
@@ -80,9 +127,11 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           yraw <- datacln[[dep]]
           
           ## Check if both variables have at least two unique values
-          if (length(unique(xraw)) < 2 || length(unique(yraw)) < 2)
-            stop("At least two unique (x, y) pairs are required for growth analysis")
-  
+          if (length(unique(xraw)) < 2 || length(unique(yraw)) < 2) {
+            jmvcore::reject(
+              "At least two unique (x, y) pairs are required for growth analysis"
+            )
+          }
           
           ##### Mean points -----
           samplesMean <- aggregate(
@@ -267,13 +316,14 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           }
           
           # Area Under the Curve metrics
-          if (any(!is.na(unlist(aucs[[setupId]]$metrics)))) {
+          if (length(op$aucFunction) > 0L) {
             populate_auctable(
               table    = results$aucTable,
               setup    = setupId,
               label    = depSetupLabel,
               interval = aucs[[setupId]]$interval,
-              metrics  = aucs[[setupId]]$metrics
+              metrics  = aucs[[setupId]]$metrics,
+              note     = aucs[[setupId]]$note
             )
           }
           
@@ -348,13 +398,10 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           comparisonData <- prepare_comparison_data(
             op = op,
             tCurves = tnew,
-            tCurvesGlobal = tnewGlobal,
-            tSamplesGlobal = trawGlobal,
-            ySamples = yraw,
             functions = Wderivs,
             cp = cp
           )
-          ySamplesList[[depSetupLabel]]  <- comparisonData$ySamples
+          ySamplesList[[depSetupLabel]] <- list(x = xraw, y = yraw)
           curvesList[[depSetupLabel]] <- comparisonData$curves
           cpList[[depSetupLabel]] <- comparisonData$cps
           
@@ -591,49 +638,46 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         curvesList <- image$state$curvesList
         ySamplesList <- image$state$ySamplesList
         
-        ## Time columns and y columns names
+        ## Setup labels and global time grid
         tnewGlobal <- curvesList$tnewGlobal
-        trawGlobal <- ySamplesList$trawGlobal
         depSetupLabels <- setdiff(names(curvesList), "tnewGlobal")
-
+        
         ## Generate colors in the standard jamovi palette
         jmvColors <- jmvcore::colorPalette(n = length(depSetupLabels))
         
-        ## Join all samples y to calculate limits
-        ylimTotal <- range(unlist(ySamplesList[depSetupLabels]), na.rm = TRUE)
+        ## Global vertical limits
+        ylimTotal <- range(
+          unlist(lapply(ySamplesList[depSetupLabels], \(s) s$y)),
+          na.rm = TRUE
+        )
         ylimTotal <- better_lim(ylimTotal)
         
-        ## Deactivate the default box around the plotting area
-        par(bty='L')
+        ## Global horizontal limits
+        xlimTotal <- range(tnewGlobal)
         
-        ## Create and set-up the plot
+        ## Plot settings
+        par(bty = 'L')
+        
+        ## First setup
+        samples <- ySamplesList[[depSetupLabels[1]]]
+        
         samplesColor <- NA
-        
         if ("dataPoints" %in% op$plotsElements)
           samplesColor <- adjustcolor(jmvColors[1], alpha.f = 0.3)
         
-        plot(trawGlobal, ySamplesList[[depSetupLabels[1]]], pch=16, 
-             xlab="", ylab="", ylim = ylimTotal, col = samplesColor)
+        plot(samples$x, samples$y, pch = 16, xlab = "", ylab = "",
+             xlim = xlimTotal, ylim = ylimTotal, col = samplesColor)
         
-        ## Add the other variables samples
-        if (length(depSetupLabels) > 1) {
+        ## Remaining setups
+        if ("dataPoints" %in% op$plotsElements &&
+            length(depSetupLabels) > 1L) {
           
           for (i in seq_along(depSetupLabels)[-1]) {
             
-            depSetupLabel <- depSetupLabels[i]
-            samplesColor <- NA
-            
-            if ("dataPoints" %in% op$plotsElements){
-              
-              samplesColor <- adjustcolor(jmvColors[i], alpha.f = 0.3)
-              depSetupLabel <- depSetupLabels[i]
-              samples <- ySamplesList[[depSetupLabel]]
-              
-              points(trawGlobal, samples, pch = 16, col = samplesColor)
-            }
-            
+            samples <- ySamplesList[[depSetupLabels[i]]]
+            points(samples$x, samples$y, pch = 16,
+                   col = adjustcolor(jmvColors[i], alpha.f = 0.3))
           }
-          
         }
         
         ## Add growth curves
@@ -664,30 +708,29 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         legend("bottom", inset = -0.2, legend = depSetupLabels, 
                col = jmvColors, lty = 1, lwd = 2, horiz = TRUE, 
                bty = "n", xpd = TRUE)
-          
         
         ## Right Axis
         if (op$comparisonRightFunc != "none") {
           
-          x <- curvesList[[depSetupLabel]]$x
-          xlimRight <- c(min(trawGlobal), max(trawGlobal))
+          ylimRight <- better_lim(range(
+            unlist(lapply(curvesList[depSetupLabels], \(item) item$rightAxis)),
+            na.rm = TRUE
+          ))
           
-          ylimRight <- better_lim(range(unlist(
-            lapply(curvesList[depSetupLabels], \(item) item$rightAxis)
-          ), na.rm = TRUE))
-
           par(new = TRUE)
           
-          plot(x, curvesList[[depSetupLabels[1]]]$rightAxis, type = "n", 
-               axes = FALSE, xlab = "", ylab = "", ylim = ylimRight)
+          plot(tnewGlobal, rep(NA_real_, length(tnewGlobal)), type="n",
+               axes=FALSE, xlab="", ylab="", xlim=xlimTotal, ylim=ylimRight)
           
-          for (i in seq_along(curvesList))
-            lines(x, curvesList[[depSetupLabels[i]]]$rightAxis, 
+          for (i in seq_along(depSetupLabels)) {
+            depSetupLabel <- depSetupLabels[i]
+            lines(curvesList[[depSetupLabel]]$x, 
+                  curvesList[[depSetupLabel]]$rightAxis, 
                   col = jmvColors[i], lty = "dashed")
+          }
           
           axis(4)
         }
-        
         
         ## Notify the rendering system that we have plotted something
         TRUE

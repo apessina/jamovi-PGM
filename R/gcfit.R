@@ -72,11 +72,14 @@ pgm_fit <- function(
   naturalNames <- setNames(
     c("A", "K", if (op$modelParam == "W0") "W0" else "Ti", "d"), paramNames
   )
+  
   fixedTerms <- setNames(
-    lapply(op$fixedTerms, pgm_normalize_terms), paramNames
+    lapply(pgm_parameter_terms(op$fixedTerms), pgm_normalize_terms),
+    paramNames
   )
   randomTerms <- setNames(
-    lapply(op$randomGroups, pgm_normalize_terms), paramNames
+    lapply(pgm_parameter_terms(op$randomGroups), pgm_normalize_terms),
+    paramNames
   )
   
   ## Keep only parameters present in this setup

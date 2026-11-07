@@ -5,7 +5,7 @@ refs:
         author: Pessina ALR, Garcia Neto M
         year: 2026
         title: 'PGM: Practical Growth Modeling'
-        publisher: '(Version 0.10.0) [jamovi module]. DOI: 10.5281/zenodo.15764773'
+        publisher: '(Version 0.10.1) [jamovi module]. DOI: 10.5281/zenodo.15764773'
         url: https://github.com/apessina/jamovi-PGM
     
     richards:
@@ -16,6 +16,7 @@ refs:
         publisher: 'Journal of Theoretical Biology'
         volume: 267
         pages: '417–425'
+        url: https://doi.org/10.1016/j.jtbi.2010.09.008
         
     ppfm:
         type: 'software'
@@ -34,6 +35,7 @@ refs:
         publisher: 'Turk. J. Math. Comput. Sci.'
         volume: 10
         pages: '33–37'
+        url: https://dergipark.org.tr/tr/pub/tjmcs/issue/42027/448246
     
     pda:
         type: 'article'
@@ -44,6 +46,7 @@ refs:
         publisher: 'Scientia Agricola'
         volume: 68
         pages: '109–114'
+        url: https://doi.org/10.1590/S0103-90162011000100016
         
     nlsLM:
         type: 'software'

@@ -107,8 +107,12 @@ children:
         children:
           - type: ActionButton
             name: duplicateSetup
+            events:
+              change: './gcurve::duplicateSetup_clicked'
           - type: ActionButton
             name: removeSetup
+            events:
+              change: './gcurve::removeSetup_clicked'
   - type: CollapseBox
     label: Fixed Effects
     collapsed: true
@@ -133,19 +137,20 @@ children:
                   - type: ListBox
                     name: fixedTerms
                     height: large
-                    selectable: true
-                    template:
-                      type: LayoutBox
-                      margin: normal
-                      targetArea: true
-                      children:
-                        - type: Label
-                          name: fixedBlockName
-                          label: Parameter
-                          stretchFactor: 1
-                          margin: normal
-                        - type: ListBox
-                          name: fixedBlockList
+                    showColumnHeaders: false
+                    stretchFactor: 1
+                    columns:
+                      - name: param
+                        selectable: false
+                        stretchFactor: 1
+                        maxWidth: 55
+                        template:
+                          type: Label
+                      - name: terms
+                        selectable: false
+                        stretchFactor: 4
+                        template:
+                          type: ListBox
                           isTarget: true
                           valueFilter: unique
                           height: auto
@@ -178,19 +183,20 @@ children:
                   - type: ListBox
                     name: randomGroups
                     height: large
-                    selectable: true
-                    template:
-                      type: LayoutBox
-                      margin: normal
-                      targetArea: true
-                      children:
-                        - type: Label
-                          name: randomBlockName
-                          label: Parameter
-                          stretchFactor: 1
-                          margin: normal
-                        - type: ListBox
-                          name: randomBlockList
+                    showColumnHeaders: false
+                    stretchFactor: 1
+                    columns:
+                      - name: param
+                        selectable: false
+                        stretchFactor: 1
+                        maxWidth: 55
+                        template:
+                          type: Label
+                      - name: terms
+                        selectable: false
+                        stretchFactor: 4
+                        template:
+                          type: ListBox
                           isTarget: true
                           valueFilter: unique
                           height: auto
@@ -371,7 +377,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Geometric descriptors
+                label: Geometric Descriptors
                 children:
                   - name: aucFunction_growthFunction
                     type: CheckBox
@@ -460,7 +466,7 @@ children:
             stretchFactor: 1
             children:
               - type: Label
-                label: Additional plots
+                label: Additional Plots
                 children:
                   - type: CheckBox
                     name: residualPlots
@@ -474,7 +480,7 @@ children:
                             name: comparisonRightFunc
                             enable: (growthComparisonPlots)
               - type: Label
-                label: Plots elements
+                label: Plot elements
                 children:
                   - name: plotsElements_dataPoints
                     type: CheckBox

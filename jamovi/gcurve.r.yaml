@@ -7,6 +7,7 @@ items:
 
     - name: documentation
       type: Html
+      visible: false
       content: |
         <p style="margin: 0; font-size: 0.9em;">
           See the <a href="https://apessina.github.io/jamovi-PGM/">PGM documentation</a>
@@ -18,6 +19,15 @@ items:
       type: Table
       description: a table containing models parameters estimation
       visible: (parTables)
+      clearWith:
+        - deps
+        - time
+        - corrGroups
+        - modelParam
+        - modelPhase
+        - modeling
+        - fixedTerms
+        - randomGroups
       columns:
         - name: var
           title: ''
@@ -46,11 +56,22 @@ items:
           format: zto,pvalue
       refs:
         - pgm
+        - richards
         
     - name: randomTable
       title: Random Effects
       type: Table
       visible: false
+      clearWith:
+        - deps
+        - time
+        - corrGroups
+        - modelParam
+        - modelPhase
+        - modeling
+        - fixedTerms
+        - randomGroups
+        - parTables
       columns:
         - name: var
           title: ''
@@ -75,6 +96,15 @@ items:
       type: Table
       description: a table containing information about estimation methods
       visible: (estTables)
+      clearWith:
+        - deps
+        - time
+        - corrGroups
+        - modelParam
+        - modelPhase
+        - modeling
+        - fixedTerms
+        - randomGroups
       columns:
         - name: var
           title: ''
@@ -100,7 +130,17 @@ items:
           title: Goodness of Fit
           type: Table
           description: a table containing GoF metrics
-          visible: false
+          visible: (length(gofMetrics) > 0)
+          clearWith:
+            - deps
+            - time
+            - corrGroups
+            - modelParam
+            - modelPhase
+            - modeling
+            - fixedTerms
+            - randomGroups
+            - gofMetrics
           columns:
             - name: var
               title: ''
@@ -134,7 +174,17 @@ items:
           title: Error Metrics
           type: Table
           description: a table containing error metrics
-          visible: false
+          visible: (length(errorMetrics) > 0)
+          clearWith:
+            - deps
+            - time
+            - corrGroups
+            - modelParam
+            - modelPhase
+            - modeling
+            - fixedTerms
+            - randomGroups
+            - errorMetrics
           columns:
             - name: var
               title: ''
@@ -153,19 +203,34 @@ items:
               visible: (errorMetrics:medae)
               
             - name: sMAPE
-              type: text
+              title: sMAPE (%)
+              type: number
               visible: (errorMetrics:smape)
               
             - name: RRMSE
-              type: text
+              title: RRMSE (%)
+              type: number
               visible: (errorMetrics:rrmse)
           refs:
             - pgm
       
     - name: aucTable
       title: Area Under the Curve
-      visible: false
       type: Table
+      visible: (length(aucFunction) > 0)
+      clearWith:
+            - deps
+            - time
+            - corrGroups
+            - modelParam
+            - modelPhase
+            - modeling
+            - fixedTerms
+            - randomGroups
+            - aucFunction
+            - aucInterval
+            - aucLower
+            - aucUpper
       columns:
         - name: var
           title: ''
@@ -186,9 +251,9 @@ items:
           visible: (aucFunction:growthFunction)
           
         - name: gfRank
-          title: Rank
+          title: Rank (%)
           superTitle: Growth function
-          type: text
+          type: number
           visible: (aucFunction:growthFunction)
           
         - name: sgr
@@ -198,9 +263,9 @@ items:
           visible: (aucFunction:squaredRate)
           
         - name: sgrRank
-          title: Rank
+          title: Rank (%)
           superTitle: Squared rate
-          type: text
+          type: number
           visible: (aucFunction:squaredRate)
           
         - name: gfSgr
@@ -210,18 +275,34 @@ items:
           visible: (aucFunction:gfSquaredRate)
           
         - name: gfSgrRank
-          title: Rank
+          title: Rank (%)
           superTitle: Weighted rate²
-          type: text
+          type: number
           visible: (aucFunction:gfSquaredRate)
       refs:
         - pgm
         - ppfm
 
     - name: critPointsTable
-      title: Critical points
+      title: Critical Points
       type: Table
-      visible: false
+      visible: (iPoints || length(lagPoints) > 0 || length(ogfPoints) > 0 || length(accPoints) > 0 || length(asyPoints) > 0)
+      clearWith:
+        - deps
+        - time
+        - corrGroups
+        - modelParam
+        - modelPhase
+        - modeling
+        - fixedTerms
+        - randomGroups
+        - iPoints
+        - lagPoints
+        - ogfPoints
+        - accPoints
+        - asyPoints
+        - thValue
+        - timeAxisFactor
       columns:
         - name: var
           title: ''
@@ -291,7 +372,6 @@ items:
         width: 700
         height: 500
         renderFun: .residualPlot
-        requiresData: true
         refs:
           - pgm
 
@@ -306,7 +386,6 @@ items:
         width: 700
         height: 500
         renderFun: .growthPlot
-        requiresData: true
         refs:
           - pgm
 
