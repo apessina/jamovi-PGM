@@ -5,7 +5,7 @@ refs:
         author: Pessina ALR, Garcia Neto M
         year: 2026
         title: 'PGM: Practical Growth Modeling'
-        publisher: '(Version 0.10.1) [jamovi module]. DOI: 10.5281/zenodo.15764773'
+        publisher: '(Version 0.10.2) [jamovi module]. DOI: 10.5281/zenodo.15764773'
         url: https://github.com/apessina/jamovi-PGM
     
     richards:
@@ -30,8 +30,7 @@ refs:
         type: 'article'
         author: Korkmaz M, Oda V,  Basustaoglu EO
         year: 2018
-        title: 'A Study Over Determination of Asymptotic Deceleration and 
-        Absolute Acceleration Points in Logistic Growth Model'
+        title: 'A Study Over Determination of Asymptotic Deceleration and Absolute Acceleration Points in Logistic Growth Model'
         publisher: 'Turk. J. Math. Comput. Sci.'
         volume: 10
         pages: '33–37'
@@ -41,8 +40,7 @@ refs:
         type: 'article'
         author: Mischan MM, Pinho SZ, Carvalho LR
         year: 2011
-        title: 'Determination of a point sufficiently close to the asymptote 
-        in nonlinear growth functions'
+        title: 'Determination of a point sufficiently close to the asymptote in nonlinear growth functions'
         publisher: 'Scientia Agricola'
         volume: 68
         pages: '109–114'
@@ -52,8 +50,7 @@ refs:
         type: 'software'
         author: Elzhov TV, Mullen KM, Spiess A-N, Bolker B
         year: 2023
-        title: 'minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear 
-        Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds'
+        title: 'minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds'
         publisher: '(Version 1.2-4) [R package]. doi: 10.32614/CRAN.package.minpack.lm'
         url: https://cran.r-project.org/package=minpack.lm      
         

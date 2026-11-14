@@ -3,7 +3,7 @@ name:  gcurve
 title: Growth Curve Modeling
 menuGroup: Growth
 menuTitle: Curve Modeling
-version: '0.10.1'
+version: '0.10.2'
 jas: '1.2'
 
 description:
@@ -182,14 +182,17 @@ options:
                   title: CAR(1)
               default: none
             - name: fixValue
-              type: Number
+              type: String
+              default: ''
       description:
           ui: >
             specifications for each model setup, including dependent variable,
             Unified growth model, residual variance structure, residual
-            correlation structure and optional fixed asymptote.
+            correlation structure and optional fixed asymptote; an empty
+            asymptote value means that the asymptote is estimated.
           R: >
-            an array describing the specifications for each model setup
+            an array describing the specifications for each model setup; an
+            empty `fixValue` means that the asymptote is estimated
 
     - name: duplicateSetup
       title: Duplicate

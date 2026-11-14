@@ -30,6 +30,85 @@ get_model_spec <- function(
 }
 
 
+##
+pgm_resolve_modeling <- function(
+    modeling,
+    deps,
+    validate = TRUE
+) {
+  
+  if (length(modeling) == 0L) {
+    
+    if (length(deps) == 0L)
+      return(list())
+    
+    setupIds <- make.unique(
+      paste0("setup_", make.names(deps))
+    )
+    
+    return(Map(
+      function(dep, setupId) {
+        list(
+          setupId = setupId,
+          setupLabel = "M1",
+          var = dep,
+          model = "richards",
+          errorVarType = "none",
+          errorCorType = "none",
+          fixValue = ""
+        )
+      },
+      deps,
+      setupIds
+    ))
+  }
+  
+  if (isTRUE(validate)) {
+    
+    setupVars <- vapply(
+      modeling,
+      function(setup) {
+        
+        if (is.null(setup$var) ||
+            length(setup$var) != 1L ||
+            is.na(setup$var) ||
+            !nzchar(setup$var)) {
+          
+          jmvcore::reject(
+            paste(
+              "Each modeling setup must define exactly",
+              "one dependent variable in 'var'"
+            )
+          )
+        }
+        
+        as.character(setup$var)
+      },
+      character(1)
+    )
+    
+    invalid <- setdiff(
+      unique(setupVars),
+      deps
+    )
+    
+    if (length(invalid) > 0L) {
+      jmvcore::reject(
+        sprintf(
+          paste(
+            "Modeling setup refers to dependent variable(s)",
+            "not listed in 'deps': %s"
+          ),
+          paste(invalid, collapse = ", ")
+        )
+      )
+    }
+  }
+  
+  modeling
+}
+
+
 ## 
 ur_family <- function(family) {
   

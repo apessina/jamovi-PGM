@@ -480,7 +480,7 @@ children:
                             name: comparisonRightFunc
                             enable: (growthComparisonPlots)
               - type: Label
-                label: Plot elements
+                label: Plot Elements
                 children:
                   - name: plotsElements_dataPoints
                     type: CheckBox

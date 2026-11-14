@@ -1,7 +1,7 @@
 Package: PGM
 Type: Package
 Title: Practical Growth Modeling
-Version: 0.10.1
+Version: 0.10.2
 Authors@R: c(
             person("André L. R.", "Pessina", 
              role=c("aut", "cre", "cph"), 

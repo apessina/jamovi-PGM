@@ -11,9 +11,15 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         hasDeps <- length(op$deps) > 0L
         hasTime <- length(op$time) > 0L
         
+        setups <- pgm_resolve_modeling(
+          modeling = op$modeling,
+          deps = op$deps,
+          validate = FALSE
+        )
+        
         results$documentation$setVisible(!(hasDeps && hasTime))
         
-        for (setup in op$modeling) {
+        for (setup in setups) {
           
           setupId <- setup$setupId
           label <- paste0(setup$var, ": ", setup$setupLabel)
@@ -57,7 +63,7 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         corrGroups <- op$corrGroups
         
         ## Get required data
-        if (is.null(deps) || is.null(time))
+        if (length(deps) == 0L || length(time) == 0L)
           return()
         
         if (isTRUE(op$aucInterval) && op$aucUpper <= op$aucLower) {
@@ -101,7 +107,7 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         equations <- list()
         
         ## Modeling Setup Array
-        setups <- op$modeling
+        setups <- pgm_resolve_modeling(modeling = op$modeling, deps = deps)
         
         for (setup in setups) {
           
@@ -372,7 +378,7 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             )
             
             residualPlot$setTitle(
-              paste("Residual diagnostics for", depSetupLabel)
+              paste("Residual Diagnostics for", depSetupLabel)
             )
             
             residualPlot$setState(
@@ -399,7 +405,9 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
             op = op,
             tCurves = tnew,
             functions = Wderivs,
-            cp = cp
+            cp = cp,
+            dep = dep,
+            time = time
           )
           ySamplesList[[depSetupLabel]] <- list(x = xraw, y = yraw)
           curvesList[[depSetupLabel]] <- comparisonData$curves
@@ -420,13 +428,33 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         ## Multiple models plot
         if (op$growthComparisonPlots) {
-          
           growthComparisonPlot <- results$growthComparisonPlot
+          
+          depNames <- unique(vapply(
+            setups, function(setup) setup$var, character(1)
+          ))
+          depSetupLabels <- setdiff(names(curvesList), "tnewGlobal")
+          growthAxisLabel <- if (length(depNames) == 1L)
+            depNames[[1L]]
+          else
+            "Growth"
+          rightAxisLabel <- NULL
+          
+          if (op$comparisonRightFunc != "none" && length(depSetupLabels) > 0L) {
+            firstCurve <- curvesList[[depSetupLabels[[1L]]]]
+            rightAxisLabel <- if (length(depNames) == 1L)
+              firstCurve$rightAxisLabel
+            else
+              firstCurve$rightAxisLegend
+          }
           
           growthComparisonPlot$setState(list(
             curvesList = curvesList,
             ySamplesList = ySamplesList,
-            cpList = cpList
+            cpList = cpList,
+            timeLabel = time,
+            growthAxisLabel = growthAxisLabel,
+            rightAxisLabel = rightAxisLabel
           ))
         }
         
@@ -561,8 +589,11 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Create plot with samples points
         samplesColor = if ("dataPoints" %in% op$plotsElements) "grey" else NA
         
-        plot(samples$x, samples$y, xlab = "", ylab = curves$growth$axisLabel,
-             col = samplesColor, pch=16, ylim = better_lim(samples$y))
+        plot(
+          samples$x, samples$y, 
+          xlab = image$state$timeLabel, ylab = curves$growth$axisLabel, 
+          col = samplesColor, pch = 16, ylim = better_lim(samples$y)
+        )
         
         ### Add W(t) curve
         lines(curves$growth$x, curves$growth$y, 
@@ -599,7 +630,10 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         
         ## Add a third curve (just for the shape over time)
-        if (op$growthNoAxis & op$growthNoAxisFunc != op$growthRightAxisFunc) {
+        if (op$growthNoAxis && !(
+          op$growthRightAxis && op$growthNoAxisFunc == op$growthRightAxisFunc)
+          ) 
+        {
           
           draw_new_curve(
             x = curves$noAxis$x,
@@ -615,8 +649,11 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         
         
         ## Add lines legend
-        legend("bottom", inset = -0.2, legend = legendLabels, col = legendColors,
-               lty = legendTypes, horiz = TRUE, bty = "n", lwd = 2, xpd = TRUE)
+        legend(
+          "bottom", inset = c(0, -0.2), legend = legendLabels, 
+          col = legendColors, lty = legendTypes, horiz = TRUE, 
+          bty = "n", lwd = 2, xpd = TRUE
+        )
         
         
         ## Notify the rendering system that we have plotted something
@@ -641,6 +678,8 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Setup labels and global time grid
         tnewGlobal <- curvesList$tnewGlobal
         depSetupLabels <- setdiff(names(curvesList), "tnewGlobal")
+        if (length(depSetupLabels) == 0L)
+          return(FALSE)
         
         ## Generate colors in the standard jamovi palette
         jmvColors <- jmvcore::colorPalette(n = length(depSetupLabels))
@@ -658,6 +697,10 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         ## Plot settings
         par(bty = 'L')
         
+        ## Redefine plot margins to fit axis labels
+        par(mar = c(5.1, 3.1, 4.1, 3.1))  # c(5.1, 4.1, 4.1, 2.1)
+        par(mgp = c(2, 0.5, 0)) # c(3, 1, 0)
+        
         ## First setup
         samples <- ySamplesList[[depSetupLabels[1]]]
         
@@ -665,8 +708,11 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         if ("dataPoints" %in% op$plotsElements)
           samplesColor <- adjustcolor(jmvColors[1], alpha.f = 0.3)
         
-        plot(samples$x, samples$y, pch = 16, xlab = "", ylab = "",
-             xlim = xlimTotal, ylim = ylimTotal, col = samplesColor)
+        plot(
+          samples$x, samples$y, pch = 16, xlim = xlimTotal, ylim = ylimTotal,
+          xlab = image$state$timeLabel, ylab = image$state$growthAxisLabel,
+          col = samplesColor
+        )
         
         ## Remaining setups
         if ("dataPoints" %in% op$plotsElements &&
@@ -705,9 +751,10 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
         }
         
         ## Make legend
-        legend("bottom", inset = -0.2, legend = depSetupLabels, 
-               col = jmvColors, lty = 1, lwd = 2, horiz = TRUE, 
-               bty = "n", xpd = TRUE)
+        legend(
+          "bottom", inset = c(0, -0.2), legend = depSetupLabels, bty = "n",
+          col = jmvColors, lty = 1, lwd = 2, horiz = TRUE, xpd = TRUE
+        )
         
         ## Right Axis
         if (op$comparisonRightFunc != "none") {
@@ -730,6 +777,7 @@ gcurveClass <- if (requireNamespace('jmvcore', quietly=TRUE)) R6::R6Class(
           }
           
           axis(4)
+          mtext(image$state$rightAxisLabel, side = 4, line = 2)
         }
         
         ## Notify the rendering system that we have plotted something

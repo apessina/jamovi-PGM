@@ -150,9 +150,10 @@ gcurveOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                                 "ar1",
                                 "car1"),
                             default="none"),
-                        jmvcore::OptionNumber$new(
+                        jmvcore::OptionString$new(
                             "fixValue",
-                            NULL))))
+                            NULL,
+                            default=""))))
             private$..duplicateSetup <- jmvcore::OptionAction$new(
                 "duplicateSetup",
                 duplicateSetup)
@@ -936,7 +937,7 @@ gcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             super$initialize(
                 package = "PGM",
                 name = "gcurve",
-                version = c(0,10,1),
+                version = c(0,10,2),
                 options = options,
                 results = gcurveResults$new(options=options),
                 data = data,
@@ -981,7 +982,8 @@ gcurveBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'   parameters values  tables
 #' @param modelParam one of \code{'Ti'}, or \code{'W0'}
 #' @param modelPhase one of \code{'single'}
-#' @param modeling an array describing the specifications for each model setup
+#' @param modeling an array describing the specifications for each model
+#'   setup; an empty \code{fixValue} means that the asymptote is estimated
 #' @param duplicateSetup an action to duplicate the selected model setup with
 #'   the same  variable in UI.
 #' @param removeSetup an action to remove the selected model setup in UI.

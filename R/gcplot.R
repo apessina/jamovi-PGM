@@ -74,6 +74,7 @@ populate_growthplot <- function(
   }
   
   list(
+    timeLabel = time,
     curves = curves,
     cps = critPoints,
     samples = list(
@@ -89,7 +90,9 @@ prepare_comparison_data <- function(
     op,
     tCurves,
     functions,
-    cp = NULL
+    cp = NULL,
+    dep = "",
+    time = ""
 ) {
   
   ## Growth curve
@@ -98,11 +101,17 @@ prepare_comparison_data <- function(
   ## Right-axis function
   if (op$comparisonRightFunc != "none") {
     
-    curves$rightAxis <- make_plot_ypred(
+    rightAxis <- make_plot_ypred(
       t = tCurves,
       curve = op$comparisonRightFunc,
-      functions = functions
-    )$ypred
+      functions = functions,
+      dep = dep,
+      time = time
+    )
+    
+    curves$rightAxis <- rightAxis$ypred
+    curves$rightAxisLabel <- rightAxis$axisLabel
+    curves$rightAxisLegend <- rightAxis$legend
     
   }
   
